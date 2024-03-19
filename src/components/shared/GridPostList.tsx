@@ -15,7 +15,7 @@ const GridPostList: React.FC<GridPostListProps> = ({
   showStats = true
 }) => {
   const { user } = useUserContext()
-
+  if (!posts) return null
   return (
     <ul className='grid-container'>
       {posts.map(post => (
