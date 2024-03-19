@@ -58,6 +58,20 @@ export const useCreatePost = () => {
   })
 }
 
+const recentPostsQuery = [Query.orderDesc('$createdAt')]
+export const useGetInfiniteRecentPosts = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+    queryFn: ({ pageParam }) =>
+      getInfinitePosts({ lastId: pageParam, queries: recentPostsQuery }),
+    getNextPageParam: lastPage => {
+      if (lastPage?.documents?.length === 0) return null
+      return lastPage.documents[lastPage.documents.length - 1].$id
+    },
+    initialPageParam: ''
+  })
+}
+
 export const useGetRecentPosts = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
