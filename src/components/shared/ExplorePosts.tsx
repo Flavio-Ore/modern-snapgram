@@ -1,6 +1,6 @@
 import { useGetPosts } from '@/lib/queries/queriesAndMutations'
 import GridPostList from './GridPostList'
-import InfinitePosts from './InfinitePosts'
+import InfiniteData from './InfiniteScroll'
 
 interface ExploreDefaultPostsModel {
   isSearching: boolean
@@ -16,12 +16,12 @@ const ExploreDefaultPosts: React.FC<ExploreDefaultPostsProps> = ({
   const { data } = infinitePostsResponse
 
   return (
-    <InfinitePosts
+    <InfiniteData
       infinityHookResponse={infinitePostsResponse}
-      dependencies={[searchValue]}
+      dependencyList={[searchValue]}
       conditionIfNoData={isSearching}
       conditionIfinView={!searchValue}
-      nextPageCondition={!searchValue}
+      conditionToShowLoader={!searchValue}
     >
       {data?.pages.map((currentPosts, i) => (
         <GridPostList
@@ -29,7 +29,7 @@ const ExploreDefaultPosts: React.FC<ExploreDefaultPostsProps> = ({
           posts={currentPosts.documents}
         />
       ))}
-    </InfinitePosts>
+    </InfiniteData>
   )
 }
 

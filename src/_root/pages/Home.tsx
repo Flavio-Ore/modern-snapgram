@@ -1,4 +1,4 @@
-import InfinitePosts from '@/components/shared/InfinitePosts'
+import InfiniteData from '@/components/shared/InfiniteScroll'
 import PostCard from '@/components/shared/PostCard'
 import { useGetInfiniteRecentPosts } from '@/lib/queries/queriesAndMutations'
 
@@ -6,13 +6,13 @@ const HomePosts = () => {
   const infiniteRecentPosts = useGetInfiniteRecentPosts()
   const { data } = infiniteRecentPosts
   return (
-    <InfinitePosts infinityHookResponse={infiniteRecentPosts}>
+    <InfiniteData infinityHookResponse={infiniteRecentPosts}>
       {data?.pages.map(currentPosts =>
         currentPosts.documents.map(post => (
           <PostCard post={post} key={post.$id} />
         ))
       )}
-    </InfinitePosts>
+    </InfiniteData>
   )
 }
 
