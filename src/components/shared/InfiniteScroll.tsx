@@ -9,6 +9,7 @@ type InfinitePostsProps = {
   infinityHookResponse: UseInfiniteQueryResult<
     InfiniteData<Models.DocumentList<Models.Document>, unknown>
   >
+  isNothingMoreToShow: boolean
   dependencyList?: DependencyList
   triggerNextPage?: boolean
   triggerFetchNextPage?: boolean
@@ -21,6 +22,7 @@ type InfinitePostsProps = {
  * @component
  * @param children - The elements to be rendered for each post.-
  * @param infinityHookResponse - The response from the `useInfiniteQuery` hook.
+ * @param notEmptyData - If `true`, the component will render the children elements when there is data available.
  * @param dependencyList - Array of dependencies to trigger the `fetchNextPage` function only when inView is `true` and the dependencies have changed
  * @param triggerLoader  - If `true`, the component will show a loading spinner, regardless of the state of the data fetching.
  * @param triggerFetchNextPage - If `true`, the component will fetch the next page when it comes into view.
@@ -29,6 +31,7 @@ type InfinitePostsProps = {
  * @example
  * <InfinitePosts
  *   infinityHookResponse={useGetInfiniteData()}
+ *   notEmptyData={true}
  *   dependencyList={[dependency1, dependency2]}
  *   triggerLoader={isLoading}
  *   triggerFetchNextPage={shouldFetchNextPage}
@@ -40,6 +43,7 @@ type InfinitePostsProps = {
 const InfinitePosts: React.FC<InfinitePostsProps> = ({
   children,
   infinityHookResponse,
+  isNothingMoreToShow = false,
   dependencyList = [],
   triggerLoader = false,
   triggerFetchNextPage = true,
@@ -54,7 +58,7 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
 
   if (triggerLoader || !data) {
     return <Loader />
-  } else if (data && data.pages[0].total > 0) {
+  } else if (data) {
     return (
       <>
         {children}
@@ -65,10 +69,12 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
         )}
       </>
     )
-  }
-  return (
-    <p className='text-light-4 mt-10 text-center w-full'>No results found</p>
-  )
+  } else if (isNothingMoreToShow)
+    return (
+      <p className='text-light-4 mt-10 text-center w-full'>
+        There is nothing more to show!
+      </p>
+    )
 }
 
 export default InfinitePosts
