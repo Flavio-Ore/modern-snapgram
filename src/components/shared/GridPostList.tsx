@@ -24,6 +24,7 @@ const GridPostList: React.FC<GridPostListProps> = ({
             <img
               src={post.imageUrl}
               alt='Post image'
+              loading='lazy'
               className='h-full w-full object-cover'
             />
           </Link>
@@ -35,6 +36,7 @@ const GridPostList: React.FC<GridPostListProps> = ({
                     post.creator.imageUrl ||
                     '/assets/icons/profile-placeholder.svg'
                   }
+                  loading='lazy'
                   alt='Creator post profile'
                   className='h-8 w-8 rounded-full'
                 />
