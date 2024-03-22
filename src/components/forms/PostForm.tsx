@@ -8,7 +8,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { useUserContext } from '@/context/useUserContext'
-import { useCreatePost, useUpdatePost } from '@/lib/queries/queriesAndMutations'
+import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { PostValidationSchema } from '@/lib/validations'
 import { E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
