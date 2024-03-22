@@ -1,17 +1,26 @@
 import InfinitePosts from '@/components/shared/InfiniteScroll'
 import PostCard from '@/components/shared/PostCard'
-import { useGetInfiniteRecentPosts } from '@/lib/queries/queriesAndMutations'
+import { useGetInfiniteRecentPosts } from '@/lib/queries/queries'
 
 const HomePosts = () => {
-  const infiniteRecentPosts = useGetInfiniteRecentPosts()
-  const { data } = infiniteRecentPosts
+  const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } =
+    useGetInfiniteRecentPosts()
+
+  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
+
   return (
-    <InfinitePosts infinityHookResponse={infiniteRecentPosts} notEmptyData>
-      {data?.pages.map(currentPosts =>
-        currentPosts.documents.map(post => (
-          <PostCard post={post} key={post.$id} />
-        ))
-      )}
+    <InfinitePosts
+      data={data}
+      isDataEmpty={posts.length === 0}
+      fetchNextPage={fetchNextPage}
+      isFetching={isFetching}
+      isLoading={isLoading}
+      isError={isError}
+      hasNextPage={hasNextPage}
+    >
+      {posts.map(post => (
+        <PostCard post={post} key={post.$id} />
+      ))}
     </InfinitePosts>
   )
 }

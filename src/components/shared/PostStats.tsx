@@ -1,13 +1,14 @@
 import {
   useDeleteSavedPost,
-  useGetCurrentUser,
   useLikePost,
   useSavePost
-} from '@/lib/queries/queriesAndMutations'
+} from '@/lib/queries/mutations'
+import { useGetCurrentUser } from '@/lib/queries/queries'
 import { checkIsLiked } from '@/lib/utils'
 import { Models } from 'appwrite'
 import { useEffect, useState } from 'react'
 import Loader from './Loader'
+
 interface PostStatsModel {
   post: Models.Document
   userId: string
@@ -16,20 +17,22 @@ interface PostStatsModel {
 type PostStatsProps = PostStatsModel
 
 const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
-  const likesList = post.likes.map((user: Models.Document) => user.$id)
-
-  const [likes, setLikes] = useState<string[]>(likesList)
+  const likesList: string[] = post.likes.map(
+    (user: Models.Document) => user.$id
+  )
+  const { $id: postId } = post
+  const [likes, setLikes] = useState(likesList)
   const [isSaved, setIsSaved] = useState(false)
 
   const { mutate: likePost } = useLikePost()
   const { mutate: savePost, isPending: isSavingPost } = useSavePost()
-  const { mutate: deleteSavePost, isPending: isDeletingSavedPost } =
+  const { mutate: deleteSavedPost, isPending: isDeletingSavedPost } =
     useDeleteSavedPost()
 
   const { data: currentUser } = useGetCurrentUser()
 
   const savedPostRecord = currentUser?.save.find(
-    (record: Models.Document) => record.post.$id === post.$id
+    (record: Models.Document) => record.post.$id === postId
   )
 
   useEffect(() => {
@@ -41,14 +44,14 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
   ) => {
     e.stopPropagation()
 
-    let likesArray = [...likes]
+    let usersLikes = [...likes]
 
-    if (likesArray.includes(userId))
-      likesArray = likesArray.filter(id => id !== userId)
-    else likesArray.push(userId)
+    if (usersLikes.includes(userId))
+      usersLikes = usersLikes.filter(id => id !== userId)
+    else usersLikes.push(userId)
 
-    setLikes(likesArray)
-    likePost({ postId: post.$id, likesArray })
+    setLikes(usersLikes)
+    likePost({ postId, usersLikes })
   }
   const handleSavePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -56,9 +59,9 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
     e.stopPropagation()
     if (savedPostRecord) {
       setIsSaved(false)
-      return deleteSavePost(savedPostRecord.$id)
+      return void deleteSavedPost({ savedRecordId: savedPostRecord.$id })
     }
-    savePost({ userId, postId: post.$id })
+    savePost({ userId, postId })
     setIsSaved(true)
   }
 

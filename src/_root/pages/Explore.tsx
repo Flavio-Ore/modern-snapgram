@@ -2,35 +2,16 @@ import ExploreDefaultPosts from '@/components/shared/ExplorePosts'
 import SearchResults from '@/components/shared/SearchResults'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
-import {
-  useGetPosts,
-  useInfiniteSearchPosts
-} from '@/lib/queries/queriesAndMutations'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const Explore = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-  const { data: infinitePosts, isFetching: isInfinitePostsFetching } =
-    useGetPosts()
   const debouncedValue = useDebounce(searchValue, 500)
-  const { data: infiniteSearched, isFetching: isInfiniteSearchedFetching } =
-    useInfiniteSearchPosts({
-      searchTerm: debouncedValue
-    })
 
-  useEffect(() => {
-    if (!isInfiniteSearchedFetching || !isInfinitePostsFetching)
-      setIsSearchLoading(false)
-  }, [isInfiniteSearchedFetching, isInfinitePostsFetching])
+  console.log('isSearchLoading :>> ', isSearchLoading)
 
   const isTyping = searchValue !== ''
-  const noMoreSearchedResults =
-    infiniteSearched?.pages[infiniteSearched.pages.length - 1]?.documents
-      .length === 0
-  const noMoreDefaultResults =
-    infinitePosts?.pages[infinitePosts.pages.length - 1]?.documents.length === 0
-  const noMoreDefaultPosts = !isTyping && noMoreDefaultResults
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
@@ -75,16 +56,9 @@ const Explore = () => {
           <SearchResults
             searchValue={debouncedValue}
             isSearching={isSearchLoading}
-            isNothingMoreToShow={noMoreSearchedResults}
           />
         )}
-        {!isTyping && (
-          <ExploreDefaultPosts
-            searchValue={debouncedValue}
-            isSearching={isSearchLoading}
-            isNothingMoreToShow={noMoreDefaultPosts}
-          />
-        )}
+        {!isTyping && <ExploreDefaultPosts />}
       </div>
     </div>
   )

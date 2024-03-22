@@ -11,7 +11,7 @@ type PostCardProps = PostCardModel
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { user } = useUserContext()
-  if (!post.creator) return
+  if (!post.creator) return // Radix Skeleton
   return (
     <div className='post-card'>
       <div className='flex-between'>
