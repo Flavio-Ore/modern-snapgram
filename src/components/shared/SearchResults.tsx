@@ -1,7 +1,7 @@
+import GridPostList from '@/components/shared/GridPostList'
+import InfinitePosts from '@/components/shared/InfinitePosts'
 import { useInfiniteSearchPosts } from '@/lib/queries/infiniteQueries'
 import { OPERATIONS } from '@/values'
-import GridPostList from './GridPostList'
-import InfinitePosts from './InfinitePosts'
 
 interface SearchResultsModel {
   debouncedValue: string
