@@ -1,4 +1,4 @@
-import ExploreDefaultPosts from '@/components/shared/ExplorePosts'
+import ExplorePosts from '@/components/shared/ExplorePosts'
 import Loader from '@/components/shared/Loader'
 import SearchResults from '@/components/shared/SearchResults'
 import { Input } from '@/components/ui/input'
@@ -49,7 +49,7 @@ const Explore = () => {
       <div className='flex flex-wrap gap-9 w-full max-w-5xl'>
         {isTyping && debouncedValue === '' && <Loader />}
         {isTyping && <SearchResults debouncedValue={debouncedValue} />}
-        {!isTyping && <ExploreDefaultPosts />}
+        {!isTyping && <ExplorePosts />}
       </div>
     </div>
   )
