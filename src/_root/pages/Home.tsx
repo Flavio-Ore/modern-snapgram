@@ -1,4 +1,4 @@
-import InfinitePosts from '@/components/shared/InfiniteScroll'
+import InfinitePosts from '@/components/shared/InfinitePosts'
 import PostCard from '@/components/shared/PostCard'
 import { useGetInfiniteRecentPosts } from '@/lib/queries/infiniteQueries'
 
