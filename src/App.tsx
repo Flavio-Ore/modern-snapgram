@@ -4,11 +4,11 @@ import SignInForm from './_auth/forms/SigninForm'
 import SignupForm from './_auth/forms/SignupForm'
 import RootLayout from './_root/RootLayout'
 import {
-  AllUsers,
   CreatePost,
   EditPost,
   Explore,
   Home,
+  People,
   PostDetails,
   Profile,
   Saved,
@@ -31,7 +31,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path='/explore' element={<Explore />} />
           <Route path='/saved' element={<Saved />} />
-          <Route path='/all-users' element={<AllUsers />} />
+          <Route path='/all-users' element={<People />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/update-post/:id' element={<EditPost />} />
           <Route path='/posts/:id' element={<PostDetails />} />
