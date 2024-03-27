@@ -20,9 +20,9 @@ import { Toaster } from './components/ui/toaster'
 import './global.css'
 import { useGetInfinitePosts } from './lib/queries/infiniteQueries'
 import { OPERATIONS } from './values'
-const SavedPosts = () => <h1>Saved Posts</h1>
-const SavedReels = () => <h1>Saved Reels</h1>
-const SavedCollections = () => {
+export const SavedPosts = () => <h1 className='h1-bold w-full'>Saved Posts</h1>
+export const SavedReels = () => <h1 className='h1-bold w-full'>Saved Reels</h1>
+export const SavedCollections = () => {
   const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
     useGetInfinitePosts()
   const posts = data?.pages.flatMap(postsPage => postsPage) ?? []

@@ -1,3 +1,4 @@
+import { E_USERS } from '@/values'
 import UserCard from './UserCard'
 
 const TopCreators = () => {
@@ -15,7 +16,7 @@ const TopCreators = () => {
               name={name}
               mainFollower={`Followed by ${mainFollower}`}
               profileLink={profileLink}
-              role='TOP_CREATORS'
+              role={E_USERS.TOP_CREATORS}
             />
           </li>
         )
