@@ -43,7 +43,7 @@ const LeftSidebar = () => {
           </div>
         </Link>
 
-        <ul className='flex flex-col gap-6'>
+        <ul className='flex flex-col gap-4'>
           {sidebarLinks.map(({ imgURL, label, route }: INavLink) => {
             const isActive = truncateRoute(pathname) === route
             return (
@@ -55,7 +55,7 @@ const LeftSidebar = () => {
               >
                 <NavLink to={route} className='flex gap-4 items-center p-4'>
                   <img
-                    className={`group-hover:invert-white ${
+                    className={`h-[21.5px] w-[21.5px] aspect-square group-hover:invert-white ${
                       isActive && 'invert-white'
                     }`}
                     src={imgURL}
