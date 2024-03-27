@@ -68,18 +68,23 @@ const LeftSidebar = () => {
           })}
         </ul>
       </div>
-
-      <Button
-        variant='ghost'
-        className='shad-button_ghost'
-        onClick={() => {
-          signOut()
-          navigate('/sign-in')
-        }}
-      >
-        <img src='/assets/icons/logout.svg' alt='logout' />
-        <p className='small-medium lg:base-medium'>Logout</p>
-      </Button>
+      <div className='flex-start flex-col'>
+        <Button variant='ghost' className='shad-button_ghost'>
+          <img src='/assets/icons/settings.svg' alt='settings' />
+          <p className='small-medium lg:base-medium'>Settings</p>
+        </Button>
+        <Button
+          variant='ghost'
+          className='shad-button_ghost'
+          onClick={() => {
+            signOut()
+            navigate('/sign-in')
+          }}
+        >
+          <img src='/assets/icons/logout.svg' alt='logout' />
+          <p className='small-medium lg:base-medium'>Logout</p>
+        </Button>
+      </div>
     </nav>
   )
 }
