@@ -6,6 +6,10 @@ import { useEffect } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 
+const truncateRoute = (route: string) => {
+  return route.split('/').slice(0, 2).join('/')
+}
+
 const LeftSidebar = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -41,7 +45,7 @@ const LeftSidebar = () => {
 
         <ul className='flex flex-col gap-6'>
           {sidebarLinks.map(({ imgURL, label, route }: INavLink) => {
-            const isActive = pathname === route
+            const isActive = truncateRoute(pathname) === route
             return (
               <li
                 key={label}
