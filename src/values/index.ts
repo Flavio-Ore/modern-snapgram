@@ -33,6 +33,16 @@ export const sidebarLinks = [
     label: 'Saved'
   },
   {
+    imgURL: '/assets/icons/reels.svg',
+    route: '/reels',
+    label: 'Reels'
+  },
+  {
+    imgURL: '/assets/icons/chat.svg',
+    route: '/chats',
+    label: 'Chats'
+  },
+  {
     imgURL: '/assets/icons/gallery-add.svg',
     route: '/create-post',
     label: 'Create Post'

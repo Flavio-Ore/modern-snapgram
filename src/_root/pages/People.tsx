@@ -1,4 +1,5 @@
 import UserCard from '@/components/shared/UserCard'
+import { E_USERS } from '@/values'
 
 const People = () => {
   return (
@@ -7,10 +8,10 @@ const People = () => {
         <div className='flex-start w-full max-w-5xl gap-6'>
           <img
             src='/assets/icons/people.svg'
-            className='h-[36px] w-[36px] rounded-full aspect-square invert-white'
+            className='h-[36px] w-[36px] aspect-square invert-white'
             alt='people'
           />
-          <h2 className='h1-bold'>All Users</h2>
+          <h2 className='md:h1-bold h3-bold'>All Users</h2>
         </div>
         <ul className='user-grid'>
           {Array.from({ length: 12 }, (_, i) => i + 1).map(i => {
@@ -25,7 +26,7 @@ const People = () => {
                   name={name}
                   mainFollower={`@${mainFollower}`}
                   profileLink={profileLink}
-                  role='ALL_USERS'
+                  role={E_USERS.ALL_USERS}
                 />
               </li>
             )
