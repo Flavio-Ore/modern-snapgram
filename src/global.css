@@ -78,7 +78,9 @@
   .invert-white {
     @apply invert brightness-0 transition;
   }
-
+  .text-overflow-ellipsis {
+    @apply whitespace-nowrap overflow-hidden overflow-ellipsis;
+  }
   .flex-center {
     @apply flex justify-center items-center;
   }
