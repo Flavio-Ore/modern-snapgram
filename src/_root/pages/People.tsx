@@ -1,7 +1,11 @@
+import Loader from '@/components/shared/Loader'
 import UserCard from '@/components/shared/UserCard'
+import { useGetUsers } from '@/lib/queries/queries'
 import { E_USERS } from '@/values'
 
 const People = () => {
+  const { data: users, isLoading, isError } = useGetUsers({ limit: 12 })
+  console.log('users :>> ', users)
   return (
     <div className='common-container'>
       <div className='user-container'>
@@ -14,23 +18,25 @@ const People = () => {
           <h2 className='md:h1-bold h3-bold'>All Users</h2>
         </div>
         <ul className='user-grid'>
-          {Array.from({ length: 12 }, (_, i) => i + 1).map(i => {
-            const imgUrl = '/assets/icons/profile-placeholder.svg'
-            const name = 'The Midudev'
-            const mainFollower = 'Steban'
-            const profileLink = `/profile/65e42bcc7cd2846e471b`
-            return (
-              <li key={i}>
-                <UserCard
-                  imgUrl={imgUrl}
-                  name={name}
-                  mainFollower={`@${mainFollower}`}
-                  profileLink={profileLink}
-                  role={E_USERS.ALL_USERS}
-                />
-              </li>
-            )
-          })}
+          {isError && <p>Something went wrong</p>}
+          {isLoading && <Loader />}
+          {!isError &&
+            !isLoading &&
+            users?.documents.map((user, i) => {
+              return (
+                <li key={i}>
+                  <UserCard
+                    imgUrl={
+                      user.imageUrl || '/assets/icons/profile-placeholder.svg'
+                    }
+                    name={user.name}
+                    mainFollower={`@${user.username}`}
+                    profileLink={`/profile/${user.$id}`}
+                    role={E_USERS.ALL_USERS}
+                  />
+                </li>
+              )
+            })}
         </ul>
       </div>
     </div>
