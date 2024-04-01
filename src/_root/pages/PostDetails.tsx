@@ -59,7 +59,7 @@ const PostDetails = () => {
         <div className='post_details-card'>
           <img
             src={post?.imageUrl}
-            alt='creator'
+            alt='Creator main post'
             className='post_details-img'
           />
 
@@ -74,8 +74,10 @@ const PostDetails = () => {
                     post?.creator.imageUrl ||
                     '/assets/icons/profile-placeholder.svg'
                   }
-                  alt='creator'
-                  className='w-8 h-8 lg:w-12 lg:h-12 rounded-full'
+                  alt='Creator profile picture'
+                  height={48}
+                  width={48}
+                  className='rounded-full'
                 />
                 <div className='flex gap-1 flex-col'>
                   <p className='base-medium lg:body-bold text-light-1'>
@@ -100,7 +102,7 @@ const PostDetails = () => {
                 >
                   <img
                     src={'/assets/icons/edit.svg'}
-                    alt='edit'
+                    alt='Edit button'
                     width={24}
                     height={24}
                   />
@@ -115,7 +117,7 @@ const PostDetails = () => {
                 >
                   <img
                     src={'/assets/icons/delete.svg'}
-                    alt='delete'
+                    alt='Delete button'
                     width={24}
                     height={24}
                   />

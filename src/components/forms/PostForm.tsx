@@ -1,3 +1,5 @@
+import FileUploader from '@/components/shared/FileUploader'
+import Loader from '@/components/shared/Loader'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -7,6 +9,9 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { PostValidationSchema } from '@/lib/validations'
@@ -16,11 +21,6 @@ import { Models } from 'appwrite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
-import FileUploader from '../shared/FileUploader'
-import Loader from '../shared/Loader'
-import { Input } from '../ui/input'
-import { Textarea } from '../ui/textarea'
-import { useToast } from '../ui/use-toast'
 
 type Actions = keyof typeof E_FORM_ACTIONS
 interface PostFormModel {
@@ -92,7 +92,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
           name='caption'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='shad-form_field'>Caption</FormLabel>
+              <FormLabel className='shad-form_label'>Caption</FormLabel>
               <FormControl>
                 <Textarea
                   className='shad-textarea custom-scrollbar'
@@ -109,14 +109,15 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
           name='file'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='shad-form_field'>Add Photos</FormLabel>
+              <FormLabel className='shad-form_label'>
+                Add Photos/Videos
+              </FormLabel>
               <FormControl>
                 <FileUploader
                   fieldChange={field.onChange}
                   mediaUrl={post?.imageUrl}
                 />
               </FormControl>
-
               <FormMessage className='shad-form_message' />
             </FormItem>
           )}
@@ -126,7 +127,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
           name='location'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='shad-form_field'>Add Location</FormLabel>
+              <FormLabel className='shad-form_label'>Add Location</FormLabel>
               <FormControl>
                 <Input type='text' className='shad-input' {...field} />
               </FormControl>
@@ -140,7 +141,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
           name='tags'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='shad-form_field'>
+              <FormLabel className='shad-form_label body-medium'>
                 Add tags{', '}
                 <span className='tiny-medium text-light-4'>
                   separated by comma " , "
