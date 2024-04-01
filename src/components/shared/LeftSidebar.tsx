@@ -49,7 +49,9 @@ const LeftSidebar = () => {
           <img
             src={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
             alt='profile'
-            className='h-14 w-14 rounded-full aspect-square'
+            height={56}
+            width={56}
+            className='rounded-full aspect-square'
           />
           <div className='flex flex-col'>
             <p className='body-bold'>{user.name}</p>
@@ -68,11 +70,13 @@ const LeftSidebar = () => {
               >
                 <NavLink to={route} className='flex gap-4 items-center p-4'>
                   <img
-                    className={`h-[21.5px] w-[21.5px] aspect-square group-hover:invert-white ${
-                      isActive && 'invert-white'
-                    }`}
                     src={imgURL}
                     alt={label}
+                    height={21.5}
+                    width={21.5}
+                    className={`group-hover:invert-white ${
+                      isActive && 'invert-white'
+                    }`}
                   />
                   {label}
                 </NavLink>
@@ -81,21 +85,36 @@ const LeftSidebar = () => {
           })}
         </ul>
       </div>
-      <div className='flex-start flex-col'>
-        <Button variant='ghost' className='shad-button_ghost'>
-          <img src='/assets/icons/settings.svg' alt='settings' />
-          <p className='small-medium lg:base-medium'>Settings</p>
-        </Button>
+      <div className='flex flex-col gap-2'>
         <Button
           variant='ghost'
-          className='shad-button_ghost'
+          className='shad-button_ghost small-medium lg:base-medium flex-start w-full h-12 group hover:bg-red'
           onClick={() => {
             signOut()
             navigate('/sign-in')
           }}
         >
-          <img src='/assets/icons/logout.svg' alt='logout' />
-          <p className='small-medium lg:base-medium'>Logout</p>
+          <img
+            src='/assets/icons/logout.svg'
+            alt='logout'
+            height={21.5}
+            width={21.5}
+            className='group-hover:invert-white'
+          />
+          Logout
+        </Button>
+        <Button
+          variant='ghost'
+          className='shad-button_ghost small-medium lg:base-medium flex-start w-full group hover:bg-primary-600 h-12'
+        >
+          <img
+            src='/assets/icons/settings.svg'
+            alt='settings'
+            height={21.5}
+            width={21.5}
+            className='group-hover:invert-white'
+          />
+          Settings
         </Button>
       </div>
     </nav>

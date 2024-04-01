@@ -1,8 +1,39 @@
+import { SavedCollections, SavedReels } from '@/App'
 import Loader from '@/components/shared/Loader'
 import { Button } from '@/components/ui/button'
+import { TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useGetCurrentUser, useGetUserById } from '@/lib/queries/queries'
-import { useParams } from 'react-router-dom'
+import { Tabs } from '@radix-ui/react-tabs'
+import { Link, useParams } from 'react-router-dom'
 import NotFound from './NotFound'
+
+const savedCollections = [
+  {
+    filter: 'Posts',
+    icon: '/assets/icons/posts.svg'
+  },
+  {
+    filter: 'Reels',
+    icon: '/assets/icons/reels.svg'
+  },
+  {
+    filter: 'Tagged',
+    icon: '/assets/icons/tagged.svg'
+  }
+]
+
+const getComponent = (filter: string) => {
+  switch (filter) {
+    case 'Posts':
+      return () => <div></div>
+    case 'Reels':
+      return SavedReels
+    case 'Tagged':
+      return SavedCollections
+    default:
+      return () => <div>Not found</div>
+  }
+}
 
 const Profile = () => {
   const { data: sessionUser } = useGetCurrentUser()
@@ -27,22 +58,29 @@ const Profile = () => {
         <img
           src={id === sessionUser.id ? sessionUser.imageUrl : user.imageUrl}
           alt={id === sessionUser.id ? sessionUser.name : user.name}
-          className='h-[150px] w-[150px] rounded-full aspect-square'
+          height={150}
+          width={150}
+          className='rounded-full'
         />
-        <div className='flex-between flex-col gap-4 h-full'>
-          <div className='flex-between flex-col md:flex-row  w-full xs:gap-5 gap-2'>
-            <h2 className='body-medium xs:h3-bold lg:h2-bold max-w-48 lg:max-w-72 xl:max-w-2xl text-overflow-ellipsis'>
+        <div className='flex-between flex-col h-full gap-2 xl:gap-0'>
+          <div className='flex-between flex-col md:flex-row w-full gap-2 xl:gap-0'>
+            <h2 className='body-medium xs:h3-bold lg:h1-semibold max-w-48 lg:max-w-72 xl:max-w-2xl text-overflow-ellipsis'>
               {id === sessionUser.id ? sessionUser.name : user.name}
             </h2>
             {id === sessionUser.$id ? (
-              <Button className='shad-button_dark_4 hover:bg-primary-600'>
+              <Link
+                to='/update-profile'
+                className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
+              >
                 <img
                   src='/assets/icons/edit-profile.svg'
                   alt='edit'
-                  className='h-[18px] w-[18px] invert-primary aspect-square stroke-secondary-500'
+                  height={18}
+                  width={18}
+                  className='invert-primary stroke-secondary-500'
                 />
                 Edit Profile
-              </Button>
+              </Link>
             ) : (
               <div className='flex-center gap-1'>
                 <Button className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'>
@@ -54,11 +92,11 @@ const Profile = () => {
               </div>
             )}
           </div>
-          <h3 className='xs:self-start self-center base-medium text-light-3'>
+          <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3 '>
             @{id === sessionUser.id ? sessionUser.username : user.username}
           </h3>
-          <div className='flex-center xs:self-start self-center xs:flex-row flex-col '>
-            <Button className='shad-button_ghost'>
+          <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
+            <Button className='shad-button_ghost small-medium md:body-medium'>
               <span className='text-primary-500'>
                 {id === sessionUser?.$id
                   ? sessionUser.posts?.length || 0
@@ -66,7 +104,7 @@ const Profile = () => {
               </span>{' '}
               Posts
             </Button>
-            <Button className='shad-button_ghost'>
+            <Button className='shad-button_ghost md:body-medium small-medium'>
               <span className='text-primary-500'>
                 {id === sessionUser.$id
                   ? sessionUser.liked?.length || 0
@@ -74,7 +112,7 @@ const Profile = () => {
               </span>{' '}
               Liked
             </Button>
-            <Button className='shad-button_ghost'>
+            <Button className='shad-button_ghost md:body-medium small-medium col-span-2'>
               <span className='text-primary-500'>
                 {id === sessionUser.$id
                   ? sessionUser.followers?.length || 0
@@ -84,6 +122,40 @@ const Profile = () => {
             </Button>
           </div>
         </div>
+      </div>
+      <div className='flex flex-1 w-full'>
+        <Tabs
+          defaultValue={savedCollections[0].filter}
+          className='flex flex-col xxs:gap-8 xxs:items-start gap-20 w-full'
+        >
+          <TabsList className='grid grid-flow-row xs:flex place-items-center w-full max-w-lg gap-1 xs:gap-0'>
+            {savedCollections.map(({ filter, icon }, index) => (
+              <TabsTrigger
+                key={filter + icon}
+                value={filter}
+                className={`data-[state=active]:bg-dark-4 flex-center w-full small-medium lg:body-medium px-6 py-2 border gap-2 ${
+                  index === 0 ? 'rounded-l-lg' : ''
+                } ${
+                  index === savedCollections.length - 1
+                    ? 'rounded-r-lg col-span-2'
+                    : ''
+                } border-dark-4 group transition hover:bg-dark-4
+                    `}
+              >
+                <img src={icon} alt='Link selection' width={20} height={20} />
+                <p className='text-ellipsis'>{filter}</p>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {savedCollections.map(({ filter }, index) => {
+            const Component = getComponent(filter)
+            return (
+              <TabsContent key={index} value={filter}>
+                <Component />
+              </TabsContent>
+            )
+          })}
+        </Tabs>
       </div>
     </div>
   )

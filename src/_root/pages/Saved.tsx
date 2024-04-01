@@ -35,7 +35,9 @@ const Saved = () => {
       <div className='flex flex-start w-full gap-3'>
         <img
           src='/assets/icons/bookmark.svg'
-          className='hidden xs:block h-[28px] w-[28px] md:h-[36px] md:w-[36px] aspect-square invert-white'
+          height={36}
+          width={36}
+          className='invert-white'
           alt='people'
         />
         <h2 className='h3-bold md:h1-bold'>Saved Posts</h2>
@@ -43,9 +45,9 @@ const Saved = () => {
       <div className='flex flex-1 w-full'>
         <Tabs
           defaultValue={savedCollections[0].filter}
-          className='flex flex-col xxs:gap-8 xxs:items-start gap-20 w-full'
+          className='flex flex-col xs:gap-8 xs:items-start gap-20 w-full'
         >
-          <TabsList className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
+          <TabsList className='grid grid-flow-row xs:flex place-items-center w-full max-w-lg gap-1 xs:gap-0'>
             {savedCollections.map(({ filter, icon }, index) => (
               <TabsTrigger
                 key={filter + icon}
@@ -59,7 +61,7 @@ const Saved = () => {
                 } border-dark-4 group transition hover:bg-dark-4
                     `}
               >
-                <img src={icon} alt='Link selection' className='' />
+                <img src={icon} alt='Link selection' width={20} height={20} />
                 <p className='text-ellipsis'>{filter}</p>
               </TabsTrigger>
             ))}
