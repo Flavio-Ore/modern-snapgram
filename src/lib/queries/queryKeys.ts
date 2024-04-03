@@ -16,5 +16,10 @@ export enum QUERY_KEYS {
   GET_FILE_PREVIEW = 'getFilePreview',
 
   //  SEARCH KEYS
-  SEARCH_POSTS = 'getSearchPosts'
+  SEARCH_POSTS = 'getSearchPosts',
+
+  // SAVED POSTS KEYS
+  GET_SAVED_POSTS = 'getSavedPosts',
+  GET_SAVED_REELS = 'getSavedReels',
+  GET_SAVED_COLLECTIONS = 'getSavedCollections'
 }
