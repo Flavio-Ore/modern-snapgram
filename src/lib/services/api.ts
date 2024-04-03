@@ -1,4 +1,10 @@
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
+import {
+  INewPost,
+  INewUser,
+  IUpdatePost,
+  IUpdateUser,
+  type User
+} from '@/types'
 import { ID, Query } from 'appwrite'
 import { account, appwriteConfig, avatars, databases, storage } from './config'
 
@@ -90,9 +96,12 @@ export async function getCurrentUser () {
       [Query.equal('accountId', currentAccount.$id)]
     )
     if (!currentUser) throw Error
-    return currentUser.documents[0]
+    const userSession: User = currentUser.documents[0] as User
+    return userSession
   } catch (error) {
     console.error(error)
+    const userSession: User = {}
+    return userSession
   }
 }
 
@@ -394,7 +403,7 @@ export async function getInfinitePosts ({
   lastId: string
   queries: string[]
 }) {
-  const query = [...queries, Query.limit(1)]
+  const query = [...queries, Query.limit(2)]
   if (lastId) query.push(Query.cursorAfter(lastId.toString()))
   try {
     const postsDocumentList = await databases.listDocuments(
@@ -410,24 +419,46 @@ export async function getInfinitePosts ({
   }
 }
 
-// export async function searchPosts ({ searchTerm }: { searchTerm: string }) {
-//   try {
-//     const posts = await databases.listDocuments(
-//       appwriteConfig.databaseId,
-//       appwriteConfig.postsCollectionId,
-//       [Query.search('caption', searchTerm)]
-//     )
-//     if (!posts) throw Error
-//     return posts
-//   } catch (error) {
-//     console.error(error)
-//     const emptyPosts: Models.DocumentList<Models.Document> = {
-//       total: 0,
-//       documents: []
-//     }
-//     return emptyPosts
-//   }
-// }
+export async function getInfiniteSaves ({
+  lastId = '',
+  queries = []
+}: {
+  lastId: string
+  queries: string[]
+}) {
+  const query = [...queries, Query.limit(2)]
+  if (lastId) query.push(Query.cursorAfter(lastId.toString()))
+  console.log('query :>> ', query)
+  try {
+    const saves = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      query
+    )
+    if (!saves) throw Error
+    console.log('savedPosts: ', saves)
+    return saves.documents || []
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+export async function getSavedPosts ({ userId }: { userId: string }) {
+  try {
+    const saves = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      [Query.equal('user', userId), Query.cursorAfter('65fe081ac1d03e2c241c')]
+    )
+    if (!saves) throw Error
+    console.log('savedPosts: ', saves)
+    return saves.documents || []
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
 
 // ============================================================
 // USERS

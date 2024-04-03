@@ -2,6 +2,7 @@ import GridPostList from '@/components/shared/GridPostList'
 import InfinitePosts from '@/components/shared/InfinitePosts'
 import { useInfiniteSearchPosts } from '@/lib/queries/infiniteQueries'
 import { OPERATIONS } from '@/values'
+import { useMemo } from 'react'
 
 interface SearchResultsModel {
   debouncedValue: string
@@ -13,7 +14,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ debouncedValue }) => {
     useInfiniteSearchPosts({
       searchTerm: debouncedValue
     })
-  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
+  const posts = useMemo(
+    () => data?.pages.flatMap(postsPage => postsPage) ?? [],
+    [data]
+  )
   return (
     <InfinitePosts
       data={data}
@@ -24,12 +28,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ debouncedValue }) => {
       isLoading={isLoading}
       isError={isError}
     >
-      {data?.pages.map((postsPage, i) => (
-        <GridPostList
-          key={`${postsPage[i]}-${OPERATIONS.SEARCH_POSTS}-${i}`}
-          posts={postsPage}
-        />
-      ))}
+      <GridPostList
+        key={`${posts}-${OPERATIONS.SEARCH_POSTS}-${posts}`}
+        posts={posts}
+      />
     </InfinitePosts>
   )
 }

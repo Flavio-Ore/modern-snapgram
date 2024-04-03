@@ -1,11 +1,10 @@
-import { SavedCollections, SavedReels } from '@/App'
 import Loader from '@/components/shared/Loader'
 import { Button } from '@/components/ui/button'
 import { TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useGetCurrentUser, useGetUserById } from '@/lib/queries/queries'
 import { Tabs } from '@radix-ui/react-tabs'
 import { Link, useParams } from 'react-router-dom'
-import NotFound from './NotFound'
+import { SavedCollections, SavedReels } from './Saved'
 
 const savedCollections = [
   {
@@ -43,21 +42,18 @@ const Profile = () => {
     isLoading,
     isError
   } = useGetUserById({ userId: id || '' })
-  console.log('sessionUser :>> ', sessionUser)
-  console.log('param :>> ', { paramId: id })
-  console.log('user :>> ', user)
 
   if (isLoading) return <Loader />
   if (isError) return <p>Something went wrong</p>
-  if (!user) return <NotFound />
-  if (!sessionUser) return <NotFound />
+  if (!user) return <Loader />
+  if (!sessionUser) return <Loader />
 
   return (
     <div className='profile-container'>
       <div className='profile-inner_container'>
         <img
-          src={id === sessionUser.id ? sessionUser.imageUrl : user.imageUrl}
-          alt={id === sessionUser.id ? sessionUser.name : user.name}
+          src={id === sessionUser.$id ? sessionUser.imageUrl : user.imageUrl}
+          alt={id === sessionUser.$id ? sessionUser.name : user.name}
           height={150}
           width={150}
           className='rounded-full'
@@ -65,7 +61,7 @@ const Profile = () => {
         <div className='flex-between flex-col h-full gap-2 xl:gap-0'>
           <div className='flex-between flex-col md:flex-row w-full gap-2 xl:gap-0'>
             <h2 className='body-medium xs:h3-bold lg:h1-semibold max-w-48 lg:max-w-72 xl:max-w-2xl text-overflow-ellipsis'>
-              {id === sessionUser.id ? sessionUser.name : user.name}
+              {id === sessionUser.$id ? sessionUser.name : user.name}
             </h2>
             {id === sessionUser.$id ? (
               <Link
@@ -126,7 +122,7 @@ const Profile = () => {
       <div className='flex flex-1 w-full'>
         <Tabs
           defaultValue={savedCollections[0].filter}
-          className='flex flex-col xxs:gap-8 xxs:items-start gap-20 w-full'
+          className='flex flex-col xs:gap-8 xs:items-start gap-16 w-full'
         >
           <TabsList className='grid grid-flow-row xs:flex place-items-center w-full max-w-lg gap-1 xs:gap-0'>
             {savedCollections.map(({ filter, icon }, index) => (

@@ -9,8 +9,34 @@ export enum E_FORM_ACTIONS {
 }
 export const OPERATIONS = {
   SEARCH_POSTS: 'SEARCH_POSTS',
-  EXPLORE_POSTS: 'EXPLORE_POSTS'
+  EXPLORE_POSTS: 'EXPLORE_POSTS',
+  SAVED_POSTS: 'SAVED_POSTS'
 }
+
+const ROUTES = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+  PUBLIC_ROUTES: {
+    SIGN_IN: '/sign-in',
+    SIGN_UP: '/sign-up'
+  },
+  PRIVATE_ROUTES: {
+    HOME: '/',
+    EXPLORE: '/explore',
+    PEOPLE: '/all-users',
+    SAVED: '/saved',
+    REELS: '/reels',
+    CHATS: '/chats',
+    CREATE_POST: '/create-post',
+    UPDATE_POST: '/update-post/:id',
+    POST_DETAILS: '/posts/:id',
+    PROFILE: '/profile/:id/*',
+    UPDATE_PROFILE: '/update-profile',
+    NOT_FOUND: '*'
+  }
+}
+export const { PRIVATE_ROUTES, PUBLIC_ROUTES } = ROUTES
+
 export const sidebarLinks = [
   {
     imgURL: '/assets/icons/home.svg',
