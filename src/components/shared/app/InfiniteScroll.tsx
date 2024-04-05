@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import Loader from './Loader'
 
-type InfinitePostsProps = {
+interface InfinitePostsProps {
   children: React.ReactNode
   isDataEmpty: boolean
   data: InfiniteData<unknown> | undefined
@@ -49,7 +49,7 @@ type InfinitePostsProps = {
  *    {children}
  * </InfinitePosts>
  */
-const InfinitePosts: React.FC<InfinitePostsProps> = ({
+const InfiniteScroll: React.FC<InfinitePostsProps> = ({
   children,
   isDataEmpty,
   data,
@@ -68,7 +68,11 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
   }, [inView])
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading && (
+        <div className='flex-center w-full h-full'>
+          <Loader />
+        </div>
+      )}
       {isError && (
         <p className='text-light-4 mt-10 text-center w-full'>
           An error occurred while fetching the data 👮‍♂️👮‍♀️
@@ -98,4 +102,4 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
   )
 }
 
-export default InfinitePosts
+export default InfiniteScroll

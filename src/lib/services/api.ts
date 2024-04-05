@@ -96,8 +96,9 @@ export async function getCurrentUser () {
       [Query.equal('accountId', currentAccount.$id)]
     )
     if (!currentUser) throw Error
+    console.log('currentUser :>> ', currentUser.documents[0])
     const userSession: User = currentUser.documents[0] as User
-    return userSession
+    return userSession || {}
   } catch (error) {
     console.error(error)
     const userSession: User = {}
@@ -200,21 +201,6 @@ export async function deleteFile (fileId: string) {
     console.error(error)
   }
 }
-
-// ============================== GET POSTS
-// export async function getRecentPosts () {
-//   try {
-//     const posts = await databases.listDocuments(
-//       appwriteConfig.databaseId,
-//       appwriteConfig.postsCollectionId,
-//       [Query.orderDesc('$createdAt'), Query.limit(1)]
-//     )
-//     if (!posts) throw Error
-//     return posts
-//   } catch (error) {
-//     console.error(error)
-//   }
-// }
 
 // ============================== GET USER'S POST
 export async function getUserPosts ({ userId }: { userId?: string }) {
@@ -464,6 +450,30 @@ export async function getSavedPosts ({ userId }: { userId: string }) {
 // USERS
 // ============================================================
 
+export async function getInfiniteUsers ({
+  lastId = '',
+  queries = []
+}: {
+  lastId: string
+  queries: string[]
+}) {
+  const query = [...queries, Query.limit(2)]
+  if (lastId) query.push(Query.cursorAfter(lastId.toString()))
+  try {
+    const users = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      query
+    )
+    if (!users) throw Error
+    console.log('users :>> ', users.documents)
+    return users.documents
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
 // ============================== GET USERS
 export async function getUsers ({ limit }: { limit?: number }) {
   const queries = [Query.orderDesc('$createdAt')]
@@ -475,9 +485,11 @@ export async function getUsers ({ limit }: { limit?: number }) {
       queries
     )
     if (!users) throw Error
-    return users
+    console.log('users :>> ', users)
+    return users.documents || []
   } catch (error) {
     console.error(error)
+    return []
   }
 }
 
@@ -490,9 +502,12 @@ export async function getUserById ({ userId }: { userId: string }) {
       userId
     )
     if (!user) throw Error
-    return user
+    console.log('user :>> ', user)
+    const u: User = user || {}
+    return u
   } catch (error) {
     console.error(error)
+    return {}
   }
 }
 

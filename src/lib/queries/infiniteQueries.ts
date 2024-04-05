@@ -1,11 +1,12 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { Models, Query } from 'appwrite'
+import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import {
   getInfinitePosts,
   getInfiniteSaves,
+  getInfiniteUsers,
   getSavedPosts
-} from '../services/api'
-import { QUERY_KEYS } from './queryKeys'
+} from '@/lib/services/api'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { Models, Query } from 'appwrite'
 
 const initialPageParam = ''
 const INFINITY_QUERIES = {
@@ -14,7 +15,8 @@ const INFINITY_QUERIES = {
   searchPosts: ({ searchTerm }: SearchTerm) => [
     Query.search('caption', searchTerm)
   ],
-  SAVED_POSTS: [Query.select(['*'])]
+  SAVED_POSTS: [Query.select(['*'])],
+  USERS: [Query.orderDesc('$createdAt')]
 }
 
 const nextCursor = (lastPage: Models.Document[]) => {
@@ -60,6 +62,20 @@ export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
         queries: INFINITY_QUERIES.searchPosts({ searchTerm })
       }),
     enabled: !!searchTerm,
+    getNextPageParam: nextCursor,
+    initialPageParam
+  })
+}
+
+// ============================================================
+// USERS
+// ============================================================
+
+export const useGetInfiniteUsers = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_USERS],
+    queryFn: ({ pageParam }) =>
+      getInfiniteUsers({ lastId: pageParam, queries: INFINITY_QUERIES.USERS }),
     getNextPageParam: nextCursor,
     initialPageParam
   })
