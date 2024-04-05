@@ -1,3 +1,6 @@
+import { SavedCollections, SavedPosts, SavedReels } from '@/_root/pages/Saved'
+import { TabsTriggers } from '@/types'
+
 export enum E_USERS {
   ALL_USERS = 'ALL_USERS',
   TOP_CREATORS = 'TOP_CREATORS'
@@ -10,8 +13,45 @@ export enum E_FORM_ACTIONS {
 export const OPERATIONS = {
   SEARCH_POSTS: 'SEARCH_POSTS',
   EXPLORE_POSTS: 'EXPLORE_POSTS',
-  SAVED_POSTS: 'SAVED_POSTS'
+  SAVED_POSTS: 'SAVED_POSTS',
+  PEOPLE: 'PEOPLE'
 }
+
+export const SAVES_TRIGGERS: TabsTriggers[] = [
+  {
+    trigger: 'Posts',
+    icon: '/assets/icons/posts.svg',
+    Element: SavedPosts
+  },
+  {
+    trigger: 'Reels',
+    icon: '/assets/icons/reels.svg',
+    Element: SavedReels
+  },
+  {
+    trigger: 'Collections',
+    icon: '/assets/icons/collections.svg',
+    Element: SavedCollections
+  }
+]
+
+export const PROFILES_TRIGGERS: TabsTriggers[] = [
+  {
+    trigger: 'Posts',
+    icon: '/assets/icons/posts.svg',
+    Element: SavedPosts
+  },
+  {
+    trigger: 'Reels',
+    icon: '/assets/icons/reels.svg',
+    Element: SavedReels
+  },
+  {
+    trigger: 'Tagged',
+    icon: '/assets/icons/tagged.svg',
+    Element: SavedCollections
+  }
+]
 
 const ROUTES = {
   PUBLIC: 'PUBLIC',

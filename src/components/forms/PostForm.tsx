@@ -1,5 +1,5 @@
-import FileUploader from '@/components/shared/FileUploader'
-import Loader from '@/components/shared/Loader'
+import FileUploader from '@/components/shared/app/FileUploader'
+import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import {
   Form,

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useUserContext } from '@/context/useUserContext'
 import { useSignOutAccount } from '@/lib/queries/mutations'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 
 const Topbar = () => {
   const navigate = useNavigate()
