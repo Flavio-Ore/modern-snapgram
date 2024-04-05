@@ -1,8 +1,8 @@
+import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/constants'
 import { getCurrentUser } from '@/lib/services/api'
 import { IContextType, IUser } from '@/types'
 import { createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { INITIAL_AUTH_STATE, INITIAL_USER } from './constants'
 
 export const AuthContext = createContext<IContextType>(INITIAL_AUTH_STATE)
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {

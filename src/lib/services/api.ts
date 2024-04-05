@@ -1,4 +1,11 @@
 import {
+  account,
+  appwriteConfig,
+  avatars,
+  databases,
+  storage
+} from '@/lib/services/config'
+import {
   INewPost,
   INewUser,
   IUpdatePost,
@@ -6,7 +13,6 @@ import {
   type User
 } from '@/types'
 import { ID, Query } from 'appwrite'
-import { account, appwriteConfig, avatars, databases, storage } from './config'
 
 // ============================================================
 // AUTH
