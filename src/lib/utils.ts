@@ -5,6 +5,10 @@ export function cn (...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const truncateRoute = (route: string) => {
+  return route.split('/').slice(0, 2).join('/')
+}
+
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file)
 
 export function formatDateString (dateString: string) {
