@@ -1,5 +1,4 @@
-import { INewPost, IUpdatePost, IUpdateUser } from '@/types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import {
   createPost,
   createUserAccount,
@@ -12,8 +11,9 @@ import {
   signOutAccount,
   updatePost,
   updateUser
-} from '../services/api'
-import { QUERY_KEYS } from './queryKeys'
+} from '@/lib/services/api'
+import { INewPost, IUpdatePost, IUpdateUser } from '@/types'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useCreateUserAccount = () => {
   return useMutation({

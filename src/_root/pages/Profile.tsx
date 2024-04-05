@@ -10,33 +10,39 @@ import { Link, useParams } from 'react-router-dom'
 interface ProfileButtonProps {
   idMatch: boolean
 }
-const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) =>
-  idMatch ? (
-    <Link
-      to='/update-profile'
-      className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
-    >
-      <img
-        src='/assets/icons/edit-profile.svg'
-        alt='edit'
-        height={18}
-        width={18}
-        className='invert-primary stroke-secondary-500'
-      />
-      Edit Profile
-    </Link>
-  ) : (
-    <div className='flex-center gap-1'>
-      <Button className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'>
-        <p className='small-medium'>Follow</p>
-      </Button>
-      <Button className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4'>
-        <p className='small-semibold'>Message</p>
-      </Button>
-    </div>
-  )
+const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
+  <div className='flex-start gap-1'>
+    {idMatch ? (
+      <Link
+        to='/update-profile'
+        className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
+      >
+        <img
+          src='/assets/icons/edit-profile.svg'
+          alt='edit'
+          height={18}
+          width={18}
+          className='invert-primary stroke-secondary-500'
+        />
+        Edit Profile
+      </Link>
+    ) : (
+      <>
+        <Button className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'>
+          <p className='small-medium'>Follow</p>
+        </Button>
+        <Button className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4'>
+          <p className='small-semibold'>Message</p>
+        </Button>
+      </>
+    )}
+  </div>
+)
+
+type ProfileStats = { name: string; value: number }[]
+
 interface ProfileStatsProps {
-  stats: { name: string; value: number }[]
+  stats: ProfileStats
 }
 const ProfileStats: React.FC<ProfileStatsProps> = ({ stats }) => (
   <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
@@ -76,13 +82,13 @@ const ProfileInnerContainer = () => {
     () => ({
       posts: realUser?.posts?.length || 0,
       liked: realUser?.liked?.length || 0,
-      following: realUser?.followers?.length || 0
+      following: realUser?.save?.length || 0
     }),
     [realUser]
   )
-  const stats = Object.keys(profileStats).map(key => ({
+  const stats: ProfileStats = Object.keys(profileStats).map(key => ({
     name: key.charAt(0).toUpperCase() + key.slice(1),
-    value: profileStats[key]
+    value: profileStats[key as keyof typeof profileStats]
   }))
   return (
     <div className='profile-inner_container'>
@@ -101,18 +107,20 @@ const ProfileInnerContainer = () => {
           className='rounded-full'
         />
       )}
-      <div className='flex-between flex-col h-full gap-2 xl:gap-0'>
+      <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0'>
         {isLoading && <Loader />}
         {isError && <h2>An unexpected error happened.</h2>}
         {!isLoading && !isError && realUser && (
-          <div className='flex-between flex-col md:flex-row w-full gap-2 xl:gap-0'>
-            <h2 className='body-medium xs:h3-bold lg:h1-semibold max-w-48 lg:max-w-72 xl:max-w-2xl text-overflow-ellipsis'>
+          <div className='flex-between flex-1 flex-col md:flex-row w-full  gap-2 xl:gap-0'>
+            <h2 className='body-medium xs:h3-bold lg:h1-semibold max-w-60 xs:max-w-md sm:max-w-xs md:max-w-52 lg:max-w-sm xl:max-w-lg text-overflow-ellipsis'>
               {realUser.name}
             </h2>
             {isSessionFetched && isUserFetched && sessionUser ? (
               <ProfileButtons idMatch={id === sessionUser.$id} />
             ) : (
-              <Loader />
+              <div className='w-1/2'>
+                <Loader />
+              </div>
             )}
           </div>
         )}
@@ -122,10 +130,16 @@ const ProfileInnerContainer = () => {
             ? 'Loading username...'
             : isError
             ? 'Error loading username'
-            : realUser?.username || 'Error loading username'}
+            : realUser?.username || ''}
         </h3>
-
         <ProfileStats stats={stats} />
+        <p className='base-regular text-light-2 max-w-xl text-pretty'>
+          {isLoading
+            ? 'Loading bio...'
+            : isError
+            ? 'Error loading bio'
+            : realUser?.bio || ''}
+        </p>
       </div>
     </div>
   )
