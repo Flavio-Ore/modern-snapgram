@@ -20,7 +20,7 @@ const Bottombar = () => {
               width={16}
               height={16}
               src={imgURL}
-              alt={label} 
+              alt={label}
             />
             <p className='tiny-medium text-light-2'>{label}</p>
           </Link>

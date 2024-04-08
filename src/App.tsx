@@ -3,25 +3,27 @@ import RootLayout from '@/_root/RootLayout'
 import { Toaster } from '@/components/ui/toaster'
 import '@/global.css'
 import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/values'
-import { lazy } from 'react'
+import { type FC, lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-const SignInForm = lazy(() => import('@/_auth/forms/SigninForm'))
-const SignupForm = lazy(() => import('@/_auth/forms/SignupForm'))
-const Home = lazy(() => import('@/_root/pages/Home'))
-const Explore = lazy(() => import('@/_root/pages/Explore'))
-const People = lazy(() => import('@/_root/pages/People'))
-const Saved = lazy(() => import('@/_root/pages/Saved'))
-const Reels = lazy(() => import('@/_root/pages/Reels'))
-const Chats = lazy(() => import('@/_root/pages/Chats'))
-const CreatePost = lazy(() => import('@/_root/pages/CreatePost'))
-const EditPost = lazy(() => import('@/_root/pages/EditPost'))
-const PostDetails = lazy(() => import('@/_root/pages/PostDetails'))
-const Profile = lazy(() => import('@/_root/pages/Profile'))
-const UpdateProfile = lazy(() => import('@/_root/pages/UpdateProfile'))
-const NotFound = lazy(() => import('@/_root/pages/NotFound'))
+const SignInForm = lazy(async () => await import('@/_auth/forms/SigninForm'))
+const SignupForm = lazy(async () => await import('@/_auth/forms/SignupForm'))
+const Home = lazy(async () => await import('@/_root/pages/Home'))
+const Explore = lazy(async () => await import('@/_root/pages/Explore'))
+const People = lazy(async () => await import('@/_root/pages/People'))
+const Saved = lazy(async () => await import('@/_root/pages/Saved'))
+const Reels = lazy(async () => await import('@/_root/pages/Reels'))
+const Chats = lazy(async () => await import('@/_root/pages/Chats'))
+const CreatePost = lazy(async () => await import('@/_root/pages/CreatePost'))
+const EditPost = lazy(async () => await import('@/_root/pages/EditPost'))
+const PostDetails = lazy(async () => await import('@/_root/pages/PostDetails'))
+const Profile = lazy(async () => await import('@/_root/pages/Profile'))
+const UpdateProfile = lazy(
+  async () => await import('@/_root/pages/UpdateProfile')
+)
+const NotFound = lazy(async () => await import('@/_root/pages/NotFound'))
 
-const App = () => {
+const App: FC = () => {
   return (
     <main className='flex h-dvh'>
       <Routes>

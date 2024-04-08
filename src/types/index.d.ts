@@ -1,6 +1,8 @@
-import { Models } from 'appwrite'
+import { type Models } from 'appwrite'
 
-export type IContextType = {
+export type EmptyObject = Record<string, never>
+
+export interface IContextType {
   user: IUser
   isLoading: boolean
   setUser: React.Dispatch<React.SetStateAction<IUser>>
@@ -9,13 +11,13 @@ export type IContextType = {
   checkAuthUser: () => Promise<boolean>
 }
 
-export type INavLink = {
+export interface INavLink {
   imgURL: string
   route: string
   label: string
 }
 
-export type IUpdateUser = {
+export interface IUpdateUser {
   userId: string
   name: string
   bio: string
@@ -24,7 +26,7 @@ export type IUpdateUser = {
   file: File[]
 }
 
-export type INewPost = {
+export interface INewPost {
   userId: string
   caption: string
   file: File[]
@@ -32,7 +34,7 @@ export type INewPost = {
   tags?: string
 }
 
-export type IUpdatePost = {
+export interface IUpdatePost {
   postId: string
   caption: string
   imageId: string
@@ -42,7 +44,7 @@ export type IUpdatePost = {
   tags?: string
 }
 
-export type IUser = {
+export interface IUser {
   id: string
   name: string
   username: string
@@ -51,14 +53,14 @@ export type IUser = {
   bio: string
 }
 
-export type INewUser = {
+export interface INewUser {
   name: string
   email: string
   username: string
   password: string
 }
 
-export type TabsTriggers = {
+export interface TabsTriggers {
   trigger: string
   icon: string
   Element: () => JSX.Element
@@ -80,9 +82,9 @@ export type User = Partial<{
   liked: Post[]
   save: Post[]
 }> &
-  Omit<Models.Document, '$databaseId' | '$collectionId'>
+Partial<Models.Document>
 
-export type Post = Omit<Models.Document, '$databaseId' | '$collectionId'> & {
+export type Post = Partial<{
   caption: string
   tags: string[]
   imageUrl: string
@@ -94,4 +96,5 @@ export type Post = Omit<Models.Document, '$databaseId' | '$collectionId'> & {
   $permissions: string[]
   likes: User[]
   save: User[]
-}
+}> &
+Models.Document

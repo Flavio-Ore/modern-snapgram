@@ -3,7 +3,7 @@ import {
   SavedPosts,
   SavedReels
 } from '@/components/shared/saves'
-import { TabsTriggers } from '@/types'
+import { type TabsTriggers } from '@/types'
 
 export enum E_USERS {
   ALL_USERS = 'ALL_USERS',
