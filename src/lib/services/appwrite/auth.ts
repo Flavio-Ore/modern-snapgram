@@ -1,7 +1,6 @@
 import { isObjectEmpty } from '@/lib/utils'
 import type { INewUser, User } from '@/types'
 import { ID, type Models, Query } from 'appwrite'
-import type { EmptyObject } from 'react-hook-form'
 import { saveUserToDB } from './api'
 import { account, appwriteConfig, avatars, databases } from './config'
 import { parseModel } from './util'
@@ -38,28 +37,26 @@ export async function createUserAccount (user: INewUser): Promise<User> {
 export async function signInAccount (user: {
   email: string
   password: string
-}): Promise<Models.Session | EmptyObject> {
+}): Promise<Models.Session | undefined> {
   try {
     const session = await account.createEmailSession(user.email, user.password)
     parseModel({ model: session, errorMsg: 'An error occurred' })
     return session
   } catch (error) {
     console.error(error)
-    return {}
   }
 }
 
 // ============================== GET ACCOUNT
 export async function getAccount (): Promise<
-Models.User<Models.Preferences> | EmptyObject
+Models.User<Models.Preferences> | undefined
 > {
   try {
     const currentAccount = await account.get()
-    if (isObjectEmpty(currentAccount)) throw Error('An error occurred')
+    if (!currentAccount) throw Error('An error occurred')
     return currentAccount
   } catch (error) {
     console.error(error)
-    return {}
   }
 }
 
@@ -73,7 +70,7 @@ export async function signOutAccount (): Promise<void> {
 }
 
 // ============================== GET USER
-export async function getCurrentSession (): Promise<User> {
+export async function getCurrentSessionUser (): Promise<User | undefined> {
   try {
     const currentAccount = await getAccount()
     if (isObjectEmpty(currentAccount)) throw Error('An error occurred')
@@ -87,6 +84,5 @@ export async function getCurrentSession (): Promise<User> {
     return currentUser.documents[0]
   } catch (error) {
     console.error(error)
-    return {}
   }
 }

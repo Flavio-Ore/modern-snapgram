@@ -1,21 +1,19 @@
 import Loader from '@/components/shared/app/Loader'
 import {
-  FetchNextPageOptions,
-  InfiniteData,
-  InfiniteQueryObserverResult
+  type FetchNextPageOptions,
+  type InfiniteData,
+  type InfiniteQueryObserverResult
 } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-interface InfinitePostsProps {
+interface InfiniteScrollProps {
   children: React.ReactNode
   isDataEmpty: boolean
   data: InfiniteData<unknown> | undefined
   fetchNextPage: (
     options?: FetchNextPageOptions | undefined
-  ) => Promise<
-    InfiniteQueryObserverResult<InfiniteData<unknown, unknown>, Error>
-  >
+  ) => Promise<InfiniteQueryObserverResult<InfiniteData<unknown, unknown>, Error>>
   isFetching: boolean
   isLoading: boolean
   isError: boolean
@@ -34,7 +32,7 @@ interface InfinitePostsProps {
  * @param isFetching - A boolean value that indicates if the data is being fetched.
  * @param isLoading - A boolean value that indicates if the data is loading.
  * @param isError - A boolean value that indicates if an error occurred while fetching the data.
- * @returns {React.FC<InfinitePostsProps>}
+ * @returns {React.FC<InfiniteScrollProps>}
  *
  * @example
  * <InfinitePosts
@@ -49,7 +47,7 @@ interface InfinitePostsProps {
  *    {children}
  * </InfinitePosts>
  */
-const InfiniteScroll: React.FC<InfinitePostsProps> = ({
+const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   children,
   isDataEmpty,
   data,
@@ -63,7 +61,7 @@ const InfiniteScroll: React.FC<InfinitePostsProps> = ({
     threshold: 0
   })
   useEffect(() => {
-    if (inView && !isFetching && hasNextPage === true) fetchNextPage()
+    if (inView && !isFetching && hasNextPage) void fetchNextPage()
   }, [inView])
   return (
     <>
@@ -77,20 +75,20 @@ const InfiniteScroll: React.FC<InfinitePostsProps> = ({
           An error occurred while fetching the data 👮‍♂️👮‍♀️
         </p>
       )}
-      {!isLoading && !isError && data && isDataEmpty && (
+      {!isLoading && !isError && data != null && isDataEmpty && (
         <p className='text-light-4 mt-10 text-center w-full'>
           No posts found 🗑
         </p>
       )}
-      {!isLoading && !isError && data && (
+      {!isLoading && !isError && data != null && (
         <>
           {children}
-          {hasNextPage === true && (
+          {hasNextPage && (
             <div ref={ref} className='flex mt-10 flex-center w-full'>
               <Loader />
             </div>
           )}
-          {!isLoading && !isError && hasNextPage === false && (
+          {!isLoading && !isError && !hasNextPage && (
             <p className='text-light-4 mt-10 text-center w-full'>
               There is nothing more to show! 💤
             </p>

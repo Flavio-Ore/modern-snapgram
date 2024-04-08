@@ -9,25 +9,26 @@ import { useUserContext } from '@/context/useUserContext'
 import { useDeletePost } from '@/lib/queries/mutations'
 
 import { useGetPostById, useGetUserPosts } from '@/lib/queries/queries'
-import { multiFormatDateString } from '@/lib/utils'
+import { isObjectEmpty, multiFormatDateString } from '@/lib/utils'
 
 const PostDetails = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const { user } = useUserContext()
   const { toast } = useToast()
-  const { data: post, isLoading } = useGetPostById({ postId: id || '' })
+  const { data: post, isLoading } = useGetPostById({ postId: id ?? '' })
   const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts({
-    userId: post?.creator.$id
+    userId: post?.creator?.$id ?? ''
   })
   const { mutate: deletePost } = useDeletePost()
 
-  const relatedPosts = userPosts?.documents.filter(
+  if (isObjectEmpty(userPosts)) return <Loader />
+  const relatedPosts = userPosts.documents.filter(
     userPost => userPost.$id !== id
   )
 
   const handleDeletePost = () => {
-    deletePost({ postId: id || '', imageId: post?.imageId })
+    deletePost({ postId: id ?? '', imageId: post?.imageId ?? '' })
     toast({
       title: 'Post deleted',
       description: 'Your post has been deleted successfully'
@@ -39,7 +40,7 @@ const PostDetails = () => {
     <div className='post_details-container'>
       <div className='hidden md:flex max-w-5xl w-full'>
         <Button
-          onClick={() => navigate(-1)}
+          onClick={() => { navigate(-1) }}
           variant='ghost'
           className='shad-button_ghost'
         >
@@ -53,10 +54,9 @@ const PostDetails = () => {
         </Button>
       </div>
 
-      {isLoading || !post ? (
-        <Loader />
-      ) : (
-        <div className='post_details-card'>
+      {isLoading || post != null
+        ? <Loader />
+        : <div className='post_details-card'>
           <img
             src={post?.imageUrl}
             alt='Creator main post'
@@ -111,9 +111,8 @@ const PostDetails = () => {
                 <Button
                   onClick={handleDeletePost}
                   variant='ghost'
-                  className={`ost_details-delete_btn ${
-                    user.id !== post?.creator.$id && 'hidden'
-                  }`}
+                  className={`ost_details-delete_btn ${user.id !== post?.creator.$id && 'hidden'
+                    }`}
                 >
                   <img
                     src={'/assets/icons/delete.svg'}
@@ -146,7 +145,7 @@ const PostDetails = () => {
             </div>
           </div>
         </div>
-      )}
+      }
 
       <div className='w-full max-w-5xl'>
         <hr className='border w-full border-dark-4/80' />
@@ -154,11 +153,10 @@ const PostDetails = () => {
         <h3 className='body-bold md:h3-bold w-full my-10'>
           More Related Posts
         </h3>
-        {isUserPostLoading || !relatedPosts ? (
-          <Loader />
-        ) : (
-          <GridPostList posts={relatedPosts} />
-        )}
+        {isUserPostLoading || relatedPosts !== null
+          ? <Loader />
+          : <GridPostList posts={relatedPosts} />
+        }
       </div>
     </div>
   )
