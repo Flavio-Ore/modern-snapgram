@@ -1,10 +1,10 @@
 import PostStats from '@/components/shared/posts/PostStats'
 import { useUserContext } from '@/context/useUserContext'
-import { Models } from 'appwrite'
+import { type Post } from '@/types'
 import { Link } from 'react-router-dom'
 
 interface GridPostListModel {
-  posts: Models.Document[]
+  posts: Post[]
   showUser?: boolean
   showStats?: boolean
 }
@@ -15,10 +15,10 @@ const GridPostList: React.FC<GridPostListProps> = ({
   showStats = true
 }) => {
   const { user } = useUserContext()
-  const key = posts.map(posts => posts.$id).toString() || ''
+  const key = posts.map(posts => posts.$id).toString()
   console.log('key :>> ', key)
   console.log('posts :>> ', posts)
-  if (!posts) return null
+  if (posts == null || posts.length === 0) return null
   return (
     <ul className='grid-container'>
       {posts.map((post, i) => (
@@ -38,8 +38,7 @@ const GridPostList: React.FC<GridPostListProps> = ({
               <div className='flex items-center justify-start gap-2 flex-1'>
                 <img
                   src={
-                    post.creator.imageUrl ||
-                    '/assets/icons/profile-placeholder.svg'
+                    post?.creator?.imageUrl ?? '/assets/icons/profile-placeholder.svg'
                   }
                   loading='lazy'
                   alt='Creator post profile'
@@ -47,7 +46,7 @@ const GridPostList: React.FC<GridPostListProps> = ({
                   width={32}
                   className='rounded-full'
                 />
-                <p className='lime-clamp-1'>{post.creator.name}</p>
+                <p className='lime-clamp-1'>{post?.creator?.name}</p>
               </div>
             )}
             {showStats && <PostStats post={post} userId={user.id} />}

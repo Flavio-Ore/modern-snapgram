@@ -56,15 +56,14 @@ const AuthLayout = () => {
       setIsLargeScreen(window.innerWidth >= 1280)
     }
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    return () => { window.removeEventListener('resize', handleResize) }
   }, [])
 
   return (
     <>
-      {isAuth ? (
-        <Navigate to='/' />
-      ) : (
-        <section className='flex flex-1 items-center justify-center flex-col'>
+      {isAuth
+        ? <Navigate to='/' />
+        : <section className='flex flex-1 items-center justify-center flex-col'>
           <Outlet />
           {/* TO TEST THE APP */}
           {(import.meta.env.DEV || import.meta.env.PROD) && (
@@ -100,11 +99,10 @@ const AuthLayout = () => {
                     onClick={handleCLickEmail}
                   >
                     <span className='sr-only'>Copy</span>
-                    {isEmailClicked ? (
-                      <CopyCheckIcon className='h-4 w-4' />
-                    ) : (
-                      <CopyIcon className='h-4 w-4' />
-                    )}
+                    {isEmailClicked
+                      ? <CopyCheckIcon className='h-4 w-4' />
+                      : <CopyIcon className='h-4 w-4' />
+                    }
                   </Button>
                 </div>
                 <div className='flex items-center space-x-2'>
@@ -126,11 +124,10 @@ const AuthLayout = () => {
                     onClick={handleClickPasswd}
                   >
                     <span className='sr-only'>Copy</span>
-                    {isPasswordClicked ? (
-                      <CopyCheckIcon className='h-4 w-4' />
-                    ) : (
-                      <CopyIcon className='h-4 w-4' />
-                    )}
+                    {isPasswordClicked
+                      ? <CopyCheckIcon className='h-4 w-4' />
+                      : <CopyIcon className='h-4 w-4' />
+                    }
                   </Button>
                 </div>
                 <DialogFooter className='sm:justify-start'>
@@ -148,7 +145,7 @@ const AuthLayout = () => {
             </Dialog>
           )}
         </section>
-      )}
+      }
       {isLargeScreen && (
         <img
           src='/assets/images/side-img.svg'

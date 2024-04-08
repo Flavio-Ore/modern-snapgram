@@ -13,11 +13,12 @@ import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 
 import { useCreateUserAccount, useSignInAccount } from '@/lib/queries/mutations'
+import { isObjectEmpty } from '@/lib/utils'
 import { SignupValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { z } from 'zod'
+import { type z } from 'zod'
 
 const SignupForm = () => {
   const { toast } = useToast()
@@ -43,7 +44,7 @@ const SignupForm = () => {
   const handleSignup = async (user: z.infer<typeof SignupValidationSchema>) => {
     try {
       const newUser = await createUserAccount(user)
-      if (!newUser) {
+      if (isObjectEmpty(newUser)) {
         toast({ title: 'Sign up failed. Please try again.' })
         return
       }
@@ -53,7 +54,7 @@ const SignupForm = () => {
         password: user.password
       })
 
-      if (!session) {
+      if (isObjectEmpty(session)) {
         toast({
           title: 'Something went wrong.',
           description: 'Please try again.'
@@ -69,7 +70,6 @@ const SignupForm = () => {
         navigate('/')
       } else {
         toast({ title: 'Login failed. Please try again.' })
-        return
       }
     } catch (error) {
       console.error(error)

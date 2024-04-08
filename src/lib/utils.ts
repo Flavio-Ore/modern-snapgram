@@ -1,29 +1,27 @@
+import { type EmptyObject, type ObjectWithKeys } from '@/types'
 import { clsx, type ClassValue } from 'clsx'
-import { type EmptyObject } from 'react-hook-form'
+
 import { twMerge } from 'tailwind-merge'
 
-export function cn (...inputs: ClassValue[]): string {
+export function cn (...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const truncateRoute = (route: string): string => {
+export const truncateRoute = (route: string) => {
   if (route === '/') return route
   return route.split('/').slice(0, 2).join('/')
 }
 
-export const isObjectEmpty = (
-  objectName: EmptyObject | object
-): boolean => {
+export const isObjectEmpty = (objectName?: EmptyObject | ObjectWithKeys) => {
   return (
     objectName == null ||
     (Object.keys(objectName).length === 0 && objectName.constructor === Object)
   )
 }
 
-export const convertFileToUrl = (file: File): string =>
-  URL.createObjectURL(file)
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file)
 
-export function formatDateString (dateString: string): string {
+export function formatDateString (dateString: string) {
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
@@ -42,7 +40,7 @@ export function formatDateString (dateString: string): string {
 }
 
 //
-export const multiFormatDateString = (timestamp: string = ''): string => {
+export const multiFormatDateString = (timestamp: string = '') => {
   const timestampNum = Math.round(new Date(timestamp).getTime() / 1000)
   const date: Date = new Date(timestampNum * 1000)
   const now: Date = new Date()
@@ -69,6 +67,4 @@ export const multiFormatDateString = (timestamp: string = ''): string => {
   }
 }
 
-export const checkIsLiked = (likeList: string[], userId: string): boolean => {
-  return likeList.includes(userId)
-}
+export const checkIsLiked = (likeList: string[], userId: string) => likeList.includes(userId)

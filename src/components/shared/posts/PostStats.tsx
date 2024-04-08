@@ -4,51 +4,43 @@ import {
   useSavePost
 } from '@/lib/queries/mutations'
 import { useGetCurrentUser } from '@/lib/queries/queries'
-import { checkIsLiked } from '@/lib/utils'
-import { Models } from 'appwrite'
-import { useEffect, useState } from 'react'
+import { checkIsLiked, isObjectEmpty } from '@/lib/utils'
+import { type Post, type User } from '@/types'
+import { type FC, useEffect, useState } from 'react'
 import Loader from '../app/Loader'
 
-interface PostStatsModel {
-  post: Models.Document
+interface PostStatsProps {
+  post: Post
   userId: string
 }
-
-type PostStatsProps = PostStatsModel
-
-const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
-  const likesList: string[] = post.likes.map(
-    (user: Models.Document) => user.$id
-  )
-  const { $id: postId } = post
-  const [likes, setLikes] = useState(likesList)
+const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
+  const [likes, setLikes] = useState(() => {
+    if (post?.likes == null || isObjectEmpty(post)) return []
+    return post.likes.map((user: User) => user.$id)
+  })
   const [isSaved, setIsSaved] = useState(false)
-
   const { mutate: likePost } = useLikePost()
   const { mutate: savePost, isPending: isSavingPost } = useSavePost()
   const { mutate: deleteSavedPost, isPending: isDeletingSavedPost } =
     useDeleteSavedPost()
-
   const { data: currentUser } = useGetCurrentUser()
-
-  const savedPostRecord = currentUser?.save.find(
-    (record: Models.Document) => record.post.$id === postId
+  const { $id: postId } = post
+  const savedPostRecord = currentUser?.save?.find(
+    (record: Post) => record.post.$id === postId
   )
 
   useEffect(() => {
-    setIsSaved(!!savedPostRecord)
-  }, [currentUser])
+    setIsSaved(isObjectEmpty(savedPostRecord))
+  }, [])
 
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     e.stopPropagation()
-
     let usersLikes = [...likes]
-
-    if (usersLikes.includes(userId))
+    if (usersLikes.includes(userId)) {
       usersLikes = usersLikes.filter(id => id !== userId)
-    else usersLikes.push(userId)
+    } else usersLikes.push(userId)
 
     setLikes(usersLikes)
     likePost({ postId, usersLikes })
@@ -57,9 +49,10 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     e.stopPropagation()
-    if (savedPostRecord) {
+    if (savedPostRecord?.$id != null && savedPostRecord.$id.trim().length > 0) {
       setIsSaved(false)
-      return void deleteSavedPost({ savedRecordId: savedPostRecord.$id })
+      deleteSavedPost({ savedRecordId: savedPostRecord.$id })
+      return
     }
     savePost({ userId, postId })
     setIsSaved(true)
@@ -88,10 +81,9 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
         <p className='small-medium lg:base-medium'>{likes.length}</p>
       </div>
       <div className='flex gap-2'>
-        {isSavingPost || isDeletingSavedPost ? (
-          <Loader />
-        ) : (
-          <img
+        {isSavingPost || isDeletingSavedPost
+          ? <Loader />
+          : <img
             src={isSaved ? '/assets/icons/saved.svg' : '/assets/icons/save.svg'}
             alt='Icon to be displayed when a post is save'
             loading='lazy'
@@ -100,7 +92,7 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
             onClick={handleSavePost}
             className='cursor-pointer'
           />
-        )}
+        }
       </div>
     </div>
   )

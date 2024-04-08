@@ -1,9 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { TabsTriggers } from '@/types'
+import { type TabsTriggers } from '@/types'
 
 interface TabsContentsProps {
-  triggers: Omit<TabsTriggers, 'icon'>[]
+  triggers: Array<Omit<TabsTriggers, 'icon'>>
 }
 const TabsContents: React.FC<TabsContentsProps> = ({ triggers }) =>
   triggers.map(({ trigger, Element }) => (
@@ -14,7 +14,7 @@ const TabsContents: React.FC<TabsContentsProps> = ({ triggers }) =>
 
 interface TabsTriggersProps {
   className: string
-  triggersAndIcons: Omit<TabsTriggers, 'Element'>[]
+  triggersAndIcons: Array<Omit<TabsTriggers, 'Element'>>
 }
 const TabTriggers: React.FC<TabsTriggersProps> = ({
   className,

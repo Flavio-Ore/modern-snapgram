@@ -15,21 +15,22 @@ const AllUsers = () => {
     isFetching
   } = useGetInfiniteUsers()
   const users = useMemo(
-    () => infinitePeople?.pages.flatMap(page => page) || [],
+    () => infinitePeople?.pages.flatMap(page => page) ?? [],
     [infinitePeople]
   )
   const key =
     users
       ?.map(user => user.$id)
       .toString()
-      .concat(OPERATIONS.PEOPLE) || ''
+      .concat(OPERATIONS.PEOPLE) ?? ''
 
-  if (!users)
+  if (users.length === 0 || users == null) {
     return (
       <div className='flex-center w-full h-full'>
         <Loader />
       </div>
     )
+  }
   return (
     <InfiniteScroll
       data={infinitePeople}
@@ -44,9 +45,9 @@ const AllUsers = () => {
         {users.map((user, i) => (
           <li key={`${key}-${i}`}>
             <UserCard
-              imgUrl={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
-              name={user.name || 'Not found'}
-              mainFollower={`Followed by @${user.username || ''}`}
+              imgUrl={user.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
+              name={user.name ?? 'Not found'}
+              mainFollower={`Followed by @${user.username ?? ''}`}
               profileLink={`/profile/${user.$id}`}
               role={E_USERS.ALL_USERS}
             />

@@ -1,5 +1,5 @@
 import { type INewPost, type IUpdatePost, type Post } from '@/types'
-import { ID, Models, Query } from 'appwrite'
+import { ID, type Models, Query } from 'appwrite'
 
 import { isObjectEmpty } from '@/lib/utils'
 import { appwriteConfig, databases } from './config'
@@ -34,7 +34,7 @@ export async function findInfinitePosts ({
   }
 }
 // ============================== CREATE POST
-export async function createPost (post: INewPost): Promise<any> {
+export async function createPost (post: INewPost) {
   try {
     let tags
     const uploadedFile = await uploadFile(post.file[0])
@@ -68,27 +68,26 @@ export async function createPost (post: INewPost): Promise<any> {
     return newPost
   } catch (error) {
     console.error(error)
-    return {}
   }
 }
 // ============================== GET POST BY ID
-export async function findPostById (postId: string): Promise<Post> {
+export async function findPostById (postId: string) {
   try {
-    const post = await databases.getDocument(
+    const postDocument = await databases.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       postId
     )
-    parseModel({ model: post, errorMsg: 'Post not found' })
+    parseModel({ model: postDocument, errorMsg: 'Post not found' })
+    const post: Post = postDocument
     return post
   } catch (error) {
     console.error(error)
-    return {}
   }
 }
 
 // ============================== UPDATE POST
-export async function updatePost (post: IUpdatePost): Promise<any> {
+export async function updatePost (post: IUpdatePost) {
   const hasFileToUpdate = post.file.length > 0
 
   try {
