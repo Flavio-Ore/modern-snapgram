@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import path from 'node:path'
 import { defineConfig } from 'vite'
 
 /** @type {import('vite').UserConfig} */
