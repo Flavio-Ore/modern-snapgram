@@ -1,10 +1,10 @@
 import { type INewPost, type IUpdatePost, type Post } from '@/types'
-import { ID, type Models, Query } from 'appwrite'
+import { ID, Query } from 'appwrite'
 
+import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
+import { deleteFile, getFilePreview, uploadFile } from '@/lib/services/appwrite/file'
+import { parseModel } from '@/lib/services/appwrite/util'
 import { isObjectEmpty } from '@/lib/utils'
-import { appwriteConfig, databases } from './config'
-import { deleteFile, getFilePreview, uploadFile } from './file'
-import { parseModel } from './util'
 
 // ============================================================
 // POSTS
@@ -15,7 +15,7 @@ export async function findInfinitePosts ({
 }: {
   lastId: string
   queries: string[]
-}): Promise<Models.Document[]> {
+}) {
   const query = [...queries, Query.limit(2)]
   if (lastId.trim().length !== 0) {
     query.push(Query.cursorAfter(lastId.toString()))
@@ -27,10 +27,10 @@ export async function findInfinitePosts ({
       query
     )
     parseModel({ model: postsDocumentList, errorMsg: 'No posts found' })
-    return postsDocumentList.documents
+    return postsDocumentList.documents as Post[]
   } catch (error) {
     console.error(error)
-    return []
+    return null
   }
 }
 // ============================== CREATE POST
@@ -38,10 +38,11 @@ export async function createPost (post: INewPost) {
   try {
     let tags
     const uploadedFile = await uploadFile(post.file[0])
-    parseModel({ model: uploadedFile, errorMsg: 'File not uploaded' })
+
+    if (uploadedFile?.$id == null && uploadedFile == null) throw Error('File not uploaded')
 
     const fileUrl = await getFilePreview(uploadedFile.$id)
-    if (fileUrl != null && fileUrl !== '') {
+    if (fileUrl != null && fileUrl.toString() !== '') {
       await deleteFile(uploadedFile.$id)
       throw Error('File not found')
     }
@@ -57,7 +58,7 @@ export async function createPost (post: INewPost) {
         caption: post.caption,
         location: post.location,
         imageUrl: fileUrl,
-        imageId: uploadedFile.$id,
+        imageId: uploadedFile?.$id,
         tags
       }
     )
@@ -65,9 +66,10 @@ export async function createPost (post: INewPost) {
       await deleteFile(uploadedFile.$id)
       throw Error('Post not saved, try again')
     }
-    return newPost
+    return newPost as Post
   } catch (error) {
     console.error(error)
+    return null
   }
 }
 // ============================== GET POST BY ID
@@ -79,8 +81,7 @@ export async function findPostById (postId: string) {
       postId
     )
     parseModel({ model: postDocument, errorMsg: 'Post not found' })
-    const post: Post = postDocument
-    return post
+    return postDocument as Post
   } catch (error) {
     console.error(error)
   }
@@ -100,7 +101,10 @@ export async function updatePost (post: IUpdatePost) {
     if (hasFileToUpdate) {
       // Upload new file to appwrite storage
       const uploadedFile = await uploadFile(post.file[0])
-      parseModel({ model: uploadedFile, errorMsg: 'File not uploaded' })
+
+      if (uploadedFile?.$id == null && uploadedFile == null) {
+        throw Error('File not uploaded')
+      }
 
       // Get new file url
       const fileUrl = await getFilePreview(uploadedFile.$id)
@@ -145,7 +149,7 @@ export async function updatePost (post: IUpdatePost) {
     // Safely delete old file after successful update
     if (hasFileToUpdate) await deleteFile(post.imageId)
 
-    return updatedPost
+    return updatedPost as Post
   } catch (error) {
     console.error(error)
   }
@@ -158,7 +162,7 @@ export async function deletePost ({
 }: {
   postId: string
   imageId: string
-}): Promise<{ status: string }> {
+}) {
   try {
     const statusCode = await databases.deleteDocument(
       appwriteConfig.databaseId,
@@ -173,3 +177,4 @@ export async function deletePost ({
     return { status: 'error' }
   }
 }
+

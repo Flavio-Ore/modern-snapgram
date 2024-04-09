@@ -18,6 +18,12 @@
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-misused-promises": "off"
+    "@typescript-eslint/no-misused-promises": "off",
+    "no-multiple-empty-lines": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

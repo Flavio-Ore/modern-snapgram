@@ -12,7 +12,7 @@ export const truncateRoute = (route: string) => {
   return route.split('/').slice(0, 2).join('/')
 }
 
-export const isObjectEmpty = (objectName?: EmptyObject | ObjectWithKeys) => {
+export const isObjectEmpty = (objectName?: EmptyObject | ObjectWithKeys | null | undefined) => {
   return (
     objectName == null ||
     (Object.keys(objectName).length === 0 && objectName.constructor === Object)

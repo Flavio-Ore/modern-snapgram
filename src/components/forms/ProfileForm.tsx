@@ -1,3 +1,5 @@
+import Loader from '@/components/shared/app/Loader'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -14,12 +16,10 @@ import { useGetCurrentUser } from '@/lib/queries/queries'
 import { ProfileValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useState } from 'react'
-import { FileWithPath, useDropzone } from 'react-dropzone'
+import { type FileWithPath, useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { z } from 'zod'
-import Loader from '../shared/app/Loader'
-import { Button } from '../ui/button'
+import { type z } from 'zod'
 
 interface FileUploaderModel {
   fieldChange: (files: File[]) => void
@@ -55,7 +55,7 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
       <input {...getInputProps()} type='file' className='cursor-pointer' />
       <div className='flex-start flex-1 gap-4 w-full py-5 lg:py-10'>
         <img
-          src={fileUrl || '/assets/icons/profile-placeholder.svg'}
+          src={fileUrl !== '' ? fileUrl : '/assets/icons/profile-placeholder.svg'}
           alt='New Avatar Image'
           height={100}
           width={100}
@@ -83,7 +83,7 @@ const ProfileForm = () => {
       name: isSessionUserLoading ? 'Loading...' : sessionUser?.name,
       username: isSessionUserLoading ? 'Loading...' : sessionUser?.username,
       email: isSessionUserLoading ? 'Loading...' : sessionUser?.email,
-      bio: isSessionUserLoading ? 'Loading...' : sessionUser?.bio || ''
+      bio: isSessionUserLoading ? 'Loading...' : sessionUser?.bio ?? ''
     }
   })
 
@@ -94,7 +94,7 @@ const ProfileForm = () => {
   const onSubmit = async (value: z.infer<typeof ProfileValidationSchema>) => {}
 
   if (isLoading) return <Loader />
-  if (!user) return <p>Something went wrong</p>
+  if (user == null) return <p>Something went wrong</p>
   return (
     <Form {...form}>
       <form className='flex flex-col gap-9 w-full max-w-5xl'>
@@ -192,7 +192,7 @@ const ProfileForm = () => {
           <Button
             type='button'
             className='shad-button_dark_4'
-            onClick={() => navigate(-1)}
+            onClick={() => { navigate(-1) }}
           >
             Cancel
           </Button>

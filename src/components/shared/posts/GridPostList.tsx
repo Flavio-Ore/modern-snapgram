@@ -25,7 +25,7 @@ const GridPostList: React.FC<GridPostListProps> = ({
         <li key={`${key}-${i}`} className='relative'>
           <Link to={`/posts/${post.$id}`} className='grid-post_link'>
             <img
-              src={post.imageUrl}
+              src={post?.imageUrl ?? '/assets/icons/loader.svg'}
               alt='Post image'
               loading='lazy'
               height={100}
