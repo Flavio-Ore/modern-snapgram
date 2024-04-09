@@ -1,27 +1,8 @@
+import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
+import { parseModel } from '@/lib/services/appwrite/util'
 import { ID, Query } from 'appwrite'
-import { appwriteConfig, databases } from './config'
-import { parseModel } from './util'
 interface DeleteSavedPost {
   savedRecordId: string
-}
-export async function findSave ({
-  userId
-}: {
-  userId: string
-}) {
-  try {
-    const saves = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.savesCollectionId,
-      [Query.equal('user', userId), Query.cursorAfter('65fe081ac1d03e2c241c')]
-    )
-    parseModel({ model: saves, errorMsg: 'An error occurred' })
-    console.log('savedPosts: ', saves)
-    return saves.documents
-  } catch (error) {
-    console.error(error)
-    return []
-  }
 }
 
 export async function updateSave ({
@@ -49,7 +30,7 @@ export async function updateSave ({
 }
 
 // ============================== DELETE SAVED POST
-export async function deleteSaves ({
+export async function deleteSave ({
   savedRecordId
 }: DeleteSavedPost): Promise<{ status: string }> {
   try {
@@ -81,7 +62,7 @@ export async function findInfiniteSaves ({
 }: InfiniteSavesParams) {
   const query = [...queries, Query.limit(2)]
   if (lastId.trim().length !== 0) {
-    query.push(Query.cursorAfter(lastId.toString()))
+    query.push(Query.cursorAfter(lastId))
   }
   console.log('query :>> ', query)
   try {
@@ -95,6 +76,6 @@ export async function findInfiniteSaves ({
     return saves.documents
   } catch (error) {
     console.error(error)
-    return []
+    return null
   }
 }

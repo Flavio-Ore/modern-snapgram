@@ -1,11 +1,9 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { findInfiniteSaves, findSave } from '@/lib/services/appwrite/saves'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { api } from '@/lib/services'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models, Query } from 'appwrite'
-import { findInfinitePosts } from '../services/appwrite/posts'
-import { findInfiniteUsers } from '../services/appwrite/users'
 
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+const { post, saves, user } = api
 
 const initialPageParam = ''
 
@@ -24,7 +22,7 @@ const INFINITY_QUERIES = {
   USERS: [Query.orderDesc('$createdAt')]
 }
 
-const nextCursor = (lastPage: Models.Document[]) => {
+const nextCursor = (lastPage: Models.Document[] | null) => {
   if (lastPage == null) return null
   if (lastPage.length === 0) return null
   const lastId = lastPage[lastPage.length - 1].$id
@@ -35,12 +33,12 @@ export const useGetInfiniteRecentPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: async ({ pageParam }) =>
-      await findInfinitePosts({
+      await post.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.RECENT_POSTS
       }),
     getNextPageParam: nextCursor,
-    initialPageParam: ''
+    initialPageParam
   })
 }
 
@@ -48,7 +46,7 @@ export function useGetInfinitePosts () {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
     queryFn: async ({ pageParam }) =>
-      await findInfinitePosts({
+      await post.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.UPDATED_POSTS
       }),
@@ -64,7 +62,7 @@ export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
     queryFn: async ({ pageParam }) =>
-      await findInfinitePosts({
+      await post.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.searchPosts({ searchTerm })
       }),
@@ -82,7 +80,7 @@ export const useGetInfiniteUsers = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USERS],
     queryFn: async ({ pageParam }) =>
-      await findInfiniteUsers({
+      await user.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.USERS
       }),
@@ -100,20 +98,12 @@ export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
     queryFn: async ({ pageParam }) =>
-      await findInfiniteSaves({
+      await saves.findInfinite({
         lastId: pageParam,
         queries: [Query.equal('user', userId)]
       }),
     enabled: enabledId(userId),
     getNextPageParam: nextCursor,
     initialPageParam
-  })
-}
-
-export const useSavedPosts = ({ userId }: { userId: string }) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId + '12'],
-    queryFn: async () => await findSave({ userId }),
-    enabled: enabledId(userId)
   })
 }

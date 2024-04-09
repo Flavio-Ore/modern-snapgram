@@ -66,7 +66,8 @@ export interface TabsTriggers {
   Element: FC
 }
 
-export type User = Partial<{
+
+interface User extends Models.Document {
   name: string
   username: string
   accountId: string
@@ -77,9 +78,9 @@ export type User = Partial<{
   posts: Post[]
   liked: Post[]
   save: Post[]
-}> & Models.Document
-
-export type Post = Partial<{
+}
+type UserSession = Models.User<Models.Preferences> & User
+interface Post extends Models.Document {
   caption: string
   tags: string[]
   imageUrl: string
@@ -88,4 +89,4 @@ export type Post = Partial<{
   likes: User[]
   save: User[]
   creator: User
-}> & Models.Document
+}

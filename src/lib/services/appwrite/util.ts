@@ -1,9 +1,10 @@
 import { isObjectEmpty } from '@/lib/utils'
+import { type EmptyObject, type ObjectWithKeys } from '@/types'
 
-interface ParseModel {
-  model: Record<string, unknown>
+
+export const parseModel = ({ model, errorMsg }: {
+  model: ObjectWithKeys | EmptyObject | null | undefined
   errorMsg: string
-}
-export const parseModel = ({ model, errorMsg }: ParseModel): void | never => {
+}): never | void => {
   if (isObjectEmpty(model)) throw Error(errorMsg)
 }

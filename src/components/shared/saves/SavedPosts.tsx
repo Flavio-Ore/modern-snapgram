@@ -7,12 +7,12 @@ import { type FC, useMemo } from 'react'
 
 const SavedPosts: FC = () => {
   const { user } = useUserContext()
-  const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } =
-    useGetInfiniteSavedPosts({ userId: user.id })
+  const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } = useGetInfiniteSavedPosts({ userId: user.id })
+
   const posts = useMemo(
     () =>
       data?.pages.flatMap(savesPage =>
-        savesPage.flatMap(saved => saved.post)
+        savesPage?.flatMap(saved => saved.post)
       ) ?? [],
     [data]
   )
@@ -34,7 +34,6 @@ const SavedPosts: FC = () => {
       isFetching={isFetching}
     >
       <GridPostList
-        key={`${posts}-SAVED_REELS-%&`}
         posts={posts}
         showStats={false}
         showUser={false}
