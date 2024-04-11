@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useSignOutAccount } from '@/lib/queries/mutations'
-import { truncateRoute } from '@/lib/utils'
-import { INavLink } from '@/types'
+import { cn, truncateRoute } from '@/lib/utils'
+import { type INavLink } from '@/types'
 import { sidebarLinks } from '@/values'
 import { useEffect } from 'react'
 import {
@@ -16,7 +17,7 @@ import {
 const LeftSidebar = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { user } = useUserContext()
+  const { user, isLoading } = useUserContext()
   const { mutate: signOut, isSuccess } = useSignOutAccount()
   const { id: profileId } = useParams()
 
@@ -35,35 +36,50 @@ const LeftSidebar = () => {
             height={36}
           />
         </Link>
-        <Link
-          to={`/profile/${user.id}`}
-          className={`relative flex gap-3 items-center ${
-            profileId === user.id || pathname === '/update-profile'
-              ? 'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative'
-              : ''
-          }`}
-        >
-          <img
-            src={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
-            alt='profile'
-            height={56}
-            width={56}
-            className='rounded-full aspect-square'
-          />
-          <div className='flex flex-col'>
-            <p className='body-bold'>{user.name}</p>
-            <p className='small-regular text-light-3'>@{user.username}</p>
+
+        {isLoading && (
+          <div className='flex items-center space-x-4'>
+            <Skeleton className='min-h-14 min-w-14 rounded-full' />
+            <div className='w-full space-y-2'>
+              <Skeleton className='h-4 w-full' />
+              <Skeleton className='h-2 w-4/6' />
+            </div>
           </div>
-        </Link>
+        )}
+        {!isLoading && user != null && (
+          <Link
+            to={`/profile/${user.id}`}
+            className={cn(
+              'relative flex gap-3 items-center',
+              (profileId === user.id || pathname === '/update-profile') &&
+                'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative'
+            )}
+          >
+            <img
+              src={user.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
+              alt='profile'
+              height={56}
+              width={56}
+              className='rounded-full aspect-square'
+            />
+            <div className='flex flex-col max-w-[190px]'>
+              <p className='body-bold text-overflow-ellipsis'>{user.name}</p>
+              <p className='small-regular text-light-3 text-overflow-ellipsis'>
+                @{user.username}
+              </p>
+            </div>
+          </Link>
+        )}
         <ul className='flex flex-col gap-4'>
           {sidebarLinks.map(({ imgURL, label, route }: INavLink) => {
             const isActive = truncateRoute(pathname) === route
             return (
               <li
                 key={label}
-                className={`leftsidebar-link group ${
+                className={cn(
+                  'leftsidebar-link group',
                   isActive && 'bg-primary-500'
-                }`}
+                )}
               >
                 <NavLink to={route} className='flex gap-4 items-center p-4'>
                   <img

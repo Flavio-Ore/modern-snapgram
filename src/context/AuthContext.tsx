@@ -1,5 +1,5 @@
 import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/constants'
-import { getCurrentSessionUser } from '@/lib/services/appwrite/auth'
+import { api } from '@/lib/services'
 import { type IContextType, type IUser } from '@/types'
 import { createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -15,15 +15,35 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true)
 
-      const currentUser = await getCurrentSessionUser()
+      const currentUser = await api.account.findSession()
       // ✅ Check if user is authenticated
       // ✅ If user is authenticated, set `isAuthenticated` to true
       // ✅ If user is not authenticated, set `isAuthenticated` to false
 
       console.log('currentUser CONTEXT :>> ', currentUser)
       if (currentUser != null) {
-        const { $id, name, email, username, imageUrl, bio } = currentUser
-        setUser({ id: $id, name, email, username, imageUrl, bio })
+        const {
+          $id: id,
+          name,
+          email,
+          username,
+          imageUrl,
+          bio,
+          save,
+          liked,
+          posts
+        } = currentUser
+        setUser({
+          id,
+          name,
+          email,
+          username,
+          imageUrl,
+          bio: bio ?? '',
+          save,
+          liked,
+          posts
+        })
         setIsAuthenticated(true)
         return true
       }
@@ -50,7 +70,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (
       localStorage.getItem('cookieFallback') === '[]' ||
       localStorage.getItem('cookieFallback') === null
-    ) { navigate('/sign-in') }
+    ) {
+      navigate('/sign-in')
+    }
     checkAuthUser()
   }, [])
 

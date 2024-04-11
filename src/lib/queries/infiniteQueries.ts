@@ -3,7 +3,7 @@ import { api } from '@/lib/services'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models, Query } from 'appwrite'
 
-const { post, saves, user } = api
+const { posts, saves, users } = api
 
 const initialPageParam = ''
 
@@ -33,7 +33,7 @@ export const useGetInfiniteRecentPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: async ({ pageParam }) =>
-      await post.findInfinite({
+      await posts.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.RECENT_POSTS
       }),
@@ -46,7 +46,7 @@ export function useGetInfinitePosts () {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
     queryFn: async ({ pageParam }) =>
-      await post.findInfinite({
+      await posts.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.UPDATED_POSTS
       }),
@@ -62,7 +62,7 @@ export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
     queryFn: async ({ pageParam }) =>
-      await post.findInfinite({
+      await posts.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.searchPosts({ searchTerm })
       }),
@@ -80,7 +80,7 @@ export const useGetInfiniteUsers = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USERS],
     queryFn: async ({ pageParam }) =>
-      await user.findInfinite({
+      await users.findInfinite({
         lastId: pageParam,
         queries: INFINITY_QUERIES.USERS
       }),
