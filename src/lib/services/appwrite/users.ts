@@ -63,7 +63,7 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
     )
     parseModel({ model: users, errorMsg: 'No users found' })
     console.log('users :>> ', users)
-    return users.documents
+    return users.documents as User[]
   } catch (error) {
     console.error(error)
     return []
@@ -83,6 +83,7 @@ export async function findUserById ({ userId }: { userId: string }) {
     return user as User
   } catch (error) {
     console.error(error)
+    return null
   }
 }
 

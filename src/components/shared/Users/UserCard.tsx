@@ -1,4 +1,4 @@
-import { E_USERS } from '@/values'
+import { type E_USERS } from '@/values'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -46,19 +46,18 @@ const UserCard: React.FC<UserCardProps> = ({
         loading='lazy'
       />
       <div className='flex-center flex-col gap-0.5'>
-        {classes.name && <h3 className={classes.name}>{name}</h3>}
-        {classes.subtitle && (
-          <p className={`text-light-3 ${classes.subtitle}`}>{mainFollower}</p>
-        )}
+        <h3 className={classes.name}>{name ?? 'Not found'}</h3>
+
+        <p className={`text-light-3 ${classes.subtitle}`}>
+          {mainFollower ?? 'Not found'}
+        </p>
       </div>
-      {classes.link && (
-        <Link
-          to={profileLink}
-          className={`flex-center rounded-lg text-center bg-primary-500 ${classes.link}`}
-        >
-          Follow
-        </Link>
-      )}
+      <Link
+        to={profileLink}
+        className={`flex-center rounded-lg text-center bg-primary-500 ${classes.link}`}
+      >
+        Follow
+      </Link>
     </div>
   )
 }

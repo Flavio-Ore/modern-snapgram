@@ -51,6 +51,9 @@ export interface IUser {
   email: string
   imageUrl: string
   bio: string
+  posts: Post[]
+  liked: Post[]
+  save: Post[]
 }
 
 export interface INewUser {

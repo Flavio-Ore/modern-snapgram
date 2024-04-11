@@ -4,7 +4,10 @@ export const INITIAL_USER = {
   email: '',
   username: '',
   imageUrl: '',
-  bio: ''
+  bio: '',
+  posts: [],
+  liked: [],
+  save: []
 }
 
 export const INITIAL_AUTH_STATE = {

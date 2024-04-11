@@ -1,18 +1,24 @@
 import CustomTabs from '@/components/shared/app/CustomTabs'
 import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
-import { useGetCurrentUser, useGetUserById } from '@/lib/queries/queries'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useUserContext } from '@/context/useUserContext'
+import { useGetUserById } from '@/lib/queries/queries'
+import { cn } from '@/lib/utils'
 import { PROFILES_TRIGGERS } from '@/values'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 interface ProfileButtonProps {
+  className?: string
   idMatch: boolean
 }
-const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
-  <div className='flex-start gap-1'>
-    {idMatch
-      ? (
+const ProfileButtons: React.FC<ProfileButtonProps> = ({
+  idMatch,
+  className
+}) => (
+  <div className={cn(className)}>
+    {idMatch && (
       <Link
         to='/update-profile'
         className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
@@ -26,17 +32,21 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
         />
         Edit Profile
       </Link>
-        )
-      : (
-      <>
-        <Button className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'>
-          <p className='small-medium'>Follow</p>
-        </Button>
-        <Button className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4'>
-          <p className='small-semibold'>Message</p>
-        </Button>
-      </>
-        )}
+    )}
+    {!idMatch && [
+      <Button
+        key='follow'
+        className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'
+      >
+        <p className='small-medium'>Follow</p>
+      </Button>,
+      <Button
+        key='message'
+        className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4'
+      >
+        <p className='small-semibold'>Message</p>
+      </Button>
+    ]}
   </div>
 )
 
@@ -59,23 +69,18 @@ const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
 
 const ProfileInnerContainer = () => {
   const { id } = useParams()
-  const {
-    data: sessionUser,
-    isLoading: isSessionLoading,
-    isError: isSessionError,
-    isFetched: isSessionFetched
-  } = useGetCurrentUser()
+  const { user: sessionUser, isLoading: isSessionLoading } = useUserContext()
   const {
     data: user,
     isLoading: isUserLoading,
-    isError: isUserError,
-    isFetched: isUserFetched
+    isError,
+    isFetched
   } = useGetUserById({ userId: id ?? '' })
 
-  const isLoading = isSessionLoading && isUserLoading
-  const isError = isSessionError && isUserError
+  const isCurrentUser = useMemo(() => id === sessionUser.id, [id, sessionUser])
+
   const realUser = useMemo(
-    () => (id === sessionUser?.$id ? sessionUser ?? null : user ?? null),
+    () => (isCurrentUser ? sessionUser : user),
     [sessionUser, user, id]
   )
   const profileStats = useMemo(
@@ -86,6 +91,7 @@ const ProfileInnerContainer = () => {
     }),
     [realUser]
   )
+  const isLoading = isSessionLoading || isUserLoading
   const stats: UserStats = Object.keys(profileStats).map(key => ({
     name: key.charAt(0).toUpperCase() + key.slice(1),
     value: profileStats[key as keyof typeof profileStats]
@@ -93,31 +99,33 @@ const ProfileInnerContainer = () => {
   return (
     <div className='profile-inner_container'>
       {isLoading && (
-        <div className='flex-center h-[150px] w-[150px] aspect-square'>
-          <Loader />
-        </div>
+        <Skeleton className='min-h-[150px] min-w-[150px] rounded-full' />
       )}
       {isError && <p>Something went wrong 👮‍♀️👮‍♂️</p>}
-      {!isLoading && !isError && realUser != null && (
+      {!isLoading && !isError && (
         <img
-          src={realUser.imageUrl ?? '/assets/icons/default-avatar.svg'}
-          alt={realUser.name ?? 'Profile Avatar'}
+          src={
+            realUser?.imageUrl != null && realUser.imageUrl.trim().length > 0
+              ? realUser.imageUrl
+              : '/assets/icons/default-avatar.svg'
+          }
+          alt={realUser?.name ?? 'Profile Avatar'}
           height={150}
           width={150}
           className='rounded-full'
         />
       )}
-      <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0'>
-        {isLoading && <Loader />}
+      <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0 w-full overflow-ellipsis'>
+        {(isLoading || realUser == null) && <Skeleton className='h-4 w-1/2' />}
         {isError && <h2>An unexpected error happened.</h2>}
         {!isLoading && !isError && realUser != null && (
-          <div className='flex-between flex-1 flex-col md:flex-row w-full  gap-2 xl:gap-0'>
-            <h2 className='body-medium xs:h3-bold lg:h1-semibold max-w-60 xs:max-w-md sm:max-w-xs md:max-w-52 lg:max-w-sm xl:max-w-lg text-overflow-ellipsis'>
+          <div className='flex-between flex-col md:flex-row gap-2 xl:gap-0 w-full min-w-0 overflow-ellipsis'>
+            <h2 className='body-medium text-center md:text-justify xs:h3-bold w-full lg:h1-semibold overflow-ellipsis'>
               {realUser.name}
             </h2>
-            {isSessionFetched && isUserFetched && sessionUser != null
+            {isFetched && sessionUser != null
               ? (
-              <ProfileButtons idMatch={id === sessionUser.$id} />
+              <ProfileButtons idMatch={isCurrentUser} className='flex gap-1' />
                 )
               : (
               <div className='w-1/2'>
@@ -126,22 +134,35 @@ const ProfileInnerContainer = () => {
                 )}
           </div>
         )}
-        <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3 '>
-          @
-          {isLoading
-            ? 'Loading username...'
-            : isError
-              ? 'Error loading username'
-              : realUser?.username ?? ''}
-        </h3>
+        {isLoading && <Skeleton className='h-3 w-[100px]' />}
+        {isError && (
+          <p className='base-regular text-light-2 max-w-xl text-pretty'>
+            Something went wrong
+          </p>
+        )}
+        {!isError && !isLoading && realUser != null && (
+          <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3'>
+            @{realUser?.username ?? ''}
+          </h3>
+        )}
+
         <ProfileStats stats={stats} />
-        <p className='base-regular text-light-2 max-w-xl text-pretty'>
-          {isLoading
-            ? 'Loading bio...'
-            : isError
-              ? 'Error loading bio'
-              : realUser?.bio ?? ''}
-        </p>
+        {isLoading && (
+          <>
+            <Skeleton className='h-4 w-9/12' />
+            <Skeleton className='h-4 w-9/12' />
+          </>
+        )}
+        {isError && (
+          <p className='base-regular text-light-2 max-w-xl text-pretty'>
+            Something went wrong
+          </p>
+        )}
+        {!isError && !isLoading && (
+          <p className='base-regular text-light-2 max-w-xl text-pretty'>
+            {realUser?.bio ?? ''}
+          </p>
+        )}
       </div>
     </div>
   )
@@ -151,7 +172,7 @@ const Profile = () => {
   return (
     <div className='profile-container'>
       <ProfileInnerContainer />
-      <div className='flex flex-1 w-full'>
+      <div className='flex w-full'>
         <CustomTabs tabsOperations={PROFILES_TRIGGERS} />
       </div>
     </div>
