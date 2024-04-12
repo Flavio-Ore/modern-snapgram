@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
-import { useGetCurrentUser } from '@/lib/queries/queries'
+import { useUser } from '@/lib/queries/queries'
 import { ProfileValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useState } from 'react'
@@ -55,7 +55,9 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
       <input {...getInputProps()} type='file' className='cursor-pointer' />
       <div className='flex-start flex-1 gap-4 w-full py-5 lg:py-10'>
         <img
-          src={fileUrl !== '' ? fileUrl : '/assets/icons/profile-placeholder.svg'}
+          src={
+            fileUrl !== '' ? fileUrl : '/assets/icons/profile-placeholder.svg'
+          }
           alt='New Avatar Image'
           height={100}
           width={100}
@@ -71,8 +73,7 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
 const ProfileForm = () => {
   const { user: sessionUser, isLoading: isSessionUserLoading } =
     useUserContext()
-  const { data: user, isLoading } = useGetCurrentUser()
-  console.log('user :>> ', user)
+  const { data: user, isLoading } = useUser()
   const { toast } = useToast()
   const navigate = useNavigate()
   // 1. Define your form.
@@ -192,7 +193,9 @@ const ProfileForm = () => {
           <Button
             type='button'
             className='shad-button_dark_4'
-            onClick={() => { navigate(-1) }}
+            onClick={() => {
+              navigate(-1)
+            }}
           >
             Cancel
           </Button>

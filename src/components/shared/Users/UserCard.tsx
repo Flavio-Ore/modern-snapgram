@@ -47,14 +47,19 @@ const UserCard: React.FC<UserCardProps> = ({
         loading='lazy'
       />
       <div className='flex-center flex-col gap-0.5'>
-        <h3 className={classes.name}>{name ?? 'Not found'}</h3>
-        <p className={cn('text-light-3', classes.subtitle)}>
+        <h3 className={cn('overflow-ellipsis', classes.name)}>
+          {name ?? 'Not found'}
+        </h3>
+        <p className={cn('overflow-ellipsis text-light-3', classes.subtitle)}>
           {mainFollower ?? 'Not found'}
         </p>
       </div>
       <Link
         to={profileLink}
-        className={cn('flex-center rounded-lg text-center bg-primary-500', classes.link)}
+        className={cn(
+          'flex-center rounded-lg text-center bg-primary-500',
+          classes.link
+        )}
       >
         Follow
       </Link>

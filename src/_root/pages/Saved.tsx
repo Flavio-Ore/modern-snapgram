@@ -1,5 +1,5 @@
 import CustomTabs from '@/components/shared/app/CustomTabs'
-import { SAVES_TRIGGERS } from '@/values'
+import { SAVES_TRIGGERS } from '@/values/tabsTriggers'
 
 const Saved = () => {
   return (

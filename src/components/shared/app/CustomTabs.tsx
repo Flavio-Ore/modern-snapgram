@@ -1,14 +1,15 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { type TabsTriggers } from '@/types'
+import { type FC } from 'react'
 
 interface TabsContentsProps {
   triggers: Array<Omit<TabsTriggers, 'icon'>>
 }
-const TabsContents: React.FC<TabsContentsProps> = ({ triggers }) =>
+const TabsContents: FC<TabsContentsProps> = ({ triggers }) =>
   triggers.map(({ trigger, Element }) => (
     <TabsContent key={trigger} value={trigger}>
-      <Element />
+      {Element}
     </TabsContent>
   ))
 
@@ -16,10 +17,7 @@ interface TabsTriggersProps {
   className: string
   triggersAndIcons: Array<Omit<TabsTriggers, 'Element'>>
 }
-const TabTriggers: React.FC<TabsTriggersProps> = ({
-  className,
-  triggersAndIcons
-}) =>
+const TabTriggers: FC<TabsTriggersProps> = ({ className, triggersAndIcons }) =>
   triggersAndIcons.map(({ trigger, icon }, index) => (
     <TabsTrigger
       key={trigger + icon}
@@ -38,7 +36,7 @@ const TabTriggers: React.FC<TabsTriggersProps> = ({
 interface CustomTabsProps {
   tabsOperations: TabsTriggers[]
 }
-const CustomTabs: React.FC<CustomTabsProps> = ({ tabsOperations }) => (
+const CustomTabs: FC<CustomTabsProps> = ({ tabsOperations }) => (
   <Tabs
     defaultValue={tabsOperations[0].trigger}
     className='flex flex-col xxs:gap-8 gap-16 w-full'

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useGetUserById } from '@/lib/queries/queries'
-import { PROFILES_TRIGGERS } from '@/values'
+import { PROFILES_TRIGGERS } from '@/values/tabsTriggers'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -170,7 +170,7 @@ const Profile = () => {
   return (
     <div className='profile-container'>
       <ProfileInnerContainer />
-      <div className='flex w-full'>
+      <div className='flex w-full max-w-5xl'>
         <CustomTabs tabsOperations={PROFILES_TRIGGERS} />
       </div>
     </div>

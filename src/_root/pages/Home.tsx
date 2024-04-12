@@ -36,8 +36,6 @@ const HomePosts = () => {
     () => data?.pages.flatMap(postsPage => postsPage) ?? [],
     [data]
   )
-
-  console.log('posts :>> ', posts)
   return (
     <InfiniteScroll
       data={data}

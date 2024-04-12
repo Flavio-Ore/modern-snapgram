@@ -7,10 +7,9 @@ export function cn (...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const truncateRoute = (route: string) => {
-  if (route === '/') return route
-  return route.split('/').slice(0, 2).join('/')
-}
+// !!'' => false                                      undefined => '' !== '' => false
+// !!' ' => true                                       'asdasd' => 'asdasd' !== '' => true
+export const doubleNegationStr = (str?: string) => (str?.trim() ?? '') !== ''
 
 export const isObjectEmpty = (objectName?: EmptyObject | ObjectWithKeys | null | undefined) => {
   return (

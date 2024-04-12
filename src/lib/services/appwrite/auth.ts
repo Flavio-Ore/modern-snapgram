@@ -1,7 +1,7 @@
 import { account, appwriteConfig, avatars, databases } from '@/lib/services/appwrite/config'
 import { createUser } from '@/lib/services/appwrite/users'
 import { parseModel } from '@/lib/services/appwrite/util'
-import type { INewUser, User, UserSession } from '@/types'
+import type { INewUser, User } from '@/types'
 import { ID, type Models, Query } from 'appwrite'
 
 // ============================================================
@@ -51,7 +51,7 @@ export async function getAccount () {
   try {
     const currentAccount = await account.get()
     parseModel({ model: currentAccount, errorMsg: 'An error ocurred' })
-    return currentAccount as UserSession
+    return currentAccount
   } catch (error) {
     console.error(error)
   }
@@ -67,18 +67,17 @@ export async function signOutAccount () {
 }
 
 // ============================== GET USER
-export async function getCurrentSessionUser () {
+export async function getUser () {
   try {
     const currentAccount = await getAccount()
     parseModel({ model: currentAccount, errorMsg: 'An error occurred' })
-    const currentUser = await databases.listDocuments(
+    const currentUser = await databases.listDocuments<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       [Query.equal('accountId', currentAccount?.$id ?? '')]
     )
     parseModel({ model: currentUser, errorMsg: 'An error occurred' })
-    console.log('currentUser :>> ', currentUser.documents[0])
-    return currentUser.documents[0] as User
+    return currentUser.documents[0]
   } catch (error) {
     console.error(error)
     return null

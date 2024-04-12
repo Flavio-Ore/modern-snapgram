@@ -15,7 +15,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true)
 
-      const currentUser = await api.account.findSession()
+      const currentUser = await api.account.user()
+
       // ✅ Check if user is authenticated
       // ✅ If user is authenticated, set `isAuthenticated` to true
       // ✅ If user is not authenticated, set `isAuthenticated` to false

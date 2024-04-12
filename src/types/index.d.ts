@@ -70,7 +70,6 @@ export interface TabsTriggers {
   Element: ReactNode
 }
 
-
 interface User extends Models.Document {
   name: string
   username: string
@@ -83,7 +82,8 @@ interface User extends Models.Document {
   liked: Post[]
   save: Post[]
 }
-type UserSession = Models.User<Models.Preferences> & User
+
+
 interface Post extends Models.Document {
   caption: string
   tags: string[]
@@ -99,3 +99,5 @@ interface Save extends Models.Document {
   post: Post[]
   user: User[]
 }
+
+interface UserSession extends Models.User<Models.Preferences> {}
