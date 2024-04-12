@@ -43,7 +43,6 @@ export async function findInfiniteUsers ({
       query
     )
     parseModel({ model: users, errorMsg: 'No users found' })
-    console.log('users :>> ', users.documents)
     return users.documents
   } catch (error) {
     console.error(error)
@@ -62,7 +61,6 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
       queries
     )
     parseModel({ model: users, errorMsg: 'No users found' })
-    console.log('users :>> ', users)
     return users.documents as User[]
   } catch (error) {
     console.error(error)
@@ -79,7 +77,6 @@ export async function findUserById ({ userId }: { userId: string }) {
       userId
     )
     parseModel({ model: user, errorMsg: 'User not found' })
-    console.log('user :>> ', user)
     return user as User
   } catch (error) {
     console.error(error)

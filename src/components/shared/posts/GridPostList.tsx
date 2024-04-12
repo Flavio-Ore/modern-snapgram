@@ -16,7 +16,7 @@ const GridPostList: FC<GridPostListProps> = ({
   showStats = true
 }) => {
   const { user } = useUserContext()
-  const key = posts.map(posts => posts.$id).toString()
+  const key = posts.map(posts => posts?.$id).toString()
   console.log('key :>> ', key)
   console.log('posts :>> ', posts)
   return (

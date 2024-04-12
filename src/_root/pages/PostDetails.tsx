@@ -1,6 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import Loader from '@/components/shared/app/Loader'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import PostStats from '@/components/shared/posts/PostStats'
 import { Button } from '@/components/ui/button'
@@ -8,6 +7,8 @@ import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 import { useDeletePost } from '@/lib/queries/mutations'
 
+import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
+import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkeleton'
 import { useGetPostById, useGetUserPosts } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
 import { useMemo } from 'react'
@@ -32,7 +33,7 @@ const PostDetails = () => {
   const { mutate: deletePost } = useDeletePost()
 
   const relatedPosts = useMemo(
-    () => userPosts?.filter(userPost => userPost.$id !== id) ?? [],
+    () => userPosts?.filter(userPost => userPost.$id !== id) ?? null,
     [userPosts]
   )
 
@@ -65,8 +66,8 @@ const PostDetails = () => {
         </Button>
       </div>
 
-      {isLoading && <Loader />}
-      {isError && <h3 className='h2-bold'>Oops... Error loading post!</h3>}
+      {isLoading && <PostDetailsSkeleton />}
+      {isError && <h3 className='h2-bold text-secondary-500'>Oops... Error loading post!</h3>}
       {!isError && !isLoading && post == null && (
         <h3 className='h2-bold'>Post not found</h3>
       )}
@@ -123,7 +124,10 @@ const PostDetails = () => {
                 <Button
                   onClick={handleDeletePost}
                   variant='ghost'
-                  className={cn('post_details-delete_btn', user.id !== post.creator.$id && 'hidden')}
+                  className={cn(
+                    'post_details-delete_btn',
+                    user.id !== post.creator.$id && 'hidden'
+                  )}
                 >
                   <img
                     src={'/assets/icons/delete.svg'}
@@ -164,8 +168,10 @@ const PostDetails = () => {
         <h3 className='body-bold md:h3-bold w-full my-10'>
           More Related Posts
         </h3>
-        {isRelatedLoading && <Loader />}
-        {isRelatedError && <p>Oops... Error loading related posts!</p>}
+        {(isLoading || isRelatedLoading) && <GridPostSkeleton />}
+        {isRelatedError && (
+          <p className='body-bold text-secondary-500'>Oops... Error loading related posts!</p>
+        )}
         {!isRelatedLoading &&
           !isRelatedError &&
           relatedPosts != null &&
