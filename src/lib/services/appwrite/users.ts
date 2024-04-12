@@ -11,7 +11,7 @@ export async function createUser (user: {
   username?: string
 }) {
   try {
-    const newUser = await databases.createDocument(
+    const newUser = await databases.createDocument<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
@@ -37,7 +37,7 @@ export async function findInfiniteUsers ({
     query.push(Query.cursorAfter(lastId.toString()))
   }
   try {
-    const users = await databases.listDocuments(
+    const users = await databases.listDocuments<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       query
@@ -55,13 +55,13 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
   const queries = [Query.orderDesc('$createdAt')]
   if (limit != null && limit > 0) queries.push(Query.limit(limit))
   try {
-    const users = await databases.listDocuments(
+    const users = await databases.listDocuments<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       queries
     )
     parseModel({ model: users, errorMsg: 'No users found' })
-    return users.documents as User[]
+    return users.documents
   } catch (error) {
     console.error(error)
     return []
@@ -71,13 +71,13 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
 // ============================== GET USER BY ID
 export async function findUserById ({ userId }: { userId: string }) {
   try {
-    const user = await databases.getDocument(
+    const user = await databases.getDocument<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       userId
     )
     parseModel({ model: user, errorMsg: 'User not found' })
-    return user as User
+    return user
   } catch (error) {
     console.error(error)
     return null
@@ -87,7 +87,7 @@ export async function findUserById ({ userId }: { userId: string }) {
 // ============================== UPDATE USER
 export async function updateUser ({ user }: { user: IUpdateUser }) {
   try {
-    const updatedUser = await databases.updateDocument(
+    const updatedUser = await databases.updateDocument<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       user.userId,
