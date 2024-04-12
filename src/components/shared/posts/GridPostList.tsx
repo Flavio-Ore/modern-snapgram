@@ -1,6 +1,7 @@
 import PostStats from '@/components/shared/posts/PostStats'
 import { useUserContext } from '@/context/useUserContext'
 import { type Post } from '@/types'
+import { type FC } from 'react'
 import { Link } from 'react-router-dom'
 
 interface GridPostListModel {
@@ -9,7 +10,7 @@ interface GridPostListModel {
   showStats?: boolean
 }
 type GridPostListProps = GridPostListModel
-const GridPostList: React.FC<GridPostListProps> = ({
+const GridPostList: FC<GridPostListProps> = ({
   posts,
   showUser = true,
   showStats = true
@@ -18,19 +19,18 @@ const GridPostList: React.FC<GridPostListProps> = ({
   const key = posts.map(posts => posts.$id).toString()
   console.log('key :>> ', key)
   console.log('posts :>> ', posts)
-  if (posts == null || posts.length === 0) return null
   return (
     <ul className='grid-container'>
       {posts.map((post, i) => (
         <li key={`${key}-${i}`} className='relative'>
-          <Link to={`/posts/${post.$id}`} className='grid-post_link'>
+          <Link to={`/posts/${post?.$id}`} className='grid-post_link'>
             <img
-              src={post?.imageUrl ?? '/assets/icons/loader.svg'}
+              src={post.imageUrl ?? '/assets/icons/loader.svg'}
               alt='Post image'
               loading='lazy'
               height={100}
               width={100}
-              className='w-full h-full object-cover aspect-auto'
+              className='size-full object-cover aspect-auto'
             />
           </Link>
           <div className='grid-post_user'>

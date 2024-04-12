@@ -13,14 +13,13 @@ import { useToast } from '@/components/ui/use-toast'
 import { Label } from '@radix-ui/react-label'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { Navigate, Outlet } from 'react-router-dom'
 
 const AuthLayout = () => {
   const [isEmailClicked, setIsEmailClicked] = useState(false)
   const [isPasswordClicked, setIsPasswordClicked] = useState(false)
-  const { toast } = useToast()
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280)
+  const { toast } = useToast()
   const isAuth = false
   const handleCLickEmail = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -50,20 +49,23 @@ const AuthLayout = () => {
       title: 'Password copied to clipboard'
     })
   }
-
+  const handleResize = () => {
+    setIsLargeScreen(window.innerWidth >= 1280)
+  }
   useEffect(() => {
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth >= 1280)
-    }
+    if (isLargeScreen) return
     window.addEventListener('resize', handleResize)
-    return () => { window.removeEventListener('resize', handleResize) }
-  }, [])
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [isLargeScreen])
 
   return (
     <>
-      {isAuth
-        ? <Navigate to='/' />
-        : <section className='flex flex-1 items-center justify-center flex-col'>
+      {isAuth ? (
+        <Navigate to='/' />
+      ) : (
+        <section className='flex flex-1 items-center justify-center flex-col'>
           <Outlet />
           {/* TO TEST THE APP */}
           {(import.meta.env.DEV || import.meta.env.PROD) && (
@@ -100,9 +102,12 @@ const AuthLayout = () => {
                   >
                     <span className='sr-only'>Copy</span>
                     {isEmailClicked
-                      ? <CopyCheckIcon className='h-4 w-4' />
-                      : <CopyIcon className='h-4 w-4' />
-                    }
+                      ? (
+                      <CopyCheckIcon className='h-4 w-4' />
+                        )
+                      : (
+                      <CopyIcon className='h-4 w-4' />
+                        )}
                   </Button>
                 </div>
                 <div className='flex items-center space-x-2'>
@@ -125,9 +130,12 @@ const AuthLayout = () => {
                   >
                     <span className='sr-only'>Copy</span>
                     {isPasswordClicked
-                      ? <CopyCheckIcon className='h-4 w-4' />
-                      : <CopyIcon className='h-4 w-4' />
-                    }
+                      ? (
+                      <CopyCheckIcon className='h-4 w-4' />
+                        )
+                      : (
+                      <CopyIcon className='h-4 w-4' />
+                        )}
                   </Button>
                 </div>
                 <DialogFooter className='sm:justify-start'>
@@ -145,7 +153,7 @@ const AuthLayout = () => {
             </Dialog>
           )}
         </section>
-      }
+      )}
       {isLargeScreen && (
         <img
           src='/assets/images/side-img.svg'

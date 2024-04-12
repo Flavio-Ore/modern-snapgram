@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useGetUserById } from '@/lib/queries/queries'
-import { cn } from '@/lib/utils'
 import { PROFILES_TRIGGERS } from '@/values'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -17,7 +16,7 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({
   idMatch,
   className
 }) => (
-  <div className={cn(className)}>
+  <div className={className}>
     {idMatch && (
       <Link
         to='/update-profile'
@@ -78,7 +77,6 @@ const ProfileInnerContainer = () => {
   } = useGetUserById({ userId: id ?? '' })
 
   const isCurrentUser = useMemo(() => id === sessionUser.id, [id, sessionUser])
-
   const realUser = useMemo(
     () => (isCurrentUser ? sessionUser : user),
     [sessionUser, user, id]
@@ -158,7 +156,7 @@ const ProfileInnerContainer = () => {
             Something went wrong
           </p>
         )}
-        {!isError && !isLoading && (
+        {!isError && !isLoading && realUser != null && (
           <p className='base-regular text-light-2 max-w-xl text-pretty'>
             {realUser?.bio ?? ''}
           </p>

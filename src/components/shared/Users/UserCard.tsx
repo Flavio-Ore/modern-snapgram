@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import { type E_USERS } from '@/values'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -36,7 +37,7 @@ const UserCard: React.FC<UserCardProps> = ({
 }) => {
   const classes = useMemo(() => roleClassNames[role], [role])
   return (
-    <div className={`user-card ${classes.card}`}>
+    <div className={cn('user-card', classes.card)}>
       <img
         src={imgUrl}
         alt={name}
@@ -47,14 +48,13 @@ const UserCard: React.FC<UserCardProps> = ({
       />
       <div className='flex-center flex-col gap-0.5'>
         <h3 className={classes.name}>{name ?? 'Not found'}</h3>
-
-        <p className={`text-light-3 ${classes.subtitle}`}>
+        <p className={cn('text-light-3', classes.subtitle)}>
           {mainFollower ?? 'Not found'}
         </p>
       </div>
       <Link
         to={profileLink}
-        className={`flex-center rounded-lg text-center bg-primary-500 ${classes.link}`}
+        className={cn('flex-center rounded-lg text-center bg-primary-500', classes.link)}
       >
         Follow
       </Link>

@@ -1,10 +1,11 @@
 import Bottombar from '@/components/shared/app/Bottombar'
 import LeftSidebar from '@/components/shared/app/LeftSidebar'
-import Loader from '@/components/shared/app/Loader'
 import Topbar from '@/components/shared/app/Topbar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { sidebarLinks } from '@/values'
 import { lazy, Suspense } from 'react'
-import { useLocation, useMatch } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 const Outlet = lazy(
   async () =>
@@ -15,22 +16,23 @@ const Outlet = lazy(
 
 const RootLayout = () => {
   const { pathname } = useLocation()
-  const matchedPath = useMatch({
-    path: '/profile/*',
-    end: false
-  })
-  console.log('pathname :>> ', pathname)
-  console.log('matchedPath :>> ', matchedPath?.pathnameBase)
+
   return (
     <div className='w-full md:flex'>
       <Topbar />
       <LeftSidebar />
-      <section className={cn('flex flex-1 h-full w-full', (matchedPath?.pathnameBase === '/profile') && 'overflow-ellipsis')}>
+      <section
+        className={cn('flex flex-1 h-full w-full', {
+          'overflow-ellipsis': pathname.startsWith('/profile')
+        })}
+      >
         <Suspense
           fallback={
-            <div className='flex-center mx-auto'>
-              <Loader />
-            </div>
+            <Skeleton className='common-container flex-center backdrop-blur-sm size-full bg-primary-600/5 '>
+              <h2 className='h1-bold animate-pulse-fade-in'>
+                {sidebarLinks.find(link => pathname.startsWith(link.route))?.label}
+              </h2>
+            </Skeleton>
           }
         >
           <Outlet />

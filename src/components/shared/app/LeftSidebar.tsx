@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useSignOutAccount } from '@/lib/queries/mutations'
-import { cn, truncateRoute } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { type INavLink } from '@/types'
 import { sidebarLinks } from '@/values'
 import { useEffect } from 'react'
@@ -49,11 +49,10 @@ const LeftSidebar = () => {
         {!isLoading && user != null && (
           <Link
             to={`/profile/${user.id}`}
-            className={cn(
-              'relative flex gap-3 items-center',
-              (profileId === user.id || pathname === '/update-profile') &&
-                'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative'
-            )}
+            className={cn('relative flex gap-3 items-center', {
+              'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative':
+                profileId === user.id || pathname === '/update-profile'
+            })}
           >
             <img
               src={user.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
@@ -71,31 +70,28 @@ const LeftSidebar = () => {
           </Link>
         )}
         <ul className='flex flex-col gap-4'>
-          {sidebarLinks.map(({ imgURL, label, route }: INavLink) => {
-            const isActive = truncateRoute(pathname) === route
-            return (
-              <li
-                key={label}
-                className={cn(
-                  'leftsidebar-link group',
-                  isActive && 'bg-primary-500'
-                )}
-              >
-                <NavLink to={route} className='flex gap-4 items-center p-4'>
-                  <img
-                    src={imgURL}
-                    alt={label}
-                    height={21.5}
-                    width={21.5}
-                    className={`group-hover:invert-white ${
-                      isActive && 'invert-white'
-                    }`}
-                  />
-                  {label}
-                </NavLink>
-              </li>
-            )
-          })}
+          {sidebarLinks.map(({ imgURL, label, route }: INavLink) => (
+            <li
+              key={label}
+              className={cn(
+                'leftsidebar-link group',
+                pathname === route && 'bg-primary-500'
+              )}
+            >
+              <NavLink to={route} className='flex gap-4 items-center p-4'>
+                <img
+                  src={imgURL}
+                  alt={label}
+                  height={21.5}
+                  width={21.5}
+                  className={cn('group-hover:invert-white', {
+                    'invert-white': pathname === route
+                  })}
+                />
+                {label}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </div>
       <div className='flex flex-col gap-2'>

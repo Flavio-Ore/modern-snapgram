@@ -1,8 +1,11 @@
 'use client'
-import * as TabsPrimitive from '@radix-ui/react-tabs'
-
 import { cn } from '@/lib/utils'
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef } from 'react'
+import * as TabsPrimitive from '@radix-ui/react-tabs'
+import {
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+  forwardRef
+} from 'react'
 
 const Tabs = TabsPrimitive.Root
 
@@ -52,3 +55,4 @@ ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
 export { Tabs, TabsContent, TabsList, TabsTrigger }
+
