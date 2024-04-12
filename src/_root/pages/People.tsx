@@ -1,9 +1,86 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
-import Loader from '@/components/shared/app/Loader'
 import UserCard from '@/components/shared/users/UserCard'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useGetInfiniteUsers } from '@/lib/queries/infiniteQueries'
 import { E_USERS, OPERATIONS } from '@/values'
 import { useMemo } from 'react'
+
+const AllUsersSkeleton = () => (
+  <div className='user-grid'>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+    <div className='user-card'>
+      <Skeleton className='min-h-24 min-w-24 rounded-full' />
+      <div className='flex-center flex-col gap-1 w-full'>
+        <Skeleton className='h-4 w-4/6' />
+        <Skeleton className='h-2 w-9/12' />
+      </div>
+      <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+    </div>
+  </div>
+)
 
 const AllUsers = () => {
   const {
@@ -24,16 +101,10 @@ const AllUsers = () => {
       .toString()
       .concat(OPERATIONS.PEOPLE) ?? ''
 
-  if (users.length === 0 || users == null) {
-    return (
-      <div className='flex-center w-full h-full'>
-        <Loader />
-      </div>
-    )
-  }
   return (
     <InfiniteScroll
       data={infinitePeople}
+      skeleton={<AllUsersSkeleton />}
       isDataEmpty={users?.length === 0}
       isLoading={isLoading}
       isError={isError}
@@ -45,9 +116,9 @@ const AllUsers = () => {
         {users.map((user, i) => (
           <li key={`${key}-${i}`}>
             <UserCard
-              imgUrl={user.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
-              name={user.name ?? 'Not found'}
-              mainFollower={`Followed by @${user.username ?? ''}`}
+              imgUrl={user.imageUrl}
+              name={user.name}
+              mainFollower={`Followed by @${user.username}`}
               profileLink={`/profile/${user.$id}`}
               role={E_USERS.ALL_USERS}
             />

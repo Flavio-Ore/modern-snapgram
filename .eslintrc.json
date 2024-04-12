@@ -10,6 +10,7 @@
     "project": ["./tsconfig.json", "./vite.config.ts"]
   },
   "plugins": ["react", "@tanstack/query"],
+  "ignorePatterns": ["node_modules", "*.config.*"],
   "rules": {
     "@tanstack/query/exhaustive-deps": "error",
     "@tanstack/query/no-rest-destructuring": "warn",

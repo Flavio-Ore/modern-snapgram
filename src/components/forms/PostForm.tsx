@@ -19,6 +19,7 @@ import { PostValidationSchema } from '@/lib/validations'
 import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Models } from 'appwrite'
+import { type FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
@@ -28,8 +29,7 @@ interface PostFormProps {
   post?: Models.Document
   action: Actions
 }
-const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
-  console.log('post :>> ', post)
+const PostForm: FC<PostFormProps> = ({ post, action }) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
@@ -144,7 +144,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
               <FormLabel className='shad-form_label body-medium'>
                 Add tags{', '}
                 <span className='tiny-medium text-light-4'>
-                  separated by comma " , "
+                  separated by comma &quot; , &quot;
                 </span>
               </FormLabel>
               <FormControl>
@@ -164,7 +164,9 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
           <Button
             type='button'
             className='shad-button_dark_4'
-            onClick={() => { navigate(-1) }}
+            onClick={() => {
+              navigate(-1)
+            }}
           >
             Cancel
           </Button>
@@ -174,9 +176,12 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
             disabled={isLoadingCreate || isLoadingUpdate}
           >
             {isLoadingCreate || isLoadingUpdate
-              ? <Loader />
-              : `${action[0].toUpperCase() + action.slice(1)} Post`
-            }
+              ? (
+              <Loader />
+                )
+              : (
+              `${action[0].toUpperCase() + action.slice(1)} Post`
+                )}
           </Button>
         </div>
       </form>
