@@ -32,6 +32,7 @@ const appwriteService = {
     update: likes.updateLikesPost
   },
   saves: {
+    findById: saves.findSaveRecordById,
     findInfinite: saves.findInfiniteSaves,
     delete: saves.deleteSave,
     update: saves.updateSave

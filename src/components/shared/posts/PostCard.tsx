@@ -1,3 +1,4 @@
+import EditIcon from '@/components/icons/EditIcon'
 import PostStats from '@/components/shared/posts//PostStats'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
@@ -26,7 +27,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
         </div>
       </div>
     )
-  } // Radix Skeleton
+  }
   return (
     <div className='post-card'>
       <div className='flex-between'>
@@ -63,12 +64,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
             hidden: user?.id !== post.creator.$id
           })}
         >
-          <img
-            src='/assets/icons/edit.svg'
-            alt='link to edit post'
-            width={20}
-            height={20}
-          />
+          <EditIcon className='size-5 hover:fill-secondary-500'/>
         </Link>
       </div>
       <Link to={`/posts/${post.$id}`}>

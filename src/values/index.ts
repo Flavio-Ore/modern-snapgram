@@ -1,3 +1,11 @@
+import ChatsIcon from '@/components/icons/ChatsIcon'
+import CreatePostIcon from '@/components/icons/CreatePostIcon'
+import ExploreIcon from '@/components/icons/ExploreIcon'
+import HomeIcon from '@/components/icons/HomeIcon'
+import PeopleIcon from '@/components/icons/PeopleIcon'
+import ReelsIcon from '@/components/icons/ReelsIcon'
+import SaveIcon from '@/components/icons/SaveIcon'
+
 export enum E_USERS {
   ALL_USERS = 'ALL_USERS',
   TOP_CREATORS = 'TOP_CREATORS'
@@ -40,37 +48,31 @@ export const { PRIVATE_ROUTES, PUBLIC_ROUTES } = ROUTES
 
 export const sidebarLinks = [
   {
-    imgURL: '/assets/icons/home.svg',
+    Icon: HomeIcon,
     route: '/',
     label: 'Home'
   },
   {
-    imgURL: '/assets/icons/wallpaper.svg',
     route: '/explore',
     label: 'Explore'
   },
   {
-    imgURL: '/assets/icons/people.svg',
     route: '/all-users',
     label: 'People'
   },
   {
-    imgURL: '/assets/icons/bookmark.svg',
     route: '/saved',
     label: 'Saved'
   },
   {
-    imgURL: '/assets/icons/reels.svg',
     route: '/reels',
     label: 'Reels'
   },
   {
-    imgURL: '/assets/icons/chat.svg',
     route: '/chats',
     label: 'Chats'
   },
   {
-    imgURL: '/assets/icons/gallery-add.svg',
     route: '/create-post',
     label: 'Create Post'
   }
@@ -78,23 +80,81 @@ export const sidebarLinks = [
 
 export const bottombarLinks = [
   {
-    imgURL: '/assets/icons/home.svg',
     route: '/',
     label: 'Home'
   },
   {
-    imgURL: '/assets/icons/wallpaper.svg',
     route: '/explore',
     label: 'Explore'
   },
   {
-    imgURL: '/assets/icons/bookmark.svg',
     route: '/saved',
     label: 'Saved'
   },
   {
-    imgURL: '/assets/icons/gallery-add.svg',
     route: '/create-post',
     label: 'Create'
   }
 ]
+
+export const links = {
+  sidebar: [
+    {
+      Icon: HomeIcon,
+      route: '/',
+      label: 'Home'
+    },
+    {
+      Icon: ExploreIcon,
+      route: '/explore',
+      label: 'Explore'
+    },
+    {
+      Icon: PeopleIcon,
+      route: '/all-users',
+      label: 'People'
+    },
+    {
+      Icon: SaveIcon,
+      route: '/saved',
+      label: 'Saved'
+    },
+    {
+      Icon: ReelsIcon,
+      route: '/reels',
+      label: 'Reels'
+    },
+    {
+      Icon: ChatsIcon,
+      route: '/chats',
+      label: 'Chats'
+    },
+    {
+      Icon: CreatePostIcon,
+      route: '/create-post',
+      label: 'Create Post'
+    }
+  ],
+  bottom: [
+    {
+      Icon: HomeIcon,
+      route: '/',
+      label: 'Home'
+    },
+    {
+      Icon: ExploreIcon,
+      route: '/explore',
+      label: 'Explore'
+    },
+    {
+      Icon: SaveIcon,
+      route: '/saved',
+      label: 'Saved'
+    },
+    {
+      Icon: CreatePostIcon,
+      route: '/create-post',
+      label: 'Create'
+    }
+  ]
+}

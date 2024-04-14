@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
+import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useSignOutAccount } from '@/lib/queries/mutations'
+import { LogOutIcon } from 'lucide-react'
 const Topbar = () => {
   const navigate = useNavigate()
-  const { user } = useUserContext()
+  const { user, isLoading } = useUserContext()
   const { mutate: signOut, isSuccess } = useSignOutAccount()
 
   useEffect(() => {
@@ -17,12 +20,7 @@ const Topbar = () => {
     <section className='topbar'>
       <div className='flex-between py-4 px-5'>
         <Link to='/' className='flex gap-3 items-center'>
-          <img
-            src='/assets/images/logo.svg'
-            alt='logo'
-            width={130}
-            height={32}
-          />
+          <Logo width={170} height={36} className='w-full'/>
         </Link>
 
         <div className='flex gap-4'>
@@ -33,19 +31,20 @@ const Topbar = () => {
               signOut()
             }}
           >
-            <img src='/assets/icons/logout.svg' alt='logout' />
+            <LogOutIcon size={24} className='stroke-red w-full' />
           </Button>
-          <Link to={`/profile/${user.id}`} className='flex-center gap-3'>
-            <img
-              src={
-                user.imageUrl === ''
-                  ? '/assets/icons/profile-placeholder.svg'
-                  : user.imageUrl
-              }
-              alt='profile'
-              className='h-8 w-8 rounded-full'
-            />
-          </Link>
+          {isLoading && <Skeleton className='min-w-8 min-h-8 rounded-full' />}
+          {!isLoading && user != null && (
+            <Link to={`/profile/${user.id}`} className='flex-center gap-3'>
+              <img
+                src={user.imageUrl}
+                alt='profile'
+                height={32}
+                width={32}
+                className='rounded-full'
+              />
+            </Link>
+          )}
         </div>
       </div>
     </section>
