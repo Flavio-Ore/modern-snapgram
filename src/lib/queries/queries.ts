@@ -1,7 +1,7 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import { api } from '@/lib/services'
 import { useQuery } from '@tanstack/react-query'
-const { account, findUserPosts, posts, users } = api
+const { account, findUserPosts, posts, users, saves } = api
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
@@ -21,6 +21,14 @@ export const useGetUserPosts = ({ userId }: { userId: string }) => {
     queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
     queryFn: async () => await findUserPosts({ userId }),
     enabled: enabledId(userId)
+  })
+}
+
+export const useGetSavedRecord = ({ recordId }: { recordId: string }) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_SAVED_RECORD, recordId],
+    queryFn: async () => await saves.findById({ savedRecordId: recordId }),
+    enabled: enabledId(recordId)
   })
 }
 

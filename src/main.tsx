@@ -1,11 +1,19 @@
-import App from '@/App'
 import LazyPages from '@/components/shared/app/LazyPages'
-import AuthProvider from '@/context/AuthContext'
-import QueryProvider from '@/lib/queries/QueryProvider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { StrictMode } from 'react'
+import { lazy, StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+
+const BrowserRouter = lazy(
+  async () =>
+    await import('react-router-dom').then(module => ({
+      default: module.BrowserRouter
+    }))
+)
+const AuthProvider = lazy(async () => await import('@/context/AuthContext'))
+const QueryProvider = lazy(
+  async () => await import('@/lib/queries/QueryProvider')
+)
+const App = lazy(async () => await import('@/App'))
 
 const ROOT = document.getElementById('root')
 if (ROOT == null) throw new Error('Root element not found')

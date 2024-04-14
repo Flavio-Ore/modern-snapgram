@@ -21,8 +21,8 @@ export async function getFilePreview (fileId: string) {
     const fileUrl = storage.getFilePreview(
       appwriteConfig.storageId,
       fileId,
-      180,
-      180,
+      2000,
+      2000,
       'top',
       100
     )

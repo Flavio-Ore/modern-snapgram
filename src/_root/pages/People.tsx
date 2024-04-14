@@ -1,3 +1,4 @@
+import PeopleIcon from '@/components/icons/PeopleIcon'
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import AllUsersSkeleton from '@/components/shared/skeletons/AllUsersSkeleton'
 import UserCard from '@/components/shared/users/UserCard'
@@ -56,13 +57,7 @@ const People = () => (
   <div className='common-container'>
     <div className='user-container'>
       <div className='flex-start w-full max-w-5xl gap-6'>
-        <img
-          src='/assets/icons/people.svg'
-          height={36}
-          width={36}
-          className='invert-white'
-          alt='people'
-        />
+        <PeopleIcon className='size-9 fill-light-1'/>
         <h2 className='md:h1-bold h3-bold'>All Users</h2>
       </div>
       <AllUsers />

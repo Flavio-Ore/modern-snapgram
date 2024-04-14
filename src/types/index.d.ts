@@ -66,7 +66,7 @@ export interface INewUser {
 
 export interface TabsTriggers {
   trigger: string
-  icon: string
+  Icon: ReactNode
   Element: ReactNode
 }
 
@@ -80,7 +80,7 @@ interface User extends Models.Document {
   imageUrl: string
   posts: Post[]
   liked: Post[]
-  save: Post[]
+  save: Save[]
 }
 
 
@@ -91,13 +91,13 @@ interface Post extends Models.Document {
   imageId: string
   location: string
   likes: User[]
-  save: User[]
+  save: Save[]
   creator: User
 }
 
 interface Save extends Models.Document {
-  post: Post[]
-  user: User[]
+  post: Post
+  user: Use
 }
 
 interface UserSession extends Models.User<Models.Preferences> {}

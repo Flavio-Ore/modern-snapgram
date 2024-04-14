@@ -56,7 +56,7 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
       <div className='flex-start flex-1 gap-4 w-full py-5 lg:py-10'>
         <img
           src={
-            fileUrl !== '' ? fileUrl : '/assets/icons/profile-placeholder.svg'
+            fileUrl === '' ? '/assets/icons/profile-placeholder.svg' : fileUrl
           }
           alt='New Avatar Image'
           height={100}

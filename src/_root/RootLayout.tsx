@@ -3,7 +3,7 @@ import LeftSidebar from '@/components/shared/app/LeftSidebar'
 import Topbar from '@/components/shared/app/Topbar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { sidebarLinks } from '@/values'
+import BarLinks from '@/values/BarLinks'
 import { lazy, Suspense } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -30,7 +30,7 @@ const RootLayout = () => {
           fallback={
             <Skeleton className='common-container flex-center backdrop-blur-sm size-full bg-primary-600/5 '>
               <h2 className='h1-bold animate-pulse-fade-in'>
-                {sidebarLinks.find(link => pathname === link.route)?.label}
+                {BarLinks.sidebarLinks.find(link => pathname === link.route)?.label}
               </h2>
             </Skeleton>
           }
