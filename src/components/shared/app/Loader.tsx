@@ -1,13 +1,9 @@
+import LoaderIcon from '@/components/icons/LoaderIcon'
+
 const Loader = () => {
   return (
     <div className='flex-center w-full'>
-      <img
-        src='/assets/icons/loader.svg'
-        alt='loader'
-        width={24}
-        height={24}
-        loading='lazy'
-      />
+      <LoaderIcon className='' />
     </div>
   )
 }

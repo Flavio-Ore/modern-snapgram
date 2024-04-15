@@ -10,7 +10,6 @@ const CreatePost = () => {
           <CreatePostIcon width={40} height={40} className='fill-secondary-500' />
           <h2 className='h3-bold md:h2-bold text-left w-full'>Create Post</h2>
         </div>
-
         <PostForm action={E_FORM_ACTIONS.CREATE} />
       </div>
     </div>

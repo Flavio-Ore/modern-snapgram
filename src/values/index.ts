@@ -46,57 +46,6 @@ const ROUTES = {
 }
 export const { PRIVATE_ROUTES, PUBLIC_ROUTES } = ROUTES
 
-export const sidebarLinks = [
-  {
-    Icon: HomeIcon,
-    route: '/',
-    label: 'Home'
-  },
-  {
-    route: '/explore',
-    label: 'Explore'
-  },
-  {
-    route: '/all-users',
-    label: 'People'
-  },
-  {
-    route: '/saved',
-    label: 'Saved'
-  },
-  {
-    route: '/reels',
-    label: 'Reels'
-  },
-  {
-    route: '/chats',
-    label: 'Chats'
-  },
-  {
-    route: '/create-post',
-    label: 'Create Post'
-  }
-]
-
-export const bottombarLinks = [
-  {
-    route: '/',
-    label: 'Home'
-  },
-  {
-    route: '/explore',
-    label: 'Explore'
-  },
-  {
-    route: '/saved',
-    label: 'Saved'
-  },
-  {
-    route: '/create-post',
-    label: 'Create'
-  }
-]
-
 export const links = {
   sidebar: [
     {

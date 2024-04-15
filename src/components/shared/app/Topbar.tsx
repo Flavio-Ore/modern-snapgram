@@ -5,12 +5,12 @@ import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
-import { useSignOutAccount } from '@/lib/queries/mutations'
+import { useSignOut } from '@/lib/queries/mutations'
 import { LogOutIcon } from 'lucide-react'
 const Topbar = () => {
   const navigate = useNavigate()
   const { user, isLoading } = useUserContext()
-  const { mutate: signOut, isSuccess } = useSignOutAccount()
+  const { mutate: signOut, isSuccess } = useSignOut()
 
   useEffect(() => {
     if (isSuccess) navigate(0)

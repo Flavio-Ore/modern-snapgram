@@ -1,12 +1,13 @@
+import { cn } from '@/lib/utils'
 import { type SVGProps } from 'react'
 
-const SavedIcon = (props: SVGProps<SVGSVGElement>) => (
+const SavedIcon = ({ className }: SVGProps<SVGSVGElement>) => (
   <svg
     width='20'
     height='20'
     viewBox='0 0 20 20'
     xmlns='http://www.w3.org/2000/svg'
-    {...props}
+    className={cn('fill-primary-500', className)}
   >
     <path
       fillRule='evenodd'

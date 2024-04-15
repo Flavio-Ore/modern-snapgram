@@ -2,17 +2,17 @@ import LoaderIcon from '@/components/icons/LoaderIcon'
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
-import { useSignInAccount } from '@/lib/queries/mutations'
+import { useSignIn } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
 import { SigninValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,7 +24,7 @@ const SigninForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
-  const { mutateAsync: signInAccount } = useSignInAccount()
+  const { mutateAsync: signInAccount } = useSignIn()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SigninValidationSchema>>({

@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 
-import { useCreateUserAccount, useSignInAccount } from '@/lib/queries/mutations'
+import { useCreateAccount, useSignIn } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
 import { SignupValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,9 +27,9 @@ const SignupForm = () => {
   const navigate = useNavigate()
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
-    useCreateUserAccount()
+    useCreateAccount()
   const { mutateAsync: signInAccount, isPending: isSigningIn } =
-    useSignInAccount()
+    useSignIn()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidationSchema>>({

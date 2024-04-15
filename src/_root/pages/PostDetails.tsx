@@ -34,13 +34,17 @@ const PostDetails = () => {
     userId: post?.creator?.$id ?? ''
   })
   const { mutate: deletePost } = useDeletePost()
-
+  const isCreator = user.id === post?.creator?.$id
+  console.log('user :>> ', user)
+  console.log('post creator :>> ', post?.creator)
+  console.log('user.id === post?.creator?.$id :>> ', isCreator)
   const relatedPosts = useMemo(
     () => userPosts?.filter(userPost => userPost.$id !== id) ?? null,
     [userPosts]
   )
 
   const handleDeletePost = () => {
+    if (!isCreator) return
     deletePost({ postId: id ?? '', imageId: post?.imageId ?? '' })
     toast({
       title: 'Post deleted',
@@ -109,24 +113,22 @@ const PostDetails = () => {
                   </div>
                 </div>
               </Link>
-
-              <div className='flex-center gap-4'>
-                <Link
-                  to={`/update-post/${post.$id}`}
-                  className={cn({ hidden: user.id !== post.creator.$id })}
-                >
-                  <EditIcon className='size-6' />
+              <div
+                className={cn('gap-4', {
+                  'flex-center': isCreator,
+                  hidden: !isCreator
+                })}
+              >
+                <Link to={`/update-post/${post.$id}`}>
+                  <EditIcon className='size-6 hover:fill-primary-500/50' />
                 </Link>
 
                 <Button
                   onClick={handleDeletePost}
                   variant='ghost'
-                  className={cn(
-                    'post_details-delete_btn',
-                    user.id !== post.creator.$id && 'hidden'
-                  )}
+                  className='post_details-delete_btn'
                 >
-                  <DeleteIcon className='size-6' />
+                  <DeleteIcon className='size-6 hover:fill-red/50' />
                 </Button>
               </div>
             </div>
@@ -162,16 +164,16 @@ const PostDetails = () => {
         </h3>
         {(isLoading || isRelatedLoading) && <GridPostSkeleton />}
         {isRelatedError && (
-          <p className='body-bold text-secondary-500'>
+          <h4 className='h3-bold animate-pulse text-secondary-500  text-center'>
             Oops... Error loading related posts!
-          </p>
+          </h4>
         )}
         {!isRelatedLoading &&
           !isRelatedError &&
           relatedPosts != null &&
           relatedPosts.length === 0 && (
-            <h4 className='base-regular w-full text-center mx-auto'>
-              No related posts
+            <h4 className='h3-bold animate-pulse text-primary-600/80  text-center '>
+              No related posts...
             </h4>
         )}
         {!isRelatedLoading && !isRelatedError && relatedPosts != null && (

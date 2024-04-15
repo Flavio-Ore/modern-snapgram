@@ -13,7 +13,7 @@ export interface IContextType {
 }
 
 export interface INavLink {
-  imgURL: string
+  Icon: ReactNode
   route: string
   label: string
 }
