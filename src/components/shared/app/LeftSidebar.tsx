@@ -1,16 +1,10 @@
-import ChatsIcon from '@/components/icons/ChatsIcon'
-import CreatePostIcon from '@/components/icons/CreatePostIcon'
-import ExploreIcon from '@/components/icons/ExploreIcon'
-import HomeIcon from '@/components/icons/HomeIcon'
 import Logo from '@/components/icons/Logo'
-import PeopleIcon from '@/components/icons/PeopleIcon'
-import ReelsIcon from '@/components/icons/ReelsIcon'
-import SaveIcon from '@/components/icons/SaveIcon'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
-import { useSignOutAccount } from '@/lib/queries/mutations'
+import { useSignOut } from '@/lib/queries/mutations'
 import { cn } from '@/lib/utils'
+import { links } from '@/values'
 import { LucideLogOut, SettingsIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import {
@@ -21,84 +15,11 @@ import {
   useParams
 } from 'react-router-dom'
 
-const links = {
-  sidebar: [
-    {
-      Icon: HomeIcon,
-      imgURL: '/assets/icons/home.svg',
-      route: '/',
-      label: 'Home'
-    },
-    {
-      Icon: ExploreIcon,
-      imgURL: '/assets/icons/wallpaper.svg',
-      route: '/explore',
-      label: 'Explore'
-    },
-    {
-      Icon: PeopleIcon,
-      imgURL: '/assets/icons/people.svg',
-      route: '/all-users',
-      label: 'People'
-    },
-    {
-      Icon: SaveIcon,
-      imgURL: '/assets/icons/bookmark.svg',
-      route: '/saved',
-      label: 'Saved'
-    },
-    {
-      Icon: ReelsIcon,
-      imgURL: '/assets/icons/reels.svg',
-      route: '/reels',
-      label: 'Reels'
-    },
-    {
-      Icon: ChatsIcon,
-      imgURL: '/assets/icons/chat.svg',
-      route: '/chats',
-      label: 'Chats'
-    },
-    {
-      Icon: CreatePostIcon,
-      imgURL: '/assets/icons/gallery-add.svg',
-      route: '/create-post',
-      label: 'Create Post'
-    }
-  ],
-  bottom: [
-    {
-      Icon: HomeIcon,
-      imgURL: '/assets/icons/home.svg',
-      route: '/',
-      label: 'Home'
-    },
-    {
-      Icon: ExploreIcon,
-      imgURL: '/assets/icons/wallpaper.svg',
-      route: '/explore',
-      label: 'Explore'
-    },
-    {
-      Icon: SaveIcon,
-      imgURL: '/assets/icons/bookmark.svg',
-      route: '/saved',
-      label: 'Saved'
-    },
-    {
-      Icon: CreatePostIcon,
-      imgURL: '/assets/icons/gallery-add.svg',
-      route: '/create-post',
-      label: 'Create'
-    }
-  ]
-}
-
 const LeftSidebar = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { user, isLoading } = useUserContext()
-  const { mutate: signOut, isSuccess } = useSignOutAccount()
+  const { mutate: signOut, isSuccess } = useSignOut()
   const { id: profileId } = useParams()
 
   useEffect(() => {

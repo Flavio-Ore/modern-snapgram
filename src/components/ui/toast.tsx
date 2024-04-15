@@ -3,7 +3,12 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { type ComponentPropsWithoutRef, type ElementRef, forwardRef, type ReactElement } from 'react'
+import {
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+  forwardRef,
+  type ReactElement
+} from 'react'
 
 const ToastProvider = ToastPrimitives.Provider
 
@@ -14,7 +19,7 @@ ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]',
+      'fixed top-20 z-[100] flex max-h-screen w-full flex-col-reverse p-4 md:top-0 md:right-0 md:bottom-auto md:flex-col md:max-w-[420px]',
       className
     )}
     {...props}
@@ -27,9 +32,9 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border bg-background text-foreground',
+        default: 'border border-primary-600 bg-primary-500/75 md:border-primary-500/80 md:bg-primary-500/20',
         destructive:
-          'destructive group border-destructive bg-destructive text-destructive-foreground'
+          'destructive group border-primary-600 bg-destructive text-destructive-foreground'
       }
     },
     defaultVariants: {
@@ -60,7 +65,7 @@ ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      'inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive',
+      'inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 base-regular border-secondary-500/80  ring-offset-secondary-500 transition-colors hover:bg-dark-2 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-dark-4/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive',
       className
     )}
     {...props}
@@ -75,13 +80,13 @@ ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      'absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600',
+      'absolute right-2 top-2 rounded-md p-1 text-secondary-500 opacity-0 transition-opacity hover:text-red focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red/40 group-[.destructive]:hover:text-red/20 group-[.destructive]:focus:ring-red/60 group-[.destructive]:focus:ring-offset-red/80',
       className
     )}
-    toast-close=""
+    toast-close=''
     {...props}
   >
-    <X className="h-4 w-4" />
+    <X className='h-4 w-4' />
   </ToastPrimitives.Close>
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName
@@ -92,7 +97,7 @@ ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn('text-sm font-semibold', className)}
+    className={cn('body-medium text-light-2 md:text-light-1', className)}
     {...props}
   />
 ))
@@ -104,7 +109,7 @@ ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Description
     ref={ref}
-    className={cn('text-sm opacity-90', className)}
+    className={cn('base-regular opacity-90 text-light-2 md:text-light-1', className)}
     {...props}
   />
 ))
@@ -115,5 +120,14 @@ type ToastProps = ComponentPropsWithoutRef<typeof Toast>
 type ToastActionElement = ReactElement<typeof ToastAction>
 
 export {
-  Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport, type ToastActionElement, type ToastProps
+  Toast,
+  ToastAction,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+  type ToastActionElement,
+  type ToastProps
 }
+

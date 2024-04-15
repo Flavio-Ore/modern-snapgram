@@ -6,19 +6,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const { account, likes, posts, saves, users } = api
 
-export const useCreateUserAccount = () => {
+export const useCreateAccount = () => {
   return useMutation({
     mutationFn: account.create
   })
 }
 
-export const useSignInAccount = () => {
+export const useSignIn = () => {
   return useMutation({
     mutationFn: account.signIn
   })
 }
 
-export const useSignOutAccount = () => {
+export const useSignOut = () => {
   return useMutation({
     mutationFn: account.signOut
   })

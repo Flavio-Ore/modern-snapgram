@@ -65,19 +65,24 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
       <div className='flex gap-2 mr-5'>
         {(isLoading || isRefetching || isLiking) && (
           <HeartIcon
-            height={20}
-            width={20}
-            className='fill-red/50 stroke-red/50 animate-pulsing animate-duration-1000 cursor-not-allowed'
+            size={20}
+            className='fill-red/50 stroke-red/50 animate-float cursor-not-allowed'
           />
         )}
         {!isLoading && !isRefetching && !isLiking && (
           <div onClick={handleLikePost} className='flex-center cursor-pointer'>
             {checkIsLiked(likes, userId)
               ? (
-              <HeartIcon className='fill-red stroke-red' size={20} />
+              <HeartIcon
+                className='fill-red stroke-red hover:fill-red/50'
+                size={20}
+              />
                 )
               : (
-              <HeartIcon className='fill-none stroke-primary-500' size={20} />
+              <HeartIcon
+                className='fill-none stroke-primary-500 hover:fill-red/50 hover:stroke-red/50'
+                size={20}
+              />
                 )}
           </div>
         )}
@@ -86,9 +91,8 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
       <div className='flex gap-2'>
         {(isLoading || isRefetching || isSaving || isDeletingSave) && (
           <BookmarkIcon
-            height={20}
-            width={20}
-            className='fill-primary-500/50 stroke-primary-500/50 animate-pulsing animate-duration-1000 cursor-not-allowed'
+            size={20}
+            className='fill-primary-500/50 stroke-primary-500/50 animate-float cursor-not-allowed'
           />
         )}
         {!isLoading && !isRefetching && !isSaving && !isDeletingSave && (
@@ -98,10 +102,10 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
           >
             {isSaved
               ? (
-              <SavedIcon className='fill-primary-500' />
+              <SavedIcon className='hover:fill-primary-500/50' />
                 )
               : (
-              <SaveIcon className='fill-primary-500' />
+              <SaveIcon className='hover:fill-primary-500/50' />
                 )}
           </button>
         )}
