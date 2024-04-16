@@ -1,6 +1,6 @@
-import { account, appwriteConfig, avatars, databases } from '@/lib/services/appwrite/config'
-import { createUser } from '@/lib/services/appwrite/users'
-import { parseModel } from '@/lib/services/appwrite/util'
+import { account, appwriteConfig, avatars, databases } from '@/services/appwrite/config'
+import { createUser } from '@/services/appwrite/users'
+import { parseModel } from '@/services/appwrite/util'
 import type { INewUser, User } from '@/types'
 import { ID, type Models, Query } from 'appwrite'
 

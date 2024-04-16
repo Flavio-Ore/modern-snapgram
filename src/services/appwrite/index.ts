@@ -1,9 +1,9 @@
-import * as api from '@/lib/services/appwrite/api'
-import * as auth from '@/lib/services/appwrite/auth'
-import * as likes from '@/lib/services/appwrite/likes'
-import * as postsFunctions from '@/lib/services/appwrite/posts'
-import * as saves from '@/lib/services/appwrite/saves'
-import * as usersFunctions from '@/lib/services/appwrite/users'
+import * as api from '@/services/appwrite/api'
+import * as auth from '@/services/appwrite/auth'
+import * as likes from '@/services/appwrite/likes'
+import * as postsFunctions from '@/services/appwrite/posts'
+import * as saves from '@/services/appwrite/saves'
+import * as usersFunctions from '@/services/appwrite/users'
 
 const appwriteService = {
   findUserPosts: api.findUserPosts,

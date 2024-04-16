@@ -1,14 +1,14 @@
 import { type INewPost, type IUpdatePost, type Post } from '@/types'
 import { ID, Query } from 'appwrite'
 
-import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
+import { isObjectEmpty } from '@/lib/utils'
+import { appwriteConfig, databases } from '@/services/appwrite/config'
 import {
   createFile,
   deleteFile,
   getFilePreview
-} from '@/lib/services/appwrite/file'
-import { parseModel } from '@/lib/services/appwrite/util'
-import { isObjectEmpty } from '@/lib/utils'
+} from '@/services/appwrite/file'
+import { parseModel } from '@/services/appwrite/util'
 
 // ============================================================
 // POSTS

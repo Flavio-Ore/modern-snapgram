@@ -1,7 +1,7 @@
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { useSignOut } from '@/lib/queries/mutations'
 import { cn } from '@/lib/utils'
 import { links } from '@/values'

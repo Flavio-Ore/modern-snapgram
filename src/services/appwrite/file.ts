@@ -1,4 +1,4 @@
-import { appwriteConfig, storage } from '@/lib/services/appwrite/config'
+import { appwriteConfig, storage } from '@/services/appwrite/config'
 import { ID } from 'appwrite'
 
 export async function createFile (
@@ -21,10 +21,10 @@ export async function getFilePreview (fileId: string) {
     const fileUrl = storage.getFilePreview(
       appwriteConfig.storageId,
       fileId,
-      2000,
-      2000,
+      180,
+      180,
       'top',
-      100
+      10
     )
     console.log(fileUrl)
     if (fileUrl?.href?.trim()?.length === 0) throw Error('File not found')

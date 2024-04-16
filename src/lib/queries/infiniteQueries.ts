@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { api } from '@/lib/services'
+import { api } from '@/services'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models, Query } from 'appwrite'
 

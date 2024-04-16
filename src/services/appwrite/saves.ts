@@ -1,5 +1,5 @@
-import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
-import { parseModel } from '@/lib/services/appwrite/util'
+import { appwriteConfig, databases } from '@/services/appwrite/config'
+import { parseModel } from '@/services/appwrite/util'
 import { type Save } from '@/types'
 import { ID, Query } from 'appwrite'
 interface SavesId {
