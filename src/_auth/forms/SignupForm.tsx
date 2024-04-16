@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 
 import { useCreateAccount, useSignIn } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
