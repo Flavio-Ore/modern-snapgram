@@ -1,8 +1,7 @@
 import { account, appwriteConfig, avatars, databases } from '@/services/appwrite/config'
 import { createUser } from '@/services/appwrite/users'
-import { parseModel } from '@/services/appwrite/util'
 import type { INewUser, User } from '@/types'
-import { ID, type Models, Query } from 'appwrite'
+import { AppwriteException, ID, Query } from 'appwrite'
 
 // ============================================================
 // AUTH
@@ -15,20 +14,20 @@ export async function createUserAccount (user: INewUser) {
       user.password,
       user.name
     )
-    parseModel({ model: newAccount, errorMsg: 'Account not created' })
     const avatarUrl = avatars.getInitials(user.name)
-    const newUser = await createUser({
+    return await createUser({
       accountId: newAccount.$id,
       name: newAccount.name,
       email: newAccount.email,
       username: user.username,
       imageUrl: avatarUrl
     })
-    parseModel({ model: newUser, errorMsg: 'User not saved, try again' })
-    return newUser
   } catch (error) {
-    console.error(error)
-    return null
+    console.error({ error })
+    if (error instanceof AppwriteException && error.code === 409) {
+      error.message = 'This email address is not available. Choose a different address.'
+      return error
+    }
   }
 }
 
@@ -36,24 +35,12 @@ export async function createUserAccount (user: INewUser) {
 export async function signInAccount (user: {
   email: string
   password: string
-}): Promise<Models.Session | undefined> {
+}) {
   try {
-    const session = await account.createEmailSession(user.email, user.password)
-    parseModel({ model: session, errorMsg: 'An error occurred' })
-    return session
+    return await account.createEmailSession(user.email, user.password)
   } catch (error) {
     console.error(error)
-  }
-}
-
-// ============================== GET ACCOUNT
-export async function getAccount () {
-  try {
-    const currentAccount = await account.get()
-    parseModel({ model: currentAccount, errorMsg: 'An error ocurred' })
-    return currentAccount
-  } catch (error) {
-    console.error(error)
+    if (error instanceof AppwriteException && error.code === 401) return error
   }
 }
 
@@ -66,27 +53,38 @@ export async function signOutAccount () {
   }
 }
 
+// ============================== GET ACCOUNT
+export async function getAccount () {
+  try {
+    return await account.get()
+  } catch (error) {
+    console.error(error)
+    if (error instanceof AppwriteException && error.code === 401) return null
+  }
+}
+
 // ============================== GET USER
 export async function getUser () {
   try {
     const currentAccount = await getAccount()
-    parseModel({ model: currentAccount, errorMsg: 'An error occurred' })
+    console.log('currentAccount :>> ', currentAccount)
+    if (currentAccount == null) throw new Error('No account found')
+
     const currentUser = await databases.listDocuments<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       [Query.equal('accountId', currentAccount?.$id ?? '')]
     )
-    parseModel({ model: currentUser, errorMsg: 'An error occurred' })
-    return currentUser.documents[0]
+    console.log('currentUserAccountData :>> ', currentUser.documents[0])
+    return currentUser.documents[0] ?? {}
   } catch (error) {
     console.error(error)
-    return null
   }
 }
 
-export async function updateAccount ({ name, email }: { name?: string, email?: string }) {
+export async function anonymousSignIn () {
   try {
-    if (name != null) await account.updateName(name)
+    return await account.createAnonymousSession()
   } catch (error) {
     console.error(error)
   }

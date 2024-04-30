@@ -4,13 +4,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { useSignOut } from '@/lib/queries/mutations'
 import { LogOutIcon } from 'lucide-react'
 const Topbar = () => {
   const navigate = useNavigate()
-  const { user, isLoading } = useUserContext()
+  const { user, isLoading } = useAccount()
   const { mutate: signOut, isSuccess } = useSignOut()
+
+  const handleLogOut = () => {
+    signOut()
+  }
 
   useEffect(() => {
     if (isSuccess) navigate(0)
@@ -27,11 +31,9 @@ const Topbar = () => {
           <Button
             variant='ghost'
             className='shad-button_ghost'
-            onClick={() => {
-              signOut()
-            }}
+            onClick={handleLogOut}
           >
-            <LogOutIcon size={24} className='stroke-red w-full' />
+            <LogOutIcon size={24} className='stroke-red-500 w-full' />
           </Button>
           {isLoading && <Skeleton className='min-w-8 min-h-8 rounded-full' />}
           {!isLoading && user != null && (
