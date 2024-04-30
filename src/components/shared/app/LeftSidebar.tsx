@@ -1,7 +1,7 @@
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { useSignOut } from '@/lib/queries/mutations'
 import { cn } from '@/lib/utils'
 import { links } from '@/values'
@@ -18,9 +18,13 @@ import {
 const LeftSidebar = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { user, isLoading } = useUserContext()
+  const { user, isLoading } = useAccount()
   const { mutate: signOut, isSuccess } = useSignOut()
   const { id: profileId } = useParams()
+
+  const handleLogOut = () => {
+    signOut()
+  }
 
   useEffect(() => {
     if (isSuccess) navigate(0)
@@ -87,21 +91,18 @@ const LeftSidebar = () => {
       <div className='flex flex-col gap-2'>
         <Button
           variant='ghost'
-          className='shad-button_ghost small-medium lg:base-medium flex-start w-full h-12 group hover:bg-red'
-          onClick={() => {
-            signOut()
-            navigate('/sign-in')
-          }}
+          className='shad-button_ghost small-medium lg:base-medium flex-start w-full h-12 group hover:bg-red-600'
+          onClick={handleLogOut}
         >
           <LucideLogOut
             size={24}
-            className='stroke-red group-hover:stroke-white'
+            className='stroke-red-500 group-hover:stroke-white'
           />
           Logout
         </Button>
         <Button
           variant='ghost'
-          className='shad-button_ghost small-medium lg:base-medium flex-start w-full group hover:bg-primary-600  h-12'
+          className='shad-button_ghost base-medium flex-start w-full group hover:bg-primary-600  h-12'
         >
           <SettingsIcon
             size={24}

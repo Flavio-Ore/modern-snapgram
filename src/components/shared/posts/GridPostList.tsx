@@ -1,5 +1,5 @@
 import PostStats from '@/components/shared/posts/PostStats'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { type Post } from '@/types'
 import { type FC } from 'react'
 import { Link } from 'react-router-dom'
@@ -15,7 +15,7 @@ const GridPostList: FC<GridPostListProps> = ({
   showUser = true,
   showStats = true
 }) => {
-  const { user } = useUserContext()
+  const { user } = useAccount()
   const key = posts.map(posts => posts?.$id).toString()
   console.log('key :>> ', key)
   console.log('posts :>> ', posts)

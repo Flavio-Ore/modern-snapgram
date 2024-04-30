@@ -10,11 +10,11 @@ export const INITIAL_USER = {
   save: []
 }
 
-export const INITIAL_AUTH_STATE = {
+export const INITIAL_ACCOUNT_STATE = {
   user: INITIAL_USER,
   isLoading: false,
   isAuthenticated: false,
   setUser: () => {},
   setIsAuthenticated: () => {},
-  checkAuthUser: async () => false as boolean
+  checkAuth: async () => false as boolean
 }

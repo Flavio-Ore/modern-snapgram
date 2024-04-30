@@ -261,7 +261,7 @@
   }
 
   .shad-form_message {
-    @apply text-red;
+    @apply text-red-600;
   }
 
   .shad-input {

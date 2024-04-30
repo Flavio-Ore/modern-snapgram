@@ -11,11 +11,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { useSignIn } from '@/lib/queries/mutations'
-import { isObjectEmpty } from '@/lib/utils'
 import { SigninValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { AppwriteException } from 'appwrite'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
@@ -23,8 +23,8 @@ import { type z } from 'zod'
 const SigninForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
-  const { mutateAsync: signInAccount } = useSignIn()
+  const { checkAuth, isLoading } = useAccount()
+  const { mutateAsync: signInAccount, isPending } = useSignIn()
 
   const form = useForm<z.infer<typeof SigninValidationSchema>>({
     resolver: zodResolver(SigninValidationSchema),
@@ -40,23 +40,28 @@ const SigninForm = () => {
         email: user.email,
         password: user.password
       })
-
-      if (isObjectEmpty(session)) {
+      console.log('session :>> ', session)
+      if (session != null && session instanceof AppwriteException) {
         toast({
-          title: 'Something went wrong.',
-          description: 'Please try again.'
+          title: 'Login failed.',
+          description: session.message ?? 'Please try again later.',
+          variant: 'destructive'
         })
         navigate('/sign-in')
         return
       }
 
-      const isLoggedIn = await checkAuthUser()
+      const isLoggedIn = await checkAuth()
 
       if (isLoggedIn) {
         form.reset()
         navigate('/')
       } else {
-        toast({ title: 'Login failed. Please try again.' })
+        toast({
+          title: 'Login failed.',
+          description: 'Please try again.',
+          variant: 'destructive'
+        })
       }
     } catch (error) {
       console.error(error)
@@ -113,7 +118,7 @@ const SigninForm = () => {
             )}
           />
           <Button className='shad-button_primary' type='submit'>
-            {isUserLoading ? <LoaderIcon /> : 'Sign in'}
+            {(isLoading || isPending) ? <LoaderIcon /> : 'Sign in'}
           </Button>
 
           <p className='text-small-regular text-light-2 text-center mt-2'>
