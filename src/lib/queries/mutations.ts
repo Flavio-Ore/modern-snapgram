@@ -1,33 +1,33 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 
-import { api } from '@/services'
-import { type INewPost, type IUpdatePost } from '@/types'
+import { appwriteService } from '@/services'
+import { type INewPost, type IUpdatePost, type IUpdateUser } from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const { account, likes, posts, saves, users } = api
+const { auth, likes, posts, saves, users } = appwriteService
 
 export const useCreateAccount = () => {
   return useMutation({
-    mutationFn: account.create
+    mutationFn: auth.createUserAccount
   })
 }
 
 export const useSignIn = () => {
   return useMutation({
-    mutationFn: account.signIn
+    mutationFn: auth.signInAccount
   })
 }
 
 export const useSignOut = () => {
   return useMutation({
-    mutationFn: account.signOut
+    mutationFn: auth.signOutAccount
   })
 }
 
 export const useCreatePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (newPost: INewPost) => await posts.create(newPost),
+    mutationFn: async (newPost: INewPost) => await posts.createPost(newPost),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
@@ -39,7 +39,7 @@ export const useUpdatePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (updatedPost: IUpdatePost) =>
-      await posts.update(updatedPost),
+      await posts.updatePost(updatedPost),
     onSuccess: data => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
@@ -57,7 +57,7 @@ export const useDeletePost = () => {
     }: {
       postId: string
       imageId: string
-    }) => await posts.delete({ postId, imageId }),
+    }) => await posts.deletePost({ postId, imageId }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
@@ -74,7 +74,7 @@ export const useDeletePost = () => {
 export const useLikePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: likes.update,
+    mutationFn: likes.updateLikesPost,
     onSuccess: data => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
@@ -104,7 +104,7 @@ export const useSavePost = () => {
     }: {
       postId: string
       userId: string
-    }) => await saves.update({ postId, userId }),
+    }) => await saves.updateSave({ postId, userId }),
     onSuccess: data => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
@@ -128,7 +128,7 @@ export const useDeleteSavedPost = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ savedRecordId }: DeleteSavedPost) =>
-      await saves.delete({ savedRecordId }),
+      await saves.deleteSave({ savedRecordId }),
     onSuccess: (data) => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID]
@@ -146,22 +146,22 @@ export const useDeleteSavedPost = () => {
   })
 }
 
-// todo update user
-// export const useUpdateUser = () => {
-//   const queryClient = useQueryClient()
-//   return useMutation({
-//     mutationFn: async (updatedUser: IUpdateUser) =>
-//       await users.update({ user: updatedUser }),
-//     onSuccess: data => {
-//       void queryClient.invalidateQueries({
-//         queryKey: [QUERY_KEYS.GET_USERS]
-//       })
-//       void queryClient.invalidateQueries({
-//         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-//       })
-//       void queryClient.invalidateQueries({
-//         queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id]
-//       })
-//     }
-//   })
-// }
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (updatedUser: IUpdateUser) =>
+      await users.updateUser({ user: updatedUser }),
+    onSuccess: data => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USERS]
+      })
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+      })
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id]
+      })
+    }
+  })
+}

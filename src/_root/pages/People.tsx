@@ -16,7 +16,7 @@ const AllUsers = () => {
     isFetching
   } = useGetInfiniteUsers()
   const users = useMemo(
-    () => infinitePeople?.pages.flatMap(page => page) ?? [],
+    () => infinitePeople?.pages.flatMap(page => page?.data ?? []) ?? [],
     [infinitePeople]
   )
   const key =

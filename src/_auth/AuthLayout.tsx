@@ -2,9 +2,7 @@ import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
@@ -13,11 +11,10 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/components/ui/use-toast'
 import { useAccount } from '@/context/useAccountContext'
-import { api } from '@/services'
 import { Label } from '@radix-ui/react-label'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 const Outlet = lazy(
   async () =>
     await import('react-router-dom').then(module => ({
@@ -32,8 +29,7 @@ const AuthSkeleton = () => (
 )
 
 const AuthLayout = () => {
-  const navigate = useNavigate()
-  const { checkAuth, isAuthenticated } = useAccount()
+  const { isAuthenticated } = useAccount()
   const [isEmailClicked, setIsEmailClicked] = useState(false)
   const [isPasswordClicked, setIsPasswordClicked] = useState(false)
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280)
@@ -69,35 +65,7 @@ const AuthLayout = () => {
   const handleResize = () => {
     setIsLargeScreen(window.innerWidth >= 1280)
   }
-  const handleAnonymousSession = async () => {
-    try {
-      const anoSession = await api.account.anonymousSignIn()
-      console.log('session:', anoSession)
-      toast({
-        title: 'Anonymous session started',
-        description: 'You can now use the app without creating an account!'
-      })
 
-      const isLoggedIn = await checkAuth()
-
-      if (isLoggedIn) {
-        navigate('/')
-      } else {
-        toast({
-          title: 'Login failed.',
-          description: 'Please try again.',
-          variant: 'destructive'
-        })
-      }
-    } catch (error) {
-      console.error(error)
-      toast({
-        title: 'Something went wrong',
-        description: 'Please try again later',
-        variant: 'destructive'
-      })
-    }
-  }
   useEffect(() => {
     if (isLargeScreen) {
       return () => {
@@ -190,18 +158,7 @@ const AuthLayout = () => {
                       )}
                 </Button>
               </div>
-              <DialogFooter className='sm:flex-between'>
-                <DialogClose asChild>
-                  <Button
-                    type='button'
-                    className='shad-button_primary'
-                    onClick={handleAnonymousSession}
-                    variant='ghost'
-                  >
-                    Start an anonymous session
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
+
             </DialogContent>
           </Dialog>
         )}

@@ -25,7 +25,7 @@ const TopCreators = () => {
       )}
       {!isLoading &&
         !isError &&
-        topCreators?.map(user => (
+        topCreators?.data.map(user => (
           <li key={user.$id}>
             <UserCard
               imgUrl={

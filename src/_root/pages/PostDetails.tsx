@@ -1,25 +1,23 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
-
-import GridPostList from '@/components/shared/posts/GridPostList'
-import PostStats from '@/components/shared/posts/PostStats'
-import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/use-toast'
-import { useAccount } from '@/context/useAccountContext'
-import { useDeletePost } from '@/lib/queries/mutations'
-
 import BackIcon from '@/components/icons/BackIcon'
 import DeleteIcon from '@/components/icons/DeleteIcon'
 import EditIcon from '@/components/icons/EditIcon'
+import GridPostList from '@/components/shared/posts/GridPostList'
+import PostStats from '@/components/shared/posts/PostStats'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
 import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkeleton'
-import { useGetPostById, useGetUserPosts } from '@/lib/queries/queries'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
+import { useDeletePost } from '@/lib/queries/mutations'
+import { useGetPostById, useGetUserPosts, useUser } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
+import { AppwriteException } from 'appwrite'
 import { useMemo } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 const PostDetails = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const { user } = useAccount()
+  const { data: user } = useUser()
   const { toast } = useToast()
   const {
     data: post,
@@ -34,7 +32,20 @@ const PostDetails = () => {
     userId: post?.creator?.$id ?? ''
   })
   const { mutate: deletePost } = useDeletePost()
-  const isCreator = user.id === post?.creator?.$id
+  const isCreator = useMemo(() => {
+    if (
+      user?.data == null ||
+      post == null ||
+      user instanceof AppwriteException ||
+      post instanceof AppwriteException
+    ) return false
+    return user.data.$id === post.creator.$id
+  }, [user, post])
+  const userId = useMemo(() => {
+    if (user?.data == null || user instanceof AppwriteException) return ''
+    return user.data.$id
+  }, [user])
+
   console.log('user :>> ', user)
   console.log('post creator :>> ', post?.creator)
   console.log('user.id === post?.creator?.$id :>> ', isCreator)
@@ -150,7 +161,7 @@ const PostDetails = () => {
             </div>
 
             <div className='w-full'>
-              <PostStats post={post} userId={user.id} />
+              <PostStats post={post} userId={userId} />
             </div>
           </div>
         </div>

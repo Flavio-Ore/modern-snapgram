@@ -21,16 +21,13 @@ import { type FileWithPath, useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
+import LoaderIcon from '../icons/LoaderIcon'
 
-interface FileUploaderModel {
+interface FileUploaderProps {
   fieldChange: (files: File[]) => void
   avatarUrl: string
 }
-type FileUploaderProps = FileUploaderModel
-const AvatarFileUploader: React.FC<FileUploaderProps> = ({
-  avatarUrl,
-  fieldChange
-}) => {
+const AvatarFileUploader = ({ avatarUrl, fieldChange }: FileUploaderProps) => {
   const [file, setFile] = useState<File[]>([])
   const [fileUrl, setfileUrl] = useState(avatarUrl)
   const onDrop = useCallback(
@@ -83,23 +80,23 @@ const ProfileForm = () => {
     resolver: zodResolver(ProfileValidationSchema),
     defaultValues: {
       file: [],
-      name: user?.name ?? '',
-      username: user?.username ?? '',
-      email: user?.email ?? '',
-      bio: user?.bio ?? ''
+      name: user?.data?.name ?? '',
+      username: user?.data?.username ?? '',
+      email: user?.data?.email ?? '',
+      bio: user?.data?.bio ?? ''
     }
   })
 
   // 2. Define a submit handler.
   // Handler
   const onSubmit = async (value: z.infer<typeof ProfileValidationSchema>) => {
-    if (user == null) return
+    if (user?.data == null) return
     // 3. Implement your form logic.
     const updatedUser = await updateUser({
       ...value,
-      userId: user.$id,
-      imageUrl: user?.imageUrl ?? '',
-      imageId: user?.imageId ?? ''
+      userId: user.data.$id,
+      imageUrl: user.data?.imageUrl ?? '',
+      imageId: user.data?.imageId ?? ''
     })
 
     if (isObjectEmpty(updatedUser)) {
@@ -108,7 +105,7 @@ const ProfileForm = () => {
         description: 'Please try again',
         variant: 'destructive'
       })
-      navigate(`/profile/${user.$id}`)
+      navigate(`/profile/${user.data.$id}`)
       return
     }
 
@@ -116,17 +113,17 @@ const ProfileForm = () => {
       title: 'Profile Updated',
       description: 'Your profile has been updated successfully'
     })
-    navigate(`/profile/${user.$id}`)
+    navigate(`/profile/${user.data.$id}`)
   }
 
+  if (user?.data == null) return <p>Something went wrong</p>
   if (isLoading) {
     return (
       <div className='flex flex-col gap-9 w-full max-w-5xl'>
-        <Skeleton className='h-4 w-4 rounded-full'/>
+        <Skeleton className='h-4 w-4 rounded-full' />
       </div>
     )
   }
-  if (user == null) return <p>Something went wrong</p>
   return (
     <Form {...form}>
       <form
@@ -142,7 +139,7 @@ const ProfileForm = () => {
               <FormControl>
                 <AvatarFileUploader
                   fieldChange={field.onChange}
-                  avatarUrl={user.imageUrl}
+                  avatarUrl={user.data.imageUrl}
                 />
               </FormControl>
               <FormMessage className='shad-form_message' />
@@ -170,7 +167,6 @@ const ProfileForm = () => {
         <FormField
           control={form.control}
           name='username'
-          disabled
           render={({ field }) => (
             <FormItem>
               <FormLabel className='shad-form_label'>Username</FormLabel>
@@ -180,7 +176,7 @@ const ProfileForm = () => {
                   <Input
                     className='shad-input'
                     type='text'
-                    placeholder='@Username*'
+                    placeholder='Username*'
                     {...field}
                   />
                 </FormControl>
@@ -192,7 +188,6 @@ const ProfileForm = () => {
         <FormField
           control={form.control}
           name='email'
-          disabled
           render={({ field }) => (
             <FormItem>
               <FormLabel className='shad-form_label'>Email</FormLabel>
@@ -239,7 +234,7 @@ const ProfileForm = () => {
             type='submit'
             className='shad-button_primary whitespace-nowrap'
           >
-            Update Profile
+            {isPending ? <LoaderIcon /> : 'Update Profile'}
           </Button>
         </div>
       </form>

@@ -2,8 +2,7 @@ import EditIcon from '@/components/icons/EditIcon'
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useAccount } from '@/context/useAccountContext'
-import { useGetUserById } from '@/lib/queries/queries'
+import { useGetUserById, useUser } from '@/lib/queries/queries'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -62,7 +61,7 @@ const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
 
 const ProfileDetails = () => {
   const { id } = useParams()
-  const { user: sessionUser, isLoading: isSessionLoading } = useAccount()
+  const { data: account, isLoading: isSessionLoading } = useUser()
   const {
     data: user,
     isLoading: isUserLoading,
@@ -70,18 +69,15 @@ const ProfileDetails = () => {
     isFetched
   } = useGetUserById({ userId: id ?? '' })
 
-  const isCurrentUser = useMemo(() => id === sessionUser.id, [id, sessionUser])
-  const realUser = useMemo(
-    () => (isCurrentUser ? sessionUser : user),
-    [sessionUser, user, id]
-  )
+  const isCurrentUser = useMemo(() => id === account?.data?.$id, [id, account])
+
   const profileStats = useMemo(
     () => ({
-      posts: realUser?.posts?.length ?? 0,
-      liked: realUser?.liked?.length ?? 0,
-      following: realUser?.save?.length ?? 0
+      posts: user?.data?.posts?.length ?? 0,
+      followers: user?.data?.followers?.length ?? 0,
+      following: user?.data?.following?.length ?? 0
     }),
-    [realUser]
+    [user]
   )
   const isLoading = isSessionLoading || isUserLoading
   const stats: UserStats = Object.keys(profileStats).map(key => ({
@@ -101,29 +97,27 @@ const ProfileDetails = () => {
       {!isLoading && !isError && (
         <img
           src={
-            realUser?.imageUrl != null && realUser.imageUrl.trim().length > 0
-              ? realUser.imageUrl
-              : '/assets/icons/profile-placeholder.svg'
+            user?.data?.imageUrl ?? '/assets/icons/profile-placeholder.svg'
           }
-          alt={realUser?.name ?? 'Profile Avatar'}
+          alt={user?.data?.name ?? 'Profile Avatar'}
           height={150}
           width={150}
           className='rounded-full'
         />
       )}
       <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0 w-full overflow-ellipsis'>
-        {(isLoading || realUser == null) && <Skeleton className='h-4 w-1/2' />}
+        {isLoading && <Skeleton className='h-4 w-1/2' />}
         {isError && (
-          <p className='regular-medium text-light-2 max-w-xl text-pretty'>
+          <p className='base-regular text-light-2 max-w-xl text-pretty'>
             Error loading name...
           </p>
         )}
-        {!isLoading && !isError && realUser != null && (
+        {!isLoading && !isError && (
           <div className='flex-between flex-col md:flex-row gap-2 xl:gap-0 w-full min-w-0 overflow-ellipsis'>
             <h2 className='body-medium text-center md:text-justify xs:h3-bold w-full lg:h1-semibold overflow-ellipsis'>
-              {realUser.name}
+              {user?.data?.name}
             </h2>
-            {isFetched && sessionUser != null
+            {isFetched && user?.data != null
               ? (
               <ProfileButtons idMatch={isCurrentUser} className='flex gap-1' />
                 )
@@ -140,9 +134,9 @@ const ProfileDetails = () => {
             Error loading username...
           </p>
         )}
-        {!isError && !isLoading && realUser != null && (
+        {!isError && !isLoading && (
           <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3'>
-            @{realUser?.username ?? ''}
+            @{user?.data?.username ?? 'Not Found'}
           </h3>
         )}
 
@@ -158,9 +152,9 @@ const ProfileDetails = () => {
             Error loading bio...
           </p>
         )}
-        {!isError && !isLoading && realUser != null && (
+        {!isError && !isLoading && user?.data != null && (
           <p className='base-regular text-light-2 max-w-xl text-pretty'>
-            {realUser?.bio ?? ''}
+            {user.data?.bio ?? ''}
           </p>
         )}
       </div>

@@ -1,17 +1,12 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { api } from '@/services'
+import { appwriteService } from '@/services'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models, Query } from 'appwrite'
 
-const { posts, saves, users } = api
+const { posts, saves, users } = appwriteService
 
 const initialPageParam = ''
-
-const enabledId = (id: string) => {
-  if (id != null && id.trim().length === 0) return false
-  if (id === '') return false
-  return true
-}
+const enabledId = (id: string) => id != null && id.trim().length !== 0 && id !== ''
 const INFINITY_QUERIES = {
   RECENT_POSTS: [Query.orderDesc('$createdAt')],
   UPDATED_POSTS: [Query.orderDesc('$updatedAt')],
@@ -33,7 +28,7 @@ export const useGetInfiniteRecentPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: async ({ pageParam }) =>
-      await posts.findInfinite({
+      await posts.findInfinitePosts({
         lastId: pageParam,
         queries: INFINITY_QUERIES.RECENT_POSTS
       }),
@@ -46,7 +41,7 @@ export function useGetInfinitePosts () {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
     queryFn: async ({ pageParam }) =>
-      await posts.findInfinite({
+      await posts.findInfinitePosts({
         lastId: pageParam,
         queries: INFINITY_QUERIES.UPDATED_POSTS
       }),
@@ -62,7 +57,7 @@ export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
     queryFn: async ({ pageParam }) =>
-      await posts.findInfinite({
+      await posts.findInfinitePosts({
         lastId: pageParam,
         queries: INFINITY_QUERIES.searchPosts({ searchTerm })
       }),
@@ -80,11 +75,14 @@ export const useGetInfiniteUsers = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USERS],
     queryFn: async ({ pageParam }) =>
-      await users.findInfinite({
+      await users.findInfiniteUsers({
         lastId: pageParam,
         queries: INFINITY_QUERIES.USERS
       }),
-    getNextPageParam: nextCursor,
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.data == null) return null
+      return lastPage.data.length === 0 ? null : lastPage.data[lastPage.data.length - 1].$id
+    },
     initialPageParam
   })
 }
@@ -93,17 +91,19 @@ export const useGetInfiniteUsers = () => {
 // SAVED POSTS
 // ============================================================
 
-// Get x limit of posts from a user on saves record, then display more on scroll
 export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
     queryFn: async ({ pageParam }) =>
-      await saves.findInfinite({
+      await saves.findInfiniteSaves({
         lastId: pageParam,
         queries: [Query.equal('user', userId)]
       }),
     enabled: enabledId(userId),
-    getNextPageParam: nextCursor,
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.data == null) return null
+      return lastPage.data.length === 0 ? null : lastPage.data[lastPage.data.length - 1].$id
+    },
     initialPageParam
   })
 }
