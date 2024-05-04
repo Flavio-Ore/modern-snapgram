@@ -2,6 +2,7 @@ import { account, appwriteConfig, avatars, databases } from '@/services/appwrite
 import { createUser } from '@/services/appwrite/users'
 import type { INewUser, User } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
+import { APPWRITE_RESPONSE_CODES, type AppwriteResponse } from './util'
 
 // ============================================================
 // AUTH
@@ -40,7 +41,8 @@ export async function signInAccount (user: {
     return await account.createEmailSession(user.email, user.password)
   } catch (error) {
     console.error(error)
-    if (error instanceof AppwriteException && error.code === 401) return error
+    if (error instanceof AppwriteException && error.code === 401 && error.type === 'user_invalid_credentials') return error
+    return null
   }
 }
 
@@ -56,36 +58,75 @@ export async function signOutAccount () {
 // ============================== GET ACCOUNT
 export async function getAccount () {
   try {
-    return await account.get()
-  } catch (error) {
-    console.error(error)
-    if (error instanceof AppwriteException && error.code === 401) return null
+    const acc = await account.get()
+    const res: AppwriteResponse<typeof acc> = {
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      data: acc,
+      message: 'Account retrieved successfully',
+      status: APPWRITE_RESPONSE_CODES.OK.text
+    }
+    return res
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      if (e.code === 401 && e.type === 'user_not_found') {
+        const res: AppwriteResponse<null> = {
+          code: e.code,
+          data: null,
+          message: e.message,
+          status: e.name
+        }
+        return res
+      }
+    }
+    return null
   }
 }
 
 // ============================== GET USER
 export async function getUser () {
   try {
-    const currentAccount = await getAccount()
-    console.log('currentAccount :>> ', currentAccount)
-    if (currentAccount == null) throw new Error('No account found')
-
-    const currentUser = await databases.listDocuments<User>(
+    const sessionAccount = await account.get()
+    console.log('currentAccount :>> ', sessionAccount)
+    if (sessionAccount == null) return null
+    const user = await databases.listDocuments<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
-      [Query.equal('accountId', currentAccount?.$id ?? '')]
+      [Query.equal('accountId', sessionAccount.$id)]
     )
-    console.log('currentUserAccountData :>> ', currentUser.documents[0])
-    return currentUser.documents[0] ?? {}
-  } catch (error) {
-    console.error(error)
-  }
-}
 
-export async function anonymousSignIn () {
-  try {
-    return await account.createAnonymousSession()
-  } catch (error) {
-    console.error(error)
+    console.log('currentUserAccountData :>> ', user.documents[0])
+
+    const res: AppwriteResponse<User> = {
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      data: user.documents[0],
+      message: 'User retrieved successfully',
+      status: APPWRITE_RESPONSE_CODES.OK.text
+    }
+
+    return res
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      if (e instanceof AppwriteException && e.code === 401 && e.type === 'user_not_found') {
+        const res: AppwriteResponse<null> = {
+          code: e.code,
+          data: null,
+          message: e.message,
+          status: e.name
+        }
+        return res
+      }
+      if (e.code === 404) {
+        const res: AppwriteResponse<null> = {
+          code: e.code,
+          data: null,
+          message: e.message,
+          status: e.name
+        }
+        return res
+      }
+    }
+    return null
   }
 }

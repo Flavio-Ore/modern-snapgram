@@ -1,51 +1,34 @@
-import { INITIAL_ACCOUNT_STATE, INITIAL_USER } from '@/context/accountState'
-import { api } from '@/services'
-import { type AccountContextType, type IUser } from '@/types'
+import { INITIAL_ACCOUNT_STATE } from '@/context/accountState'
+import { account } from '@/services/appwrite/config'
+import { type AccountContextType } from '@/types'
+import { AppwriteException } from 'appwrite'
 import { createContext, type ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const AccountContext = createContext<AccountContextType>(INITIAL_ACCOUNT_STATE)
 const AccountProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<IUser>(INITIAL_USER)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<AppwriteException>()
   const navigate = useNavigate()
   const checkAuth = async () => {
     try {
       setIsLoading(true)
-      const currentUser = await api.account.user()
-      console.log('currentUser CONTEXT :>> ', currentUser)
-      if (currentUser != null) {
-        const {
-          $id: id,
-          name,
-          email,
-          username,
-          imageUrl,
-          bio,
-          save,
-          liked,
-          posts
-        } = currentUser
-        setUser({
-          id,
-          name,
-          email,
-          username,
-          imageUrl,
-          bio: bio ?? '',
-          save,
-          liked,
-          posts
-        })
-        setIsAuthenticated(true)
-        return true
+      const session = await account.getSession('current')
+      console.log('session :>> ', session)
+      if (session instanceof AppwriteException) {
+        setIsAuthenticated(false)
+        return false
       }
-      setIsAuthenticated(false)
-      return false
+      setIsAuthenticated(true)
+      return true
     } catch (error) {
       console.error(error)
       setIsAuthenticated(false)
+      if (error instanceof AppwriteException) {
+        setError(error)
+        return false
+      }
       return false
     } finally {
       setIsLoading(false)
@@ -53,17 +36,15 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const value = {
-    user,
     isLoading,
     isAuthenticated,
-    setUser,
     setIsAuthenticated,
-    checkAuth
+    checkAuth,
+    error
   }
 
   useEffect(() => {
     console.log('isAuthenticated :>> ', isAuthenticated)
-    console.log('user :>> ', user)
     console.log('isLoading :>> ', isLoading)
     if (
       window.localStorage.getItem('cookieFallback') === '[]' ||

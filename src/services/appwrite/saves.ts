@@ -1,7 +1,7 @@
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import { parseModel } from '@/services/appwrite/util'
+import { type AppwriteResponse, APPWRITE_RESPONSE_CODES, parseModel } from '@/services/appwrite/util'
 import { type Save } from '@/types'
-import { ID, Query } from 'appwrite'
+import { AppwriteException, ID, Query } from 'appwrite'
 interface SavesId {
   savedRecordId: string
 }
@@ -13,10 +13,25 @@ export async function findSaveRecordById ({ savedRecordId }: SavesId) {
       appwriteConfig.savesCollectionId,
       savedRecordId
     )
-    parseModel({ model: saveRecord, errorMsg: 'Error getting the record' })
-    return saveRecord
-  } catch (error) {
-    console.error(error)
+    const res: AppwriteResponse<Save> = {
+      data: saveRecord,
+      message: 'Saved post fetched successfully.',
+      status: APPWRITE_RESPONSE_CODES.OK.text,
+      code: APPWRITE_RESPONSE_CODES.OK.code
+    }
+    return res
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      const res: AppwriteResponse<null> = {
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.name
+      }
+      return res
+    }
+    return null
   }
 }
 
@@ -71,6 +86,7 @@ interface InfiniteSavesParams {
   lastId: string
   queries: string[]
 }
+
 export async function findInfiniteSaves ({
   lastId = '',
   queries = []
@@ -86,11 +102,25 @@ export async function findInfiniteSaves ({
       appwriteConfig.savesCollectionId,
       query
     )
-    parseModel({ model: saves, errorMsg: 'An error occurred' })
     console.log('savedPosts: ', saves)
-    return saves.documents
-  } catch (error) {
-    console.error(error)
-    return []
+    const res: AppwriteResponse<Save[]> = {
+      data: saves.documents,
+      message: 'Saved posts fetched successfully.',
+      status: APPWRITE_RESPONSE_CODES.OK.text,
+      code: APPWRITE_RESPONSE_CODES.OK.code
+    }
+    return res
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      const res: AppwriteResponse<[]> = {
+        data: [],
+        message: e.message,
+        code: e.code,
+        status: e.name
+      }
+      return res
+    }
+    return null
   }
 }
