@@ -1,8 +1,12 @@
-import { appwriteConfig, databases } from '@/services/appwrite/config'
-import { APPWRITE_RESPONSE_CODES, type AppwriteResponse, parseModel } from '@/services/appwrite/util'
+import { appwriteConfig, databases, storage } from '@/services/appwrite/config'
+import {
+  APPWRITE_ERROR_TYPES,
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from '@/services/appwrite/util'
 import { type IUpdateUser, type User } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
-import { createFile, deleteFile, getFilePreview } from './file'
+import { deleteFile } from './file'
 
 export async function createUser (user: {
   accountId: string
@@ -18,8 +22,17 @@ export async function createUser (user: {
       ID.unique(),
       user
     )
-  } catch (error) {
-    console.error({ error })
+  } catch (e) {
+    console.error({ error: e })
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.name
+      })
+    }
+    return null
   }
 }
 
@@ -40,24 +53,23 @@ export async function findInfiniteUsers ({
       appwriteConfig.usersCollectionId,
       query
     )
-    const res: AppwriteResponse<User[]> = {
+    return appwriteResponse({
       data: users.documents,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
       status: APPWRITE_RESPONSE_CODES.OK.text
-    }
-    return res
+    })
   } catch (e) {
     console.error(e)
     if (e instanceof AppwriteException) {
-      const res: AppwriteResponse<[]> = {
+      return appwriteResponse({
         data: [],
         message: e.message,
         code: e.code,
         status: e.name
-      }
-      return res
+      })
     }
+    return null
   }
 }
 
@@ -71,24 +83,23 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
       appwriteConfig.usersCollectionId,
       queries
     )
-    const res: AppwriteResponse<User[]> = {
+    return appwriteResponse({
       data: users.documents,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
       status: APPWRITE_RESPONSE_CODES.OK.text
-    }
-    return res
+    })
   } catch (e) {
     console.error(e)
     if (e instanceof AppwriteException) {
-      const res: AppwriteResponse<[]> = {
+      return appwriteResponse({
         data: [],
         message: e.message,
         code: e.code,
         status: e.name
-      }
-      return res
+      })
     }
+    return null
   }
 }
 
@@ -100,23 +111,21 @@ export async function findUserById ({ userId }: { userId: string }) {
       appwriteConfig.usersCollectionId,
       userId
     )
-    const res: AppwriteResponse<User> = {
+    return appwriteResponse({
       data: user,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
       status: APPWRITE_RESPONSE_CODES.OK.text
-    }
-    return res
+    })
   } catch (e) {
     console.error(e)
     if (e instanceof AppwriteException) {
-      const res: AppwriteResponse<null> = {
+      return appwriteResponse({
         data: null,
         message: e.message,
         code: e.code,
         status: e.name
-      }
-      return res
+      })
     }
     return null
   }
@@ -125,30 +134,31 @@ export async function findUserById ({ userId }: { userId: string }) {
 // ============================== UPDATE USER
 export async function updateUser ({ user }: { user: IUpdateUser }) {
   try {
-    let image = {
-      imageUrl: user.imageUrl,
-      imageId: user.imageId
+    let newImage = {
+      url: user.imageUrl,
+      id: user.imageId
     }
     const hasFile = user.file.length > 0 && user.file[0]
-    console.log({ hasFile })
+    console.log({ user })
     if (hasFile !== false) {
-      const ava = await createFile(hasFile)
+      const file = await storage.createFile(
+        appwriteConfig.storageId,
+        ID.unique(),
+        hasFile
+      )
+      const fileUrl = storage.getFilePreview(
+        appwriteConfig.storageId,
+        file.$id
+      )
 
-      if (ava?.$id == null && ava == null) {
-        throw Error('File not uploaded')
-      }
-
-      const avaUrl = await getFilePreview(ava.$id)
-
-      if (avaUrl == null || avaUrl.toString().trim().length === 0) {
-        await deleteFile(ava.$id)
-        throw Error('File not found')
-      }
-
-      image = {
-        ...image,
-        imageUrl: new URL(avaUrl),
-        imageId: ava.$id
+      if (fileUrl == null) {
+        await deleteFile(file.$id)
+      } else {
+        newImage = {
+          ...newImage,
+          url: new URL(fileUrl),
+          id: file.$id
+        }
       }
     }
 
@@ -159,14 +169,35 @@ export async function updateUser ({ user }: { user: IUpdateUser }) {
       {
         name: user.name,
         bio: user.bio,
-        imageUrl: image.imageUrl,
-        imageId: image.imageId
+        imageUrl: newImage.url,
+        imageId: newImage.id
       }
     )
-    parseModel({ model: updatedUser, errorMsg: 'User not updated' })
 
-    return updatedUser
-  } catch (error) {
-    console.error(error)
+    return appwriteResponse({
+      data: updatedUser,
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      message: 'Account updated successfully.',
+      status: APPWRITE_RESPONSE_CODES.OK.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      if (e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported) {
+        return appwriteResponse({
+          data: null,
+          code: e.code,
+          message: e.message,
+          status: e.name
+        })
+      }
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.name
+      })
+    }
+    return null
   }
 }

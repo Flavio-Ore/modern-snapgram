@@ -79,6 +79,7 @@ export const useGetInfiniteUsers = () => {
         lastId: pageParam,
         queries: INFINITY_QUERIES.USERS
       }),
+
     getNextPageParam: (lastPage) => {
       if (lastPage?.data == null) return null
       return lastPage.data.length === 0 ? null : lastPage.data[lastPage.data.length - 1].$id

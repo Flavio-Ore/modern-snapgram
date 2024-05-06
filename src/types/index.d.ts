@@ -75,7 +75,7 @@ interface User extends Models.Document {
   imageUrl: string
   posts: Post[]
   liked: Post[]
-  saves: Save[]
+  save: Save[]
 }
 
 interface Post extends Models.Document {

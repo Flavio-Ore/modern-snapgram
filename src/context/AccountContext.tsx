@@ -5,7 +5,9 @@ import { AppwriteException } from 'appwrite'
 import { createContext, type ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export const AccountContext = createContext<AccountContextType>(INITIAL_ACCOUNT_STATE)
+export const AccountContext = createContext<AccountContextType>(
+  INITIAL_ACCOUNT_STATE
+)
 const AccountProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -16,10 +18,7 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true)
       const session = await account.getSession('current')
       console.log('session :>> ', session)
-      if (session instanceof AppwriteException) {
-        setIsAuthenticated(false)
-        return false
-      }
+
       setIsAuthenticated(true)
       return true
     } catch (error) {
@@ -44,8 +43,6 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    console.log('isAuthenticated :>> ', isAuthenticated)
-    console.log('isLoading :>> ', isLoading)
     if (
       window.localStorage.getItem('cookieFallback') === '[]' ||
       window.localStorage.getItem('cookieFallback') == null
@@ -58,7 +55,9 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
-  return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>
+  return (
+    <AccountContext.Provider value={value}>{children}</AccountContext.Provider>
+  )
 }
 
 export default AccountProvider

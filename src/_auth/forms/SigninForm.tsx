@@ -15,7 +15,6 @@ import { useAccount } from '@/context/useAccountContext'
 import { useSignIn } from '@/lib/queries/mutations'
 import { SigninValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AppwriteException } from 'appwrite'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
@@ -36,32 +35,31 @@ const SigninForm = () => {
 
   const handleSignin = async (user: z.infer<typeof SigninValidationSchema>) => {
     try {
-      const session = await signInAccount({
+      const sessionResponse = await signInAccount({
         email: user.email,
         password: user.password
       })
-      console.log('session :>> ', session)
-      if (session != null && session instanceof AppwriteException) {
+      console.log('session :>> ', sessionResponse)
+      if (sessionResponse?.data == null) {
         toast({
           title: 'Login failed.',
-          description: session.message ?? 'Please try again later.',
+          description: sessionResponse?.message ?? 'Please try again later.',
           variant: 'destructive'
         })
         navigate('/sign-in')
-        return
-      }
-
-      const isLoggedIn = await checkAuth()
-
-      if (isLoggedIn) {
-        form.reset()
-        navigate('/')
       } else {
-        toast({
-          title: 'Login failed.',
-          description: 'Please try again.',
-          variant: 'destructive'
-        })
+        const isLoggedIn = await checkAuth()
+
+        if (isLoggedIn) {
+          form.reset()
+          navigate('/')
+        } else {
+          toast({
+            title: 'Login failed.',
+            description: 'Please try again.',
+            variant: 'destructive'
+          })
+        }
       }
     } catch (error) {
       console.error(error)

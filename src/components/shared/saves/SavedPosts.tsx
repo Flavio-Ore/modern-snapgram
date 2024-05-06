@@ -1,12 +1,12 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
-import { useAccount } from '@/context/useAccountContext'
 import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
+import { useUser } from '@/lib/queries/queries'
 import { useMemo } from 'react'
 
 const SavedPosts = () => {
-  const { id, isLoading: isUserLoading } = useAccount()
+  const { data: user, isLoading: isUserLoading, error } = useUser()
   const {
     data,
     isError,
@@ -14,15 +14,16 @@ const SavedPosts = () => {
     isFetching,
     hasNextPage,
     fetchNextPage
-  } = useGetInfiniteSavedPosts({ userId: id })
+  } = useGetInfiniteSavedPosts({ userId: user?.$id ?? '' })
 
   const posts = useMemo(
     () =>
       data?.pages.flatMap(savesPage =>
-        savesPage?.data?.flatMap(saves => saves.post) ?? []
+        savesPage?.data.flatMap(saves => saves.post) ?? []
       ) ?? [],
     [data]
   )
+  console.log('error :>> ', { error })
   return (
     <InfiniteScroll
       data={data}
