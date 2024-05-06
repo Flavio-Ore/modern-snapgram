@@ -1,7 +1,7 @@
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useSignOut } from '@/lib/queries/mutations'
+import { useSignOut, useUpdateUser } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
 import { links } from '@/values'
@@ -18,13 +18,22 @@ import {
 const LeftSidebar = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { data: user, isLoading, isError } = useUser()
+  const { data: user, isLoading, isError, refetch } = useUser()
+  const { isSuccess: userUpdate } = useUpdateUser()
   const { mutate: signOut, isSuccess } = useSignOut()
   const { id: profileId } = useParams()
-
+  console.log('userUpdate :>> ', userUpdate)
   const handleLogOut = () => {
     signOut()
   }
+
+  useEffect(() => {
+    refetch()
+  }, [])
+
+  useEffect(() => {
+    if (userUpdate) refetch()
+  }, [userUpdate])
 
   useEffect(() => {
     if (isSuccess) navigate(0)
@@ -45,25 +54,25 @@ const LeftSidebar = () => {
             </div>
           </div>
         )}
-        {!isLoading && !isError && user?.data != null && (
+        {!isLoading && !isError && user != null && (
           <Link
-            to={`/profile/${user.data.$id}`}
+            to={`/profile/${user.$id}`}
             className={cn('relative flex gap-3 items-center', {
               'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative':
-                profileId === user.data.$id || pathname === '/update-profile'
+                profileId === user.$id || pathname === '/update-profile'
             })}
           >
             <img
-              src={user.data.imageUrl}
+              src={user.imageUrl}
               alt='profile'
               height={56}
               width={56}
-              className='rounded-full aspect-square'
+              className='rounded-full aspect-square object-cover'
             />
             <div className='flex flex-col max-w-40'>
-              <p className='body-bold overflow-ellipsis'>{user.data.name}</p>
+              <p className='body-bold overflow-ellipsis'>{user.name}</p>
               <p className='small-regular text-light-3 overflow-ellipsis'>
-                @{user.data.username}
+                @{user.username}
               </p>
             </div>
           </Link>

@@ -1,8 +1,16 @@
-import { account, appwriteConfig, avatars, databases } from '@/services/appwrite/config'
-import { createUser } from '@/services/appwrite/users'
+import {
+  account,
+  appwriteConfig,
+  avatars,
+  databases
+} from '@/services/appwrite/config'
 import type { INewUser, User } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
-import { APPWRITE_RESPONSE_CODES, type AppwriteResponse } from './util'
+import {
+  APPWRITE_ERROR_TYPES,
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from './util'
 
 // ============================================================
 // AUTH
@@ -16,32 +24,70 @@ export async function createUserAccount (user: INewUser) {
       user.name
     )
     const avatarUrl = avatars.getInitials(user.name)
-    return await createUser({
-      accountId: newAccount.$id,
-      name: newAccount.name,
-      email: newAccount.email,
-      username: user.username,
-      imageUrl: avatarUrl
+    const newUser = await databases.createDocument<User>(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      ID.unique(),
+      {
+        accountId: newAccount.$id,
+        name: newAccount.name,
+        email: newAccount.email,
+        username: user.username,
+        imageUrl: avatarUrl
+      }
+    )
+    return appwriteResponse({
+      data: newUser,
+      message: 'Account created successfully',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text,
+      code: APPWRITE_RESPONSE_CODES.CREATED.code
     })
-  } catch (error) {
-    console.error({ error })
-    if (error instanceof AppwriteException && error.code === 409) {
-      error.message = 'This email address is not available. Choose a different address.'
-      return error
+  } catch (e) {
+    console.error({ error: e })
+    if (e instanceof AppwriteException) {
+      if (e.code === 409) {
+        return appwriteResponse({
+          data: null,
+          message:
+            'This email address is not available. Choose a different address.',
+          code: e.code,
+          status: e.name
+        })
+      }
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.name
+      })
     }
+    return null
   }
 }
 
 // ============================== SIGN IN
-export async function signInAccount (user: {
-  email: string
-  password: string
-}) {
+export async function signInAccount (user: { email: string, password: string }) {
   try {
-    return await account.createEmailSession(user.email, user.password)
-  } catch (error) {
-    console.error(error)
-    if (error instanceof AppwriteException && error.code === 401 && error.type === 'user_invalid_credentials') return error
+    return appwriteResponse({
+      data: await account.createEmailSession(user.email, user.password),
+      message: 'Account signed in successfully',
+      status: APPWRITE_RESPONSE_CODES.OK.text,
+      code: APPWRITE_RESPONSE_CODES.OK.code
+    })
+  } catch (e) {
+    console.error(e)
+    if (
+      e instanceof AppwriteException &&
+      e.code === 401 &&
+      e.type === APPWRITE_ERROR_TYPES.user_invalid_credentials
+    ) {
+      return appwriteResponse({
+        code: e.code,
+        data: null,
+        message: e.message,
+        status: e.name
+      })
+    }
     return null
   }
 }
@@ -59,24 +105,22 @@ export async function signOutAccount () {
 export async function getAccount () {
   try {
     const acc = await account.get()
-    const res: AppwriteResponse<typeof acc> = {
-      code: APPWRITE_RESPONSE_CODES.OK.code,
+    return appwriteResponse({
       data: acc,
       message: 'Account retrieved successfully',
-      status: APPWRITE_RESPONSE_CODES.OK.text
-    }
-    return res
+      status: APPWRITE_RESPONSE_CODES.OK.text,
+      code: APPWRITE_RESPONSE_CODES.OK.code
+    })
   } catch (e) {
     console.error(e)
     if (e instanceof AppwriteException) {
-      if (e.code === 401 && e.type === 'user_not_found') {
-        const res: AppwriteResponse<null> = {
+      if (e.code === 401 && e.type === APPWRITE_ERROR_TYPES.user_not_found) {
+        return appwriteResponse({
           code: e.code,
           data: null,
           message: e.message,
           status: e.name
-        }
-        return res
+        })
       }
     }
     return null
@@ -97,34 +141,30 @@ export async function getUser () {
 
     console.log('currentUserAccountData :>> ', user.documents[0])
 
-    const res: AppwriteResponse<User> = {
+    return appwriteResponse({
       code: APPWRITE_RESPONSE_CODES.OK.code,
       data: user.documents[0],
       message: 'User retrieved successfully',
       status: APPWRITE_RESPONSE_CODES.OK.text
-    }
-
-    return res
+    })
   } catch (e) {
     console.error({ e })
     if (e instanceof AppwriteException) {
-      if (e instanceof AppwriteException && e.code === 401 && e.type === 'user_not_found') {
-        const res: AppwriteResponse<null> = {
+      if (e.code === 401 && e.type === APPWRITE_ERROR_TYPES.user_not_found) {
+        return appwriteResponse({
           code: e.code,
           data: null,
           message: e.message,
           status: e.name
-        }
-        return res
+        })
       }
       if (e.code === 404) {
-        const res: AppwriteResponse<null> = {
+        return appwriteResponse({
           code: e.code,
           data: null,
           message: e.message,
           status: e.name
-        }
-        return res
+        })
       }
     }
     return null

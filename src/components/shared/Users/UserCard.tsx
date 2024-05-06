@@ -43,7 +43,7 @@ const UserCard: React.FC<UserCardProps> = ({
         alt={name}
         height={role === 'ALL_USERS' ? 90 : role === 'TOP_CREATORS' ? 54 : 100}
         width={role === 'ALL_USERS' ? 90 : role === 'TOP_CREATORS' ? 54 : 100}
-        className='rounded-full'
+        className='rounded-full aspect-square object-cover'
         loading='lazy'
       />
       <div className='flex-center flex-col gap-0.5'>

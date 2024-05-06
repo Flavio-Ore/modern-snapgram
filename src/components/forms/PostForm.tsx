@@ -14,22 +14,20 @@ import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { isObjectEmpty } from '@/lib/utils'
 import { PostValidationSchema } from '@/lib/validations'
+import { type Post } from '@/types'
 import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AppwriteException, type Models } from 'appwrite'
-import { type FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
 
 type Actions = keyof typeof E_FORM_ACTIONS
 interface PostFormProps {
-  post?: Models.Document
+  post?: Post
   action: Actions
 }
-const PostForm: FC<PostFormProps> = ({ post, action }) => {
+const PostForm = ({ post, action }: PostFormProps) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
@@ -57,14 +55,14 @@ const PostForm: FC<PostFormProps> = ({ post, action }) => {
     console.log({ post })
     try {
       if (post != null && action === 'UPDATE') {
-        const updatedPost = await updatePost({
+        const updatedPostResponse = await updatePost({
           ...value,
           postId: post.$id,
-          imageId: post?.imageId,
-          imageUrl: post?.imageUrl
+          imageId: post.imageId,
+          imageUrl: new URL(post.imageUrl)
         })
 
-        if (isObjectEmpty(updatedPost)) {
+        if (updatedPostResponse?.data == null) {
           toast({ title: 'Post update error', description: 'Please try again' })
           navigate(`/posts/${post.$id}`)
           return
@@ -73,15 +71,16 @@ const PostForm: FC<PostFormProps> = ({ post, action }) => {
         return
       }
 
-      if (post == null && user != null && !(user instanceof AppwriteException) && action === 'CREATE') {
-        const newPost = await createPost({
+      if (post == null && user != null && action === 'CREATE') {
+        const createPostResponse = await createPost({
           ...value,
           userId: user.$id
         })
 
-        if (isObjectEmpty(newPost)) {
+        if (createPostResponse?.data == null) {
           toast({
-            title: 'Post is empty.'
+            title: 'Post is empty.',
+            description: createPostResponse?.message ?? 'Please try again'
           })
         }
         navigate('/')

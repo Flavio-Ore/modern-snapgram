@@ -24,32 +24,20 @@ interface InfiniteScrollProps {
 }
 
 /**
- * `InfinitePosts` is a React component that handles infinite scrolling for posts.
+ * A component that enables infinite scrolling behavior.
  *
  * @component
- * @param children - The children elements to be rendered.
- * @param skeleton - The skeleton element to be rendered while loading first time.
- * @param data - The data to be displayed.
- * @param isDataEmpty - A boolean value that indicates if the data is empty.
- * @param hasNextPage - A boolean value that indicates if there is a next page of data.
- * @param fetchNextPage - A function that fetches the next page of data.
- * @param isFetching - A boolean value that indicates if the data is being fetched.
- * @param isLoading - A boolean value that indicates if the data is loading.
- * @param isError - A boolean value that indicates if an error occurred while fetching the data.
- * @returns {React.FC<InfiniteScrollProps>}
- *
- * @example
- * <InfiniteScroll
- *   isDataEmpty={isDataEmpty}
- *   data={data}
- *   hasNextPage={hasNextPage}
- *   fetchNextPage={fetchNextPage}
- *   isFetching={isFetching}
- *   isLoading={isLoading}
- *   isError={isError}
- *  >
- *    {children}
- * </InfiniteScroll>
+ * @param {Object} props - The component props.
+ * @param {ReactNode} props.children - The content to be rendered inside the InfiniteScroll component.
+ * @param {ReactNode} props.skeleton - The skeleton element to be displayed while loading.
+ * @param {boolean} props.isDataEmpty - Indicates whether the data is empty.
+ * @param {any} props.data - The data to be rendered.
+ * @param {Function} props.fetchNextPage - The function to fetch the next page of data.
+ * @param {boolean} props.isFetching - Indicates whether data is currently being fetched.
+ * @param {boolean} props.isLoading - Indicates whether the component is in a loading state.
+ * @param {boolean} props.isError - Indicates whether an error occurred.
+ * @param {boolean} props.hasNextPage - Indicates whether there is a next page of data.
+ * @returns {JSX.Element} The rendered InfiniteScroll component.
  */
 const InfiniteScroll: FC<InfiniteScrollProps> = ({
   children,
@@ -74,6 +62,7 @@ const InfiniteScroll: FC<InfiniteScrollProps> = ({
       {isError && (
         <p className='text-light-4 mt-10 text-center h3-bold w-full animate-pulse'>
           An error occurred...
+          <small className='block text-secondary-500'></small>
         </p>
       )}
       {!isLoading && !isError && data != null && isDataEmpty && (

@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { useUpdateUser } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { cn, isObjectEmpty } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { ProfileValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useState } from 'react'
@@ -72,7 +72,7 @@ const AvatarFileUploader = ({ avatarUrl, fieldChange }: FileUploaderProps) => {
 
 const ProfileForm = () => {
   const { mutateAsync: updateUser, isPending } = useUpdateUser()
-  const { data: user, isLoading } = useUser()
+  const { data: user, isLoading, isError } = useUser()
   const { toast } = useToast()
   const navigate = useNavigate()
   // 1. Define your form.
@@ -80,43 +80,41 @@ const ProfileForm = () => {
     resolver: zodResolver(ProfileValidationSchema),
     defaultValues: {
       file: [],
-      name: user?.data?.name ?? '',
-      username: user?.data?.username ?? '',
-      email: user?.data?.email ?? '',
-      bio: user?.data?.bio ?? ''
+      name: user?.name ?? '',
+      username: user?.username ?? '',
+      email: user?.email ?? '',
+      bio: user?.bio ?? ''
     }
   })
 
   // 2. Define a submit handler.
   // Handler
   const onSubmit = async (value: z.infer<typeof ProfileValidationSchema>) => {
-    if (user?.data == null) return
+    if (user == null) return
     // 3. Implement your form logic.
     const updatedUser = await updateUser({
       ...value,
-      userId: user.data.$id,
-      imageUrl: user.data?.imageUrl ?? '',
-      imageId: user.data?.imageId ?? ''
+      userId: user?.$id ?? '',
+      imageUrl: user?.imageUrl ?? '',
+      imageId: user?.imageId ?? ''
     })
-
-    if (isObjectEmpty(updatedUser)) {
+    console.log({ updatedUser })
+    if (updatedUser?.data == null) {
       toast({
         title: 'Profile update error',
-        description: 'Please try again',
+        description: updatedUser?.message ?? 'Something went wrong, please try again',
         variant: 'destructive'
       })
-      navigate(`/profile/${user.data.$id}`)
-      return
+    } else {
+      toast({
+        title: 'Profile Updated',
+        description: updatedUser.message
+      })
+      navigate(`/profile/${user.$id}`)
     }
-
-    toast({
-      title: 'Profile Updated',
-      description: 'Your profile has been updated successfully'
-    })
-    navigate(`/profile/${user.data.$id}`)
   }
 
-  if (user?.data == null) return <p>Something went wrong</p>
+  if (isError) return <p>Something went wrong</p>
   if (isLoading) {
     return (
       <div className='flex flex-col gap-9 w-full max-w-5xl'>
@@ -139,7 +137,7 @@ const ProfileForm = () => {
               <FormControl>
                 <AvatarFileUploader
                   fieldChange={field.onChange}
-                  avatarUrl={user.data.imageUrl}
+                  avatarUrl={user?.imageUrl ?? ''}
                 />
               </FormControl>
               <FormMessage className='shad-form_message' />

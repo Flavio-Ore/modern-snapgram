@@ -4,7 +4,8 @@ import { useGetUsers } from '@/lib/queries/queries'
 import { E_USERS } from '@/values'
 
 const TopCreators = () => {
-  const { data: topCreators, isLoading, isError } = useGetUsers({ limit: 8 })
+  const { data: topCreators, isLoading, isError, error } = useGetUsers({ limit: 8 })
+  console.log(error)
   return (
     <ul className='home-creators_grid'>
       {isLoading &&
@@ -20,12 +21,12 @@ const TopCreators = () => {
         ))}
       {isError && (
         <h4 className='flex-center h3-bold animate-pulse text-secondary-500 h-full  text-center'>
-          Oops... Error loading creators!
+          Oops... something went wrong.
         </h4>
       )}
       {!isLoading &&
         !isError &&
-        topCreators?.data.map(user => (
+        topCreators?.map(user => (
           <li key={user.$id}>
             <UserCard
               imgUrl={
