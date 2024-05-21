@@ -3,49 +3,52 @@ import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useGetUserById, useUser } from '@/lib/queries/queries'
-import { type FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 interface ProfileButtonProps {
   className?: string
   idMatch: boolean
 }
-const ProfileButtons: React.FC<ProfileButtonProps> = ({
-  idMatch,
-  className
-}) => (
-  <div className={className}>
-    {idMatch && (
-      <Link
-        to='/update-profile'
-        className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
-      >
-        <EditIcon className='size-5 fill-secondary-500' />
-        Edit Profile
-      </Link>
-    )}
-    {!idMatch && [
-      <Button
-        key='follow'
-        className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'
-      >
-        <p className='small-medium'>Follow</p>
-      </Button>,
-      <Button
-        key='message'
-        className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4'
-      >
-        <p className='small-semibold'>Message</p>
-      </Button>
-    ]}
-  </div>
-)
+const ProfileButtons = ({ idMatch, className }: ProfileButtonProps) => {
+  const { id } = useParams()
+  return (
+    <div className={className}>
+      {idMatch && (
+        <Link
+          to='/update-profile'
+          className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
+        >
+          <EditIcon className='size-5 fill-secondary-500' />
+          Edit Profile
+        </Link>
+      )}
+      {!idMatch && [
+        <Button
+          key='follow'
+          className='shad-button_primary px-5 py-2.5 hover:bg-primary-600 small-medium'
+        >
+          Follow
+        </Button>,
+        <Button
+          key='message'
+          className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4 small-semibold'
+          asChild
+        >
+          <Link key='message' to={`/chats/${id}`} className=' '>
+            Message
+          </Link>
+        </Button>
+      ]}
+    </div>
+  )
+}
 
 type UserStats = Array<{ name: string, value: number }>
 interface ProfileStatsProps {
   stats: UserStats
 }
-const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
+const ProfileStats = ({ stats }: ProfileStatsProps) => (
   <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
     {stats.map(({ name, value }) => (
       <Button
@@ -57,7 +60,6 @@ const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
     ))}
   </div>
 )
-
 
 const ProfileDetails = () => {
   const { id } = useParams()
@@ -96,9 +98,7 @@ const ProfileDetails = () => {
       )}
       {!isLoading && !isError && (
         <img
-          src={
-            user?.imageUrl ?? '/assets/icons/profile-placeholder.svg'
-          }
+          src={user?.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
           alt={user?.name ?? 'Profile Avatar'}
           height={144}
           width={144}
@@ -119,7 +119,7 @@ const ProfileDetails = () => {
             </h2>
             {isFetched && user != null
               ? (
-              <ProfileButtons idMatch={isCurrentUser} className='flex gap-1' />
+              <ProfileButtons idMatch={isCurrentUser} className='flex gap-4' />
                 )
               : (
               <div className='w-1/2'>

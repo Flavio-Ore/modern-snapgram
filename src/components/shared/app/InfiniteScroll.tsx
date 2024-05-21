@@ -5,7 +5,7 @@ import {
   type InfiniteData,
   type InfiniteQueryObserverResult
 } from '@tanstack/react-query'
-import { type FC, type ReactNode, useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 interface InfiniteScrollProps {
   children: ReactNode
@@ -39,7 +39,7 @@ interface InfiniteScrollProps {
  * @param {boolean} props.hasNextPage - Indicates whether there is a next page of data.
  * @returns {JSX.Element} The rendered InfiniteScroll component.
  */
-const InfiniteScroll: FC<InfiniteScrollProps> = ({
+const InfiniteScroll = ({
   children,
   skeleton,
   isDataEmpty,
@@ -49,7 +49,7 @@ const InfiniteScroll: FC<InfiniteScrollProps> = ({
   isLoading,
   isError,
   hasNextPage
-}) => {
+}: InfiniteScrollProps) => {
   const { ref, inView } = useInView({
     threshold: 0
   })

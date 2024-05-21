@@ -9,8 +9,7 @@ import {
 import {
   APPWRITE_ERROR_TYPES,
   APPWRITE_RESPONSE_CODES,
-  appwriteResponse,
-  parseModel
+  appwriteResponse
 } from '@/services/appwrite/util'
 
 // ============================================================
@@ -33,7 +32,6 @@ export async function findInfinitePosts ({
       appwriteConfig.postsCollectionId,
       query
     )
-    parseModel({ model: postsDocumentList, errorMsg: 'No posts found' })
     return postsDocumentList.documents
   } catch (error) {
     console.error(error)
