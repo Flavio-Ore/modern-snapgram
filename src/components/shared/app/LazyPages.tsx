@@ -1,8 +1,8 @@
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Skeleton } from '@/components/ui/skeleton'
-import { type FC, type ReactNode, Suspense } from 'react'
+import { type ReactNode, Suspense } from 'react'
 
-const LazyPages: FC<{ children: ReactNode }> = ({ children }) => {
+const LazyPages = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense
       fallback={

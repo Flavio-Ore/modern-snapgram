@@ -3,7 +3,7 @@ import {
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
 } from '@/services/appwrite/util'
-import { AppwriteException, ID } from 'appwrite'
+import { AppwriteException, ID, ImageGravity } from 'appwrite'
 
 export async function createFile (file: File) {
   try {
@@ -48,7 +48,7 @@ export async function getFilePreview (fileId: string) {
       fileId,
       180,
       180,
-      'top',
+      ImageGravity.Top,
       10
     )
     console.log(fileUrl)

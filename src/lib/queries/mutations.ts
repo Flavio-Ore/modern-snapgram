@@ -91,9 +91,9 @@ export const useLikePost = () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
       })
-      // queryClient.invalidateQueries({
-      //   queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-      // })
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+      })
       // queryClient.invalidateQueries({
       //   queryKey: [QUERY_KEYS.GET_POSTS]
       // })

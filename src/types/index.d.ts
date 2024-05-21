@@ -48,7 +48,7 @@ export interface IUser {
   bio: string
   posts: Post[]
   liked: Post[]
-  save: Save[]
+  saved: Save[]
 }
 
 export interface INewUser {
@@ -75,7 +75,7 @@ interface User extends Models.Document {
   imageUrl: string
   posts: Post[]
   liked: Post[]
-  save: Save[]
+  saves: Save[]
 }
 
 interface Post extends Models.Document {
@@ -85,13 +85,25 @@ interface Post extends Models.Document {
   imageId: string
   location: string
   likes: User[]
-  save: Save[]
+  saved: Save[]
   creator: User
 }
 
 interface Save extends Models.Document {
   post: Post
   user: Use
+}
+
+interface Message extends Models.Document {
+  body: string
+  sender: User['accountId']
+  receivers: Array<User['accountId']>
+}
+
+interface MessageAttributes {
+  body: string
+  sender: User['accountId']
+  receivers: Array<User['accountId']>
 }
 
 interface UserSession extends Models.User<Models.Preferences> {}

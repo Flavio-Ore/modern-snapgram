@@ -2,14 +2,13 @@ import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
 import { useInfiniteSearchPosts } from '@/lib/queries/infiniteQueries'
-import { type FC, useMemo } from 'react'
+import { useMemo } from 'react'
 
-interface SearchResultsModel {
+interface SearchResultsProps {
   debouncedValue: string
 }
-type SearchResultsProps = SearchResultsModel
 
-const SearchResults: FC<SearchResultsProps> = ({ debouncedValue }) => {
+const SearchResults = ({ debouncedValue }: SearchResultsProps) => {
   const { data, isLoading, isError, isFetching, hasNextPage, fetchNextPage } =
     useInfiniteSearchPosts({
       searchTerm: debouncedValue

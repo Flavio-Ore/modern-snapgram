@@ -18,8 +18,8 @@ const SavedPosts = () => {
 
   const posts = useMemo(
     () =>
-      data?.pages.flatMap(savesPage =>
-        savesPage?.data.flatMap(saves => saves.post) ?? []
+      data?.pages.flatMap(page =>
+        page?.data.flatMap(record => record.post) ?? []
       ) ?? [],
     [data]
   )

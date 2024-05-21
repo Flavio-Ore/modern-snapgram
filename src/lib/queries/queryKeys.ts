@@ -23,5 +23,8 @@ export const QUERY_KEYS = {
   GET_SAVED_RECORD: 'getSavedRecord',
   GET_SAVED_POSTS: 'getSavedPosts',
   GET_SAVED_REELS: 'getSavedReels',
-  GET_SAVED_COLLECTIONS: 'getSavedCollections'
+  GET_SAVED_COLLECTIONS: 'getSavedCollections',
+
+  // MESSAGE KEYS
+  GET_INFINITE_MESSAGES: 'getInfiniteMessages'
 }

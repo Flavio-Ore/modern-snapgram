@@ -1,31 +1,34 @@
 import { TabsContent, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { type FC, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 
-export const TR: FC<{
+interface TRProps {
+
   className?: string
   trigger: string
   Icon: ReactNode
-}> = ({ className, trigger, Icon }) => {
+}
+export const TR = ({ className, trigger, Icon }: TRProps) => {
   return (
     <TabsTrigger
       value={trigger}
       className={cn(
-        'flex-center w-full small-medium px-6 py-2 border gap-2 lg:body-medium border-dark-4 group transition hover:bg-dark-4 data-[state=active]:bg-dark-4',
+        'flex-center w-full small-medium px-6 py-2 border lg:base-regular border-dark-2 group transition hover:bg-dark-3 data-[state=active]:bg-dark-3',
         className
       )}
     >
       {Icon}
-      <p className='overflow-ellipsis'>{trigger}</p>
+      <p className='pl-2 overflow-ellipsis'>{trigger}</p>
     </TabsTrigger>
   )
 }
 
-export const TC: FC<{
+interface TCProps {
   className?: string
   trigger: string
   Content: ReactNode
-}> = ({ className, trigger, Content }) => {
+}
+export const TC = ({ className, trigger, Content }: TCProps) => {
   return (
     <TabsContent value={trigger} className={className}>
       {Content}

@@ -1,5 +1,5 @@
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import { parseModel } from '@/services/appwrite/util'
+import { type Post } from '@/types'
 
 // ============================== LIKE / UNLIKE POST
 interface LikePost {
@@ -12,7 +12,7 @@ export async function updateLikesPost ({
   usersLikes
 }: LikePost) {
   try {
-    const updatedPost = await databases.updateDocument(
+    const updatedPost = await databases.updateDocument<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       postId,
@@ -20,7 +20,6 @@ export async function updateLikesPost ({
         likes: usersLikes
       }
     )
-    parseModel({ model: updatedPost, errorMsg: 'Post not updated, try again' })
     return updatedPost
   } catch (error) {
     console.error(error)
