@@ -178,3 +178,19 @@ export const useUpdateUser = () => {
     }
   })
 }
+
+// ============================================================
+// BETA POST QUERIES
+// ============================================================
+export const useBetaCreatePost = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (newPost: INewPost) =>
+      await posts.betaCreatePost(newPost),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+      })
+    }
+  })
+}
