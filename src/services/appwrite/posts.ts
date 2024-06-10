@@ -1,15 +1,23 @@
-import { type INewPost, type IUpdatePost, type Post } from '@/types'
+import {
+  type DeletePostParams,
+  type NewPostData,
+  type Post,
+  type PostModel,
+  type UpdatedPostData
+} from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
 
-import { isObjectEmpty } from '@/lib/utils'
-import { appwriteConfig, databases, storage } from '@/services/appwrite/config'
+import { appwriteConfig, databases } from '@/services/appwrite/config'
 import {
-  deleteFile
+  createFiles,
+  deleteManyFilesByIds,
+  getFilesWithUrlsByIds
 } from '@/services/appwrite/file'
 import {
   APPWRITE_ERROR_TYPES,
   APPWRITE_RESPONSE_CODES,
-  appwriteResponse
+  appwriteResponse,
+  tagsToArray
 } from '@/services/appwrite/util'
 
 // ============================================================
@@ -19,7 +27,7 @@ export async function findInfinitePosts ({
   lastId = '',
   queries = []
 }: {
-  lastId: string
+  lastId: Post['$id']
   queries: string[]
 }) {
   const query = [...queries, Query.limit(2)]
@@ -27,110 +35,43 @@ export async function findInfinitePosts ({
     query.push(Query.cursorAfter(lastId.toString()))
   }
   try {
-    const postsDocumentList = await databases.listDocuments<Post>(
+    const postsDocumentList = await databases.listDocuments<PostModel>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       query
     )
-    return postsDocumentList.documents
+
+    const data: Post[] = await Promise.all(
+      postsDocumentList.documents.map(
+        async ({ filesId, ...postWithoutFilesId }) => ({
+          ...postWithoutFilesId,
+          files: await getFilesWithUrlsByIds(filesId)
+        })
+      )
+    )
+
+    return data
   } catch (error) {
     console.error(error)
     return []
   }
 }
-// ============================== CREATE POST
-export async function createPost (post: INewPost) {
-  let tags
-  let newImage = {
-    url: '',
-    id: ''
-  }
-  const hasFile = post.file.length > 0 && post.file[0]
-  try {
-    if (hasFile !== false) {
-      const file = await storage.createFile(
-        appwriteConfig.storageId,
-        ID.unique(),
-        hasFile
-      )
 
-      const fileUrl = storage.getFileView(
-        appwriteConfig.storageId,
-        file.$id
-      )
-      console.log('fileUrl :>> ', fileUrl)
-
-      if (fileUrl == null) {
-        await storage.deleteFile(appwriteConfig.storageId, file.$id)
-      } else {
-        if (post?.tags == null) tags = []
-        tags = post.tags?.replace(/ /g, '').split(',')
-        newImage = {
-          ...newImage,
-          url: new URL(fileUrl).toString(),
-          id: file.$id
-        }
-      }
-    }
-    const newPost = await databases.createDocument<Post>(
-      appwriteConfig.databaseId,
-      appwriteConfig.postsCollectionId,
-      ID.unique(),
-      {
-        creator: post.userId,
-        caption: post.caption,
-        location: post.location,
-        imageUrl: newImage.url,
-        imageId: newImage.id,
-        tags
-      }
-    )
-    return appwriteResponse({
-      data: newPost,
-      code: APPWRITE_RESPONSE_CODES.CREATED.code,
-      message: 'Post created successfully',
-      status: APPWRITE_RESPONSE_CODES.CREATED.text
-    })
-  } catch (e) {
-    console.error(e)
-    if (e instanceof AppwriteException) {
-      if (e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported) {
-        return appwriteResponse({
-          data: null,
-          code: e.code,
-          message: e.message,
-          status: e.name
-        })
-      }
-      if (e.type === APPWRITE_ERROR_TYPES.storage_device_not_found) {
-        return appwriteResponse({
-          data: null,
-          code: e.code,
-          message: e.message,
-          status: e.name
-        })
-      }
-      return appwriteResponse({
-        data: null,
-        code: e.code,
-        message: e.message,
-        status: e.name
-      })
-    }
-    return null
-  }
-}
 // ============================== GET POST BY ID
-export async function findPostById (postId: string) {
+export async function findPostById (postId: Post['$id']) {
   try {
-    const postDocument = await databases.getDocument<Post>(
+    const { filesId, ...postDocument } = await databases.getDocument<PostModel>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       postId
     )
 
+    const data: Post = {
+      ...postDocument,
+      files: await getFilesWithUrlsByIds(filesId)
+    }
     return appwriteResponse({
-      data: postDocument,
+      data,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'Post found',
       status: APPWRITE_RESPONSE_CODES.OK.text
@@ -149,71 +90,95 @@ export async function findPostById (postId: string) {
   }
 }
 
-// ============================== UPDATE POST
-export async function updatePost (post: IUpdatePost) {
-  const hastFile = post.file.length > 0 && post.file[0]
-
+// ============================== CREATE POST
+export async function createPost (post: NewPostData) {
+  const tags = tagsToArray(post?.tags ?? '')
   try {
-    let tags
-    let newImage = {
-      url: post.imageUrl,
-      id: post.imageId
-    }
-
-    if (hastFile !== false) {
-      // Upload new file to appwrite storage
-      const uploadedFile = await storage.createFile(
-        appwriteConfig.storageId,
-        ID.unique(),
-        hastFile
-      )
-      // Get new file url
-      const fileUrl = storage.getFileView(
-        appwriteConfig.storageId,
-        uploadedFile.$id
-      )
-      if (fileUrl == null) {
-        await deleteFile(uploadedFile.$id)
-      } else {
-        newImage = {
-          ...newImage,
-          url: new URL(fileUrl),
-          id: uploadedFile.$id
-        }
-      }
-    }
-
-    // Convert tags into array
-    if (post?.tags == null) tags = []
-    tags = post.tags?.replace(/ /g, '').split(',')
-
-    //  Update post
-    const updatedPost = await databases.updateDocument<Post>(
+    const newFiles = await createFiles(post.newFiles)
+    const { filesId, ...newPost } = await databases.createDocument<PostModel>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
-      post.postId,
+      ID.unique(),
       {
+        creator: post.userId,
         caption: post.caption,
-        imageUrl: newImage.url,
-        imageId: newImage.id,
         location: post.location,
+        filesId: newFiles.map(file => file.$id),
         tags
       }
     )
+    const data: Post = {
+      ...newPost,
+      files: newFiles
+    }
+    return appwriteResponse({
+      data,
+      code: APPWRITE_RESPONSE_CODES.CREATED.code,
+      message: 'Post created successfully',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      const message =
+        e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported
+          ? 'File type not supported.'
+          : e.type === APPWRITE_ERROR_TYPES.storage_device_not_found
+            ? 'Error uploading file, try again later.'
+            : e.type === APPWRITE_ERROR_TYPES.document_invalid_structure
+              ? 'Invalid content.'
+              : e.message
 
-    // Failed to update
-    if (isObjectEmpty(updatedPost)) {
-      // Delete new file that has been recently uploaded
-      if (hastFile !== false) await storage.deleteFile(appwriteConfig.storageId, newImage.id)
-      // If no new file uploaded, just throw error
-      throw Error('Post not updated, try again')
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message,
+        status: e.name
+      })
+    }
+    return null
+  }
+}
+
+// ============================== UPDATE POST
+export async function updatePost (post: UpdatedPostData) {
+  try {
+    const tags = tagsToArray(post?.tags ?? '')
+    const previousFilesPreserved = post.originalFiles.filter(
+      file => !post.filesToRemoveById.includes(file.$id)
+    )
+    const updatedFiles =
+      post.newFiles.length > 0
+        ? [...previousFilesPreserved, ...(await createFiles(post.newFiles))]
+        : previousFilesPreserved
+    // console.log({ originalFiles: post.originalFiles })
+    // console.log({ newFilesFromPost: post.newFiles })
+    // console.log({ previousFilesPreserved })
+    // console.log({ updatedFiles })
+
+    if (post.filesToRemoveById.length > 0) {
+      await deleteManyFilesByIds(post.filesToRemoveById)
     }
 
-    // Safely delete old file after successful update
-    if (hastFile !== false) await storage.deleteFile(appwriteConfig.storageId, post.imageId)
+    const { filesId, ...updatedPost } =
+      await databases.updateDocument<PostModel>(
+        appwriteConfig.databaseId,
+        appwriteConfig.postsCollectionId,
+        post.postId,
+        {
+          caption: post.caption,
+          location: post.location,
+          filesId: updatedFiles.map(file => file.$id),
+          tags
+        }
+      )
 
+    const data: Post = {
+      ...updatedPost,
+      files: updatedFiles
+    }
     return appwriteResponse({
-      data: updatedPost,
+      data,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'Post updated successfully',
       status: APPWRITE_RESPONSE_CODES.OK.text
@@ -235,19 +200,18 @@ export async function updatePost (post: IUpdatePost) {
 // ============================== DELETE POST
 export async function deletePost ({
   postId,
-  imageId
-}: {
-  postId: string
-  imageId: string
-}) {
+  filesId
+}: DeletePostParams) {
   try {
-    const statusCode = await databases.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.postsCollectionId,
-      postId
-    )
-    console.log('statusCode :>> ', statusCode)
-    await storage.deleteFile(appwriteConfig.storageId, imageId)
+    await Promise.all([
+      databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postsCollectionId,
+        postId
+      ),
+      deleteManyFilesByIds(filesId)
+    ])
+
     return appwriteResponse({
       data: null,
       code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
@@ -261,6 +225,57 @@ export async function deletePost ({
         data: null,
         code: e.code,
         message: e.message,
+        status: e.name
+      })
+    }
+    return null
+  }
+}
+
+// ============================================================
+// BETAS
+// ============================================================
+
+export async function betaCreatePost (post: NewPostData) {
+  const tags = tagsToArray(post?.tags ?? '')
+  const newFiles = await createFiles(post.newFiles)
+
+  try {
+    const { filesId, ...newPost } = await databases.createDocument<PostModel>(
+      appwriteConfig.databaseId,
+      appwriteConfig.postsCollectionId,
+      ID.unique(),
+      {
+        creator: post.userId,
+        caption: post.caption,
+        location: post.location,
+        filesId: newFiles.map(file => file?.$id ?? ''),
+        tags
+      }
+    )
+    const data: Post = {
+      ...newPost,
+      files: newFiles
+    }
+    return appwriteResponse({
+      data,
+      code: APPWRITE_RESPONSE_CODES.CREATED.code,
+      message: 'Post created successfully',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      const message =
+        e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported
+          ? 'File type not supported.'
+          : e.type === APPWRITE_ERROR_TYPES.storage_device_not_found
+            ? 'Error uploading file, try again later.'
+            : e.message
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message,
         status: e.name
       })
     }

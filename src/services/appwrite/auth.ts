@@ -9,7 +9,7 @@ import {
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
 } from '@/services/appwrite/util'
-import type { INewUser, User } from '@/types'
+import type { INewUser, UserModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
 
 // ============================================================
@@ -24,7 +24,7 @@ export async function createUserAccount (user: INewUser) {
       user.name
     )
     const avatarUrl = avatars.getInitials(user.name)
-    const newUser = await databases.createDocument<User>(
+    const newUser = await databases.createDocument<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
@@ -132,7 +132,7 @@ export async function getUser () {
   try {
     const sessionAccount = await account.get()
     console.log('currentAccount :>> ', sessionAccount ?? '')
-    const user = await databases.listDocuments<User>(
+    const user = await databases.listDocuments<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       [

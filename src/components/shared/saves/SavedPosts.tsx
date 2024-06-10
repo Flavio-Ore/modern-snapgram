@@ -6,7 +6,7 @@ import { useUser } from '@/lib/queries/queries'
 import { useMemo } from 'react'
 
 const SavedPosts = () => {
-  const { data: user, isLoading: isUserLoading, error } = useUser()
+  const { data: user, isLoading: isUserLoading } = useUser()
   const {
     data,
     isError,
@@ -23,7 +23,7 @@ const SavedPosts = () => {
       ) ?? [],
     [data]
   )
-  console.log('error :>> ', { error })
+  console.log('useGetInfiniteSavedPosts data :>> ', { data })
   return (
     <InfiniteScroll
       data={data}
