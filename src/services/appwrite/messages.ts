@@ -37,7 +37,7 @@ export async function findInfiniteMessages ({
         data: [],
         message: e.message,
         code: e.code,
-        status: e.name
+        status: e.type
       })
     }
     return null
@@ -74,7 +74,35 @@ export async function createMessage ({
         data: null,
         message: e.message,
         code: e.code,
-        status: e.name
+        status: e.type
+      })
+    }
+    return null
+  }
+}
+
+export async function deleteMessage ({ messageId }: { messageId: string }) {
+  try {
+    await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.messageCollectionId,
+      messageId
+    )
+
+    return appwriteResponse({
+      data: null,
+      code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
+      message: APPWRITE_RESPONSE_CODES.NO_CONTENT.message,
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.type
       })
     }
     return null

@@ -35,7 +35,7 @@ const PostsCarousel = ({
   return (
     <Carousel setApi={setEmblaApi} className={cn('group', className)}>
       <CarouselContent>
-        {files?.map(({ $id, url, mimeType }, index) =>
+        {files?.map(({ $id, url, mimeType }) =>
           mimeType.includes('image')
             ? (
             <CarouselItem key={$id}>
@@ -52,7 +52,7 @@ const PostsCarousel = ({
             : (
             <CarouselItem key={$id}>
               <div className='p-1'>
-                <video src={url} className='post_details-img' controls loop autoPlay={index === 0}/>
+                <video src={url} className='post_details-img' controls loop/>
               </div>
             </CarouselItem>
               )
