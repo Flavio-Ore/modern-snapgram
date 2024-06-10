@@ -14,29 +14,43 @@ const GridPostList = ({
   showStats = true
 }: GridPostListProps) => {
   const { data: user } = useUser()
-  const key = posts.map(posts => posts.$id).toString()
-  console.log('key :>> ', key)
   console.log('posts :>> ', posts)
   return (
     <ul className='grid-container'>
-      {posts.map((post, i) => (
-        <li key={`${key}-${i}`} className='relative'>
+      {posts.map(post => (
+        <li key={post.$id} className='relative'>
           <Link to={`/posts/${post?.$id}`} className='grid-post_link'>
-            <img
-              src={post.imageUrl ?? '/assets/icons/loader.svg'}
-              alt='Post image'
-              loading='lazy'
-              height={100}
-              width={100}
-              className='size-full aspect-square object-cover'
-            />
+            {post?.files?.length > 0 &&
+            post.files[0].mimeType === 'video/mp4'
+              ? (
+              <video
+                src={post.files[0].url ?? '/assets/icons/image-placeholder.svg'}
+                loop
+                autoPlay
+                muted
+                className='size-full aspect-square object-cover'
+              >
+                <source src={post.files[0].url} type='video/mp4' />
+              </video>
+                )
+              : (
+              <img
+                src={post.files[0].url ?? '/assets/icons/image-placeholder.svg'}
+                alt='Post image'
+                loading='lazy'
+                height={100}
+                width={100}
+                className='size-full aspect-square object-cover'
+              />
+                )}
           </Link>
           <div className='grid-post_user'>
             {showUser && (
               <div className='flex items-center justify-start gap-2 flex-1'>
                 <img
                   src={
-                    post?.creator?.imageUrl ?? '/assets/icons/profile-placeholder.svg'
+                    post?.creator?.imageUrl ??
+                    '/assets/icons/profile-placeholder.svg'
                   }
                   loading='lazy'
                   alt='Creator post profile'

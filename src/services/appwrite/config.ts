@@ -4,40 +4,19 @@ interface AppwriteConfig {
   readonly projectId: string
   readonly endpoint: string
   readonly databaseId: string
-  readonly storageId: string
+  readonly postsStorageId: string
+  readonly profileStorageId: string
   readonly savesCollectionId: string
   readonly usersCollectionId: string
   readonly postsCollectionId: string
   readonly messageCollectionId: string
 }
-
-interface BetaAppwriteConfig extends AppwriteConfig {
-  readonly betaPostsCollectionId: string
-  readonly betaUsersCollectionId: string
-  readonly betaVideosStorageId: string
-}
-
-export const betaAppwriteConfig: BetaAppwriteConfig = {
-  projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
-  endpoint: import.meta.env.VITE_APPWRITE_ENDPOINT,
-  databaseId: import.meta.env.VITE_APPWRITE_DATABASE,
-  storageId: import.meta.env.VITE_APPWRITE_STORAGE,
-  savesCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID,
-  usersCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID,
-  postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID,
-  messageCollectionId: import.meta.env
-    .VITE_APPWRITE_DATABASE_COLLECTION_MESSAGES_ID,
-  betaPostsCollectionId: import.meta.env
-    .VITE_APPWRITE_DATABASE_COLLECTION_BETA_POSTS_ID,
-  betaUsersCollectionId: import.meta.env
-    .VITE_APPWRITE_DATABASE_COLLECTION_BETA_USERS_ID,
-  betaVideosStorageId: import.meta.env.VITE_APPWRITE_STORAGE_BETA_VIDEOS_ID
-}
 export const appwriteConfig: AppwriteConfig = {
   projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
   endpoint: import.meta.env.VITE_APPWRITE_ENDPOINT,
   databaseId: import.meta.env.VITE_APPWRITE_DATABASE,
-  storageId: import.meta.env.VITE_APPWRITE_STORAGE,
+  postsStorageId: import.meta.env.VITE_APPWRITE_STORAGE_POSTS_FILES,
+  profileStorageId: import.meta.env.VITE_APPWRITE_STORAGE_PROFILE_IMAGES,
   savesCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID,
   usersCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID,
   postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID,

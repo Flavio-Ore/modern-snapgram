@@ -1,7 +1,12 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 
 import { appwriteService } from '@/services'
-import { type INewPost, type IUpdatePost, type IUpdateUser } from '@/types'
+import {
+  type DeletePostParams,
+  type NewPostData,
+  type UpdatedPostData,
+  type UserUpdateData
+} from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const { auth, likes, posts, saves, users } = appwriteService
@@ -27,7 +32,7 @@ export const useSignOut = () => {
 export const useCreatePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (newPost: INewPost) => await posts.createPost(newPost),
+    mutationFn: async (newPost: NewPostData) => await posts.createPost(newPost),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
@@ -38,7 +43,7 @@ export const useCreatePost = () => {
 export const useUpdatePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (updatedPost: IUpdatePost) =>
+    mutationFn: async (updatedPost: UpdatedPostData) =>
       await posts.updatePost(updatedPost),
     onSuccess: success => {
       if (success?.data != null) {
@@ -60,13 +65,8 @@ export const useUpdatePost = () => {
 export const useDeletePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      postId,
-      imageId
-    }: {
-      postId: string
-      imageId: string
-    }) => await posts.deletePost({ postId, imageId }),
+    mutationFn: async ({ postId, filesId }: DeletePostParams) =>
+      await posts.deletePost({ postId, filesId }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
@@ -161,7 +161,7 @@ export const useDeleteSavedPost = () => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (updatedUser: IUpdateUser) =>
+    mutationFn: async (updatedUser: UserUpdateData) =>
       await users.updateUser({ user: updatedUser }),
     onSuccess: success => {
       void queryClient.invalidateQueries({
@@ -185,7 +185,7 @@ export const useUpdateUser = () => {
 export const useBetaCreatePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (newPost: INewPost) =>
+    mutationFn: async (newPost: NewPostData) =>
       await posts.betaCreatePost(newPost),
     onSuccess: () => {
       void queryClient.invalidateQueries({

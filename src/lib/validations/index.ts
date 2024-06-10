@@ -1,3 +1,4 @@
+import { type FileModelWithUrl } from '@/types'
 import * as z from 'zod'
 
 export const SignupValidationSchema = z.object({
@@ -22,9 +23,8 @@ export const SigninValidationSchema = z.object({
 
 export const PostValidationSchema = z.object({
   caption: z.string().min(5).max(2200),
-  file: z.custom<File[]>().refine(files => files.length > 0, {
-    message: 'Please upload at least one file.'
-  }),
+  originalFiles: z.custom<FileModelWithUrl[]>(),
+  newFiles: z.custom<File[]>(),
   location: z.string().min(2).max(100),
   tags: z.string()
 })

@@ -3,15 +3,16 @@ import {
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
 } from '@/services/appwrite/util'
-import { type Save } from '@/types'
+import { type Post, type Save, type SaveModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
+import { getFilesWithUrlsByIds } from './file'
 interface SavesId {
   savedRecordId: string
 }
 
 export async function findSaveRecordById ({ savedRecordId }: SavesId) {
   try {
-    const saveRecord = await databases.getDocument<Save>(
+    const saveRecord = await databases.getDocument<SaveModel>(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
       savedRecordId
@@ -44,7 +45,7 @@ export async function updateSave ({
   userId: string
 }) {
   try {
-    const saveRecord = await databases.createDocument<Save>(
+    const saveRecord = await databases.createDocument<SaveModel>(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
       ID.unique(),
@@ -117,14 +118,32 @@ export async function findInfiniteSaves ({
   }
   console.log('query :>> ', query)
   try {
-    const saves = await databases.listDocuments<Save>(
-      appwriteConfig.databaseId,
-      appwriteConfig.savesCollectionId,
-      query
+    const { documents: savesDocuments } =
+      await databases.listDocuments<SaveModel>(
+        appwriteConfig.databaseId,
+        appwriteConfig.savesCollectionId,
+        query
+      )
+
+    const rawPosts = savesDocuments.map(record => record.post)
+    const posts: Post[] = await Promise.all(
+      rawPosts.map(async rawPost => {
+        const { filesId, ...postWithoutFilesId } = rawPost
+        return {
+          ...postWithoutFilesId,
+          files: await getFilesWithUrlsByIds(filesId)
+        }
+      })
     )
-    console.log('savedPosts: ', saves)
+
+    const saves: Save[] = posts.map((post, index) => ({
+      ...savesDocuments[index],
+      post
+    }))
+
+    console.log('savesDocumentList: ', savesDocuments)
     return appwriteResponse({
-      data: saves.documents,
+      data: saves,
       message: APPWRITE_RESPONSE_CODES.OK.message,
       status: APPWRITE_RESPONSE_CODES.OK.text,
       code: APPWRITE_RESPONSE_CODES.OK.code

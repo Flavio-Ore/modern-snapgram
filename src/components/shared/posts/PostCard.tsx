@@ -1,5 +1,6 @@
 import EditIcon from '@/components/icons/EditIcon'
 import PostStats from '@/components/shared/posts//PostStats'
+import PostsSlider from '@/components/shared/posts/PostsCarousel'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
@@ -12,6 +13,7 @@ interface PostCardProps {
 }
 const PostCard = ({ post }: PostCardProps) => {
   const { data: user } = useUser()
+  console.log('postCard :>> ', post)
   const userId = useMemo(() => user?.$id ?? '', [user])
   if (post == null) {
     return (
@@ -76,12 +78,9 @@ const PostCard = ({ post }: PostCardProps) => {
             ))}
           </ul>
         </div>
-        <img
-          src={post.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
-          alt='post image'
-          className='post-card_img'
-        />
       </Link>
+      <PostsSlider files={post.files} />
+
       <PostStats post={post} userId={userId} />
     </div>
   )
