@@ -1,13 +1,14 @@
 import DeleteIcon from '@/components/icons/DeleteIcon'
+import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useInfiniteMessages } from '@/lib/queries/infiniteQueries'
+import { useGetInfiniteMessages } from '@/lib/queries/infiniteQueries'
 import { useUser } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
 import { MessageValidationSchema } from '@/lib/validations'
 import { appwriteConfig, client, databases } from '@/services/appwrite/config'
-import { type User } from '@/types'
+import { type UserModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ID, Permission, Role } from 'appwrite'
 import { PhoneIcon, SendIcon, VideoIcon } from 'lucide-react'
@@ -15,16 +16,15 @@ import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { type z } from 'zod'
-import Loader from '../app/Loader'
 
-const Chat = ({ user }: { user: User }) => {
+const Chat = ({ user }: { user: UserModel }) => {
   const { data: account } = useUser()
   const {
     data: messagesPages,
     isLoading,
     isError,
     refetch: refetchMessages
-  } = useInfiniteMessages({
+  } = useGetInfiniteMessages({
     senderId: account?.accountId ?? '',
     receiversId: [user.accountId]
   })
@@ -49,19 +49,21 @@ const Chat = ({ user }: { user: User }) => {
   const accountId = useMemo(() => account?.accountId ?? '', [account])
   console.log('accountId :>> ', accountId)
 
-  const handleDeleteMessage = (messageId: string) => async e => {
-    e.preventDefault()
-    try {
-      const message = await databases.deleteDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
-        messageId
-      )
-      console.log('DELETED MESSAGE', message)
-    } catch (e) {
-      console.error({ e })
-    }
-  }
+  const handleDeleteMessage =
+    (messageId: string) =>
+      async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault()
+        try {
+          const message = await databases.deleteDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.messageCollectionId,
+            messageId
+          )
+          console.log('DELETED MESSAGE', message)
+        } catch (e) {
+          console.error({ e })
+        }
+      }
 
   async function onSubmit (values: z.infer<typeof MessageValidationSchema>) {
     try {
@@ -70,6 +72,7 @@ const Chat = ({ user }: { user: User }) => {
         receivers: [recieverId],
         body: values.body
       }
+      console.log('payload :>> ', payload)
       console.log('permissions :>> ', [
         Permission.write(Role.user(account?.accountId ?? ''))
       ])

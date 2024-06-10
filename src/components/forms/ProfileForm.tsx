@@ -1,3 +1,4 @@
+import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -21,7 +22,6 @@ import { type FileWithPath, useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
-import LoaderIcon from '../icons/LoaderIcon'
 
 interface FileUploaderProps {
   fieldChange: (files: File[]) => void

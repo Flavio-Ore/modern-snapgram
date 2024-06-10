@@ -46,7 +46,7 @@ const Chats = () => {
             {users?.map(
               user =>
                 user.accountId !== userRes?.accountId && (
-                  <li key={user.imageId}>
+                  <li key={user.$id}>
                     <Link
                       to={`/chats/${user.$id}`}
                       className="flex-between hover:bg-dark-3 pr-4 pb-2 after:content-[''] after:rounded-full after:bottom-0 after:left-3 after:size-3 after:bg-green-500 px-1"

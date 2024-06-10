@@ -29,7 +29,7 @@ const FileUploaderImagePreview = ({ file }: { file: File }) => {
     }
   }, [file])
 
-  return <img ref={imgRef} alt='Image to post' className='file_uploader-img' />
+  return <img ref={imgRef} alt='Image to post' className='file_uploader-img' loading='lazy'/>
 }
 
 const FileUploaderVideoPreview = ({ file }: { file: File }) => {
