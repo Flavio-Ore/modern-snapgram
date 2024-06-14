@@ -18,11 +18,10 @@ const INFINITY_QUERIES = {
   USERS: [Query.orderDesc('$createdAt')]
 }
 
-const nextCursor = (lastPage: Models.Document[] | null) => {
+const nextCursorAppwriteModel = (lastPage: Models.Document[] | null) => {
   if (lastPage == null) return null
   if (lastPage.length === 0) return null
-  const lastId = lastPage[lastPage.length - 1].$id
-  return lastId
+  return lastPage[lastPage.length - 1].$id
 }
 
 export const useGetInfiniteRecentPosts = () => {
@@ -33,7 +32,7 @@ export const useGetInfiniteRecentPosts = () => {
         lastId: pageParam,
         queries: INFINITY_QUERIES.RECENT_POSTS
       }),
-    getNextPageParam: nextCursor,
+    getNextPageParam: nextCursorAppwriteModel,
     initialPageParam
   })
 }
@@ -46,7 +45,7 @@ export function useGetInfinitePosts () {
         lastId: pageParam,
         queries: INFINITY_QUERIES.UPDATED_POSTS
       }),
-    getNextPageParam: nextCursor,
+    getNextPageParam: nextCursorAppwriteModel,
     initialPageParam
   })
 }
@@ -63,7 +62,7 @@ export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
         queries: INFINITY_QUERIES.searchPosts({ searchTerm })
       }),
     enabled: enabledId(searchTerm),
-    getNextPageParam: nextCursor,
+    getNextPageParam: nextCursorAppwriteModel,
     initialPageParam
   })
 }
@@ -101,7 +100,7 @@ export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
     queryFn: async ({ pageParam }) =>
       await saves.findInfiniteSaves({
         lastId: pageParam,
-        queries: [Query.equal('user', userId)]
+        userId
       }),
     enabled: enabledId(userId),
     getNextPageParam: lastPage => {
@@ -126,18 +125,8 @@ export const useGetInfiniteMessages = ({
     queryFn: async ({ pageParam }) =>
       await messages.findInfiniteMessages({
         lastId: pageParam,
-        queries: [
-          Query.or([
-            Query.and([
-              Query.contains('sender', [senderId]),
-              Query.contains('receivers', receiversId)
-            ]),
-            Query.and([
-              Query.contains('sender', receiversId),
-              Query.contains('receivers', [senderId])
-            ])
-          ])
-        ]
+        senderId,
+        receiversId
       }),
     enabled: enabledId(senderId),
     getNextPageParam: lastPage => {

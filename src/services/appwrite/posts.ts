@@ -74,7 +74,7 @@ export async function findPostById (postId: Post['$id']) {
       data,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'Post found',
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
@@ -115,7 +115,7 @@ export async function createPost (post: NewPostData) {
       data,
       code: APPWRITE_RESPONSE_CODES.CREATED.code,
       message: 'Post created successfully',
-      status: APPWRITE_RESPONSE_CODES.CREATED.text
+      status: APPWRITE_RESPONSE_CODES.CREATED.status
     })
   } catch (e) {
     console.error({ e })
@@ -181,7 +181,7 @@ export async function updatePost (post: UpdatedPostData) {
       data,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'Post updated successfully',
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
@@ -216,7 +216,7 @@ export async function deletePost ({
       data: null,
       code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
       message: 'Post deleted successfully',
-      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.status
     })
   } catch (e) {
     console.error(e)
@@ -261,7 +261,7 @@ export async function betaCreatePost (post: NewPostData) {
       data,
       code: APPWRITE_RESPONSE_CODES.CREATED.code,
       message: 'Post created successfully',
-      status: APPWRITE_RESPONSE_CODES.CREATED.text
+      status: APPWRITE_RESPONSE_CODES.CREATED.status
     })
   } catch (e) {
     console.error({ e })

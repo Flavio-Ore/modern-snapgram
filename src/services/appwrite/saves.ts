@@ -4,7 +4,7 @@ import {
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
 } from '@/services/appwrite/util'
-import { type Post, type Save, type SaveModel } from '@/types'
+import { type Post, type Save, type SaveModel, type UserModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
 interface SavesId {
   savedRecordId: string
@@ -20,7 +20,7 @@ export async function findSaveRecordById ({ savedRecordId }: SavesId) {
     return appwriteResponse({
       data: saveRecord,
       message: 'Saved post fetched successfully.',
-      status: APPWRITE_RESPONSE_CODES.OK.text,
+      status: APPWRITE_RESPONSE_CODES.OK.status,
       code: APPWRITE_RESPONSE_CODES.OK.code
     })
   } catch (e) {
@@ -58,7 +58,7 @@ export async function updateSave ({
     return appwriteResponse({
       data: saveRecord,
       message: 'Post saved successfully.',
-      status: APPWRITE_RESPONSE_CODES.CREATED.text,
+      status: APPWRITE_RESPONSE_CODES.CREATED.status,
       code: APPWRITE_RESPONSE_CODES.CREATED.code
     })
   } catch (e) {
@@ -75,7 +75,6 @@ export async function updateSave ({
   }
 }
 
-// ============================== DELETE SAVED POST
 export async function deleteSave ({ savedRecordId }: SavesId) {
   try {
     await databases.deleteDocument(
@@ -86,7 +85,7 @@ export async function deleteSave ({ savedRecordId }: SavesId) {
     return appwriteResponse({
       data: null,
       message: 'Saved post removed successfully.',
-      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text,
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.status,
       code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code
     })
   } catch (e) {
@@ -105,14 +104,14 @@ export async function deleteSave ({ savedRecordId }: SavesId) {
 
 interface InfiniteSavesParams {
   lastId: string
-  queries: string[]
+  userId: UserModel['$id']
 }
 
 export async function findInfiniteSaves ({
   lastId = '',
-  queries = []
+  userId
 }: InfiniteSavesParams) {
-  const query = [...queries, Query.limit(2)]
+  const query = [Query.equal('user', userId), Query.limit(2)]
   if (lastId.trim().length !== 0) {
     query.push(Query.cursorAfter(lastId))
   }
@@ -145,7 +144,7 @@ export async function findInfiniteSaves ({
     return appwriteResponse({
       data: saves,
       message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: APPWRITE_RESPONSE_CODES.OK.text,
+      status: APPWRITE_RESPONSE_CODES.OK.status,
       code: APPWRITE_RESPONSE_CODES.OK.code
     })
   } catch (e) {
