@@ -1,7 +1,7 @@
 import { appwriteConfig, storage } from '@/services/appwrite/config'
 import {
-  APPWRITE_RESPONSE_CODES,
-  appwriteResponse
+    APPWRITE_RESPONSE_CODES,
+    appwriteResponse
 } from '@/services/appwrite/util'
 import { type FileModelWithUrl } from '@/types'
 import { AppwriteException, ID, ImageGravity } from 'appwrite'
@@ -81,7 +81,7 @@ export async function createFile (file: File) {
       data: createdFile,
       code: APPWRITE_RESPONSE_CODES.CREATED.code,
       message: 'File created',
-      status: APPWRITE_RESPONSE_CODES.CREATED.text
+      status: APPWRITE_RESPONSE_CODES.CREATED.status
     })
   } catch (e) {
     console.error(e)
@@ -122,7 +122,7 @@ export async function getFilePreview (fileId: string) {
       data: fileUrl.toString(),
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'File found',
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
@@ -146,7 +146,7 @@ export async function deleteFile (fileId: string) {
       data: null,
       code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
       message: 'File deleted.',
-      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.status
     })
   } catch (e) {
     console.error(e)

@@ -1,13 +1,13 @@
 import {
-  account,
-  appwriteConfig,
-  avatars,
-  databases
+    account,
+    appwriteConfig,
+    avatars,
+    databases
 } from '@/services/appwrite/config'
 import {
-  APPWRITE_ERROR_TYPES,
-  APPWRITE_RESPONSE_CODES,
-  appwriteResponse
+    APPWRITE_ERROR_TYPES,
+    APPWRITE_RESPONSE_CODES,
+    appwriteResponse
 } from '@/services/appwrite/util'
 import type { INewUser, UserModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
@@ -39,7 +39,7 @@ export async function createUserAccount (user: INewUser) {
     return appwriteResponse({
       data: newUser,
       message: 'Account created successfully',
-      status: APPWRITE_RESPONSE_CODES.CREATED.text,
+      status: APPWRITE_RESPONSE_CODES.CREATED.status,
       code: APPWRITE_RESPONSE_CODES.CREATED.code
     })
   } catch (e) {
@@ -71,7 +71,7 @@ export async function signInAccount (user: { email: string, password: string }) 
     return appwriteResponse({
       data: await account.createEmailPasswordSession(user.email, user.password),
       message: 'Account signed in successfully',
-      status: APPWRITE_RESPONSE_CODES.OK.text,
+      status: APPWRITE_RESPONSE_CODES.OK.status,
       code: APPWRITE_RESPONSE_CODES.OK.code
     })
   } catch (e) {
@@ -108,7 +108,7 @@ export async function getAccount () {
     return appwriteResponse({
       data: acc,
       message: 'Account retrieved successfully',
-      status: APPWRITE_RESPONSE_CODES.OK.text,
+      status: APPWRITE_RESPONSE_CODES.OK.status,
       code: APPWRITE_RESPONSE_CODES.OK.code
     })
   } catch (e) {
@@ -146,7 +146,7 @@ export async function getUser () {
       code: APPWRITE_RESPONSE_CODES.OK.code,
       data: user.documents[0],
       message: 'User retrieved successfully',
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error({ e })

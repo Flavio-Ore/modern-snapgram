@@ -1,5 +1,6 @@
 export * as auth from '@/services/appwrite/auth'
 export * as file from '@/services/appwrite/file'
+export * as follows from '@/services/appwrite/followers'
 export * as likes from '@/services/appwrite/likes'
 export * as messages from '@/services/appwrite/messages'
 export * as posts from '@/services/appwrite/posts'

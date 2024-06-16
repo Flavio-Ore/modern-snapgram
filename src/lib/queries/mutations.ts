@@ -9,7 +9,7 @@ import {
 } from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const { auth, likes, posts, saves, users, messages } = appwriteService
+const { auth, likes, posts, saves, users, messages, follows } = appwriteService
 
 export const useCreateAccount = () => {
   return useMutation({
@@ -92,9 +92,6 @@ export const useLikePost = () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       })
-      // queryClient.invalidateQueries({
-      //   queryKey: [QUERY_KEYS.GET_POSTS]
-      // })
     }
   })
 }
@@ -110,21 +107,16 @@ export const useSavePost = () => {
       userId: string
     }) => await saves.updateSave({ postId, userId }),
     onSuccess: success => {
-      if (success?.data != null) {
-        const { data: savedRecord } = success
-        void queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_POST_BY_ID, savedRecord?.$id]
-        })
-        void queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-        })
+      if (success?.data == null) {
+        return
       }
-      // queryClient.invalidateQueries({
-      //   queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-      // })
-      // queryClient.invalidateQueries({
-      //   queryKey: [QUERY_KEYS.GET_POSTS]
-      // })
+      const { data: savedRecord } = success
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, savedRecord?.$id]
+      })
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+      })
     }
   })
 }
@@ -144,12 +136,6 @@ export const useDeleteSavedPost = () => {
         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
       })
     }
-    //   queryClient.invalidateQueries({
-    //     queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-    //   })
-    //   queryClient.invalidateQueries({
-    //     queryKey: [QUERY_KEYS.GET_POSTS]
-    //   })
   })
 }
 
@@ -177,7 +163,9 @@ export const useUpdateUser = () => {
 export const useDeleteMessage = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ messageId }: { messageId: string }) =>
+    mutationFn: async ({
+      messageId
+    }: Parameters<typeof messages.deleteMessage>[0]) =>
       await messages.deleteMessage({ messageId }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -187,6 +175,47 @@ export const useDeleteMessage = () => {
   })
 }
 
+export const useFollow = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      followedUserId,
+      followerUserId
+    }: Parameters<typeof follows.updateFollows>[0]) =>
+      await follows.updateFollows({
+        followerUserId,
+        followedUserId
+      }),
+    onSuccess: data => {
+      if (data != null) {
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+        })
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_USER_BY_ID]
+        })
+      }
+    }
+  })
+}
+
+export const useUnfollow = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ followRecordId }: { followRecordId: string }) =>
+      await follows.deleteFollow({ followRecordId }),
+    onSuccess: data => {
+      if (data != null) {
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+        })
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_USER_BY_ID]
+        })
+      }
+    }
+  })
+}
 // ============================================================
 // BETAS
 // ============================================================
