@@ -1,12 +1,13 @@
 import PeopleIcon from '@/components/icons/PeopleIcon'
 import PostsIcon from '@/components/icons/PostsIcon'
 import { TC, TR } from '@/components/shared/app/CustomTabs'
+import UserPosts from '@/components/shared/posts/UserPosts'
 import Followers from '@/components/shared/profile/Followers'
 import Followings from '@/components/shared/profile/Followings'
 import ProfileDetails from '@/components/shared/profile/ProfileDetails'
-import UserPosts from '@/components/shared/users/UserPosts'
 import { Tabs, TabsList } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
+import { useParams } from 'react-router-dom'
 
 const ProfileTriggers = [
   {
@@ -27,6 +28,7 @@ const ProfileTriggers = [
 ]
 
 const Profile = () => {
+  const { id } = useParams()
   return (
     <div className='profile-container'>
       <ProfileDetails />
@@ -50,7 +52,11 @@ const Profile = () => {
             ))}
           </TabsList>
           {ProfileTriggers.map(({ trigger, Content }) => (
-            <TC key={trigger} trigger={trigger} Content={<Content />} />
+            <TC
+              key={trigger}
+              trigger={trigger}
+              Content={<Content userId={id ?? ''} />}
+            />
           ))}
         </Tabs>
       </div>

@@ -35,8 +35,8 @@ const Saved = () => {
     <div className='saved-container'>
       <div className='common-inner_container'>
         <div className='flex flex-start w-full gap-3'>
-          <SaveIcon className='size-9 fill-secondary-500' />
-          <h2 className='h3-bold md:h1-bold'>Saved Posts</h2>
+          <SaveIcon className='size-9 fill-primary-500' />
+          <h2 className='md:h2-bold h3-bold'>Saved Posts</h2>
         </div>
         <div className='flex flex-1 w-full'>
           <Tabs

@@ -20,25 +20,63 @@ import {
   tagsToArray
 } from '@/services/appwrite/util'
 
-// ============================================================
-// POSTS
-// ============================================================
-export async function findInfinitePosts ({
+export async function findInfinitePostsByUserId ({
   lastId = '',
-  queries = []
+  userId
 }: {
   lastId: Post['$id']
-  queries: string[]
+  userId?: string
 }) {
-  const query = [...queries, Query.limit(2)]
+  if (userId == null || userId.trim().length === 0) return null
+  return await findInfinitePosts({
+    lastId,
+    query: [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
+  })
+}
+
+export async function findInfiniteSearchedPosts ({
+  lastId = '',
+  searchTerm = ''
+}: {
+  lastId: Post['$id']
+  searchTerm: string
+}) {
+  return await findInfinitePosts({
+    lastId,
+    query: [Query.search('caption', searchTerm), Query.orderDesc('$createdAt')]
+  })
+}
+
+export async function findInfiniteRecentPosts ({ lastId = '' }) {
+  return await findInfinitePosts({
+    lastId,
+    query: [Query.orderDesc('$createdAt')]
+  })
+}
+
+export async function findInfiniteUpdatedPosts ({ lastId = '' }) {
+  return await findInfinitePosts({
+    lastId,
+    query: [Query.orderDesc('$updatedAt')]
+  })
+}
+
+export async function findInfinitePosts ({
+  lastId = '',
+  query = []
+}: {
+  lastId: Post['$id']
+  query: string[]
+}) {
+  const queries = [...query, Query.limit(2)]
   if (lastId.trim().length !== 0) {
-    query.push(Query.cursorAfter(lastId.toString()))
+    queries.push(Query.cursorAfter(lastId))
   }
   try {
     const postsDocumentList = await databases.listDocuments<PostModel>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
-      query
+      queries
     )
 
     const data: Post[] = await Promise.all(
@@ -50,10 +88,23 @@ export async function findInfinitePosts ({
       )
     )
 
-    return data
-  } catch (error) {
-    console.error(error)
-    return []
+    return appwriteResponse({
+      data,
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      message: APPWRITE_RESPONSE_CODES.OK.message,
+      status: APPWRITE_RESPONSE_CODES.OK.status
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: [],
+        code: e.code,
+        message: e.message,
+        status: e.type
+      })
+    }
+    return null
   }
 }
 
@@ -83,7 +134,7 @@ export async function findPostById (postId: Post['$id']) {
         data: null,
         code: e.code,
         message: e.message,
-        status: e.name
+        status: e.type
       })
     }
     return null
@@ -133,7 +184,7 @@ export async function createPost (post: NewPostData) {
         data: null,
         code: e.code,
         message,
-        status: e.name
+        status: e.type
       })
     }
     return null
@@ -151,10 +202,6 @@ export async function updatePost (post: UpdatedPostData) {
       post.newFiles.length > 0
         ? [...previousFilesPreserved, ...(await createFiles(post.newFiles))]
         : previousFilesPreserved
-    // console.log({ originalFiles: post.originalFiles })
-    // console.log({ newFilesFromPost: post.newFiles })
-    // console.log({ previousFilesPreserved })
-    // console.log({ updatedFiles })
 
     if (post.filesToRemoveById.length > 0) {
       await deleteManyFilesByIds(post.filesToRemoveById)
@@ -190,7 +237,7 @@ export async function updatePost (post: UpdatedPostData) {
         data: null,
         code: e.code,
         message: e.message,
-        status: e.name
+        status: e.type
       })
     }
     return null
@@ -198,10 +245,7 @@ export async function updatePost (post: UpdatedPostData) {
 }
 
 // ============================== DELETE POST
-export async function deletePost ({
-  postId,
-  filesId
-}: DeletePostParams) {
+export async function deletePost ({ postId, filesId }: DeletePostParams) {
   try {
     await Promise.all([
       databases.deleteDocument(
@@ -225,58 +269,7 @@ export async function deletePost ({
         data: null,
         code: e.code,
         message: e.message,
-        status: e.name
-      })
-    }
-    return null
-  }
-}
-
-// ============================================================
-// BETAS
-// ============================================================
-
-export async function betaCreatePost (post: NewPostData) {
-  const tags = tagsToArray(post?.tags ?? '')
-  const newFiles = await createFiles(post.newFiles)
-
-  try {
-    const { filesId, ...newPost } = await databases.createDocument<PostModel>(
-      appwriteConfig.databaseId,
-      appwriteConfig.postsCollectionId,
-      ID.unique(),
-      {
-        creator: post.userId,
-        caption: post.caption,
-        location: post.location,
-        filesId: newFiles.map(file => file?.$id ?? ''),
-        tags
-      }
-    )
-    const data: Post = {
-      ...newPost,
-      files: newFiles
-    }
-    return appwriteResponse({
-      data,
-      code: APPWRITE_RESPONSE_CODES.CREATED.code,
-      message: 'Post created successfully',
-      status: APPWRITE_RESPONSE_CODES.CREATED.status
-    })
-  } catch (e) {
-    console.error({ e })
-    if (e instanceof AppwriteException) {
-      const message =
-        e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported
-          ? 'File type not supported.'
-          : e.type === APPWRITE_ERROR_TYPES.storage_device_not_found
-            ? 'Error uploading file, try again later.'
-            : e.message
-      return appwriteResponse({
-        data: null,
-        code: e.code,
-        message,
-        status: e.name
+        status: e.type
       })
     }
     return null

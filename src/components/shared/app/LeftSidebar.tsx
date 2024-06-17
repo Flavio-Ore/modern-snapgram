@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSignOut, useUpdateUser } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { cn } from '@/lib/utils'
+import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { links } from '@/values'
 import { LucideLogOut, SettingsIcon } from 'lucide-react'
 import { useEffect } from 'react'
@@ -82,13 +82,17 @@ const LeftSidebar = () => {
             <li
               key={label}
               className={cn('leftsidebar-link group', {
-                'bg-primary-500': pathname === route
+                'bg-dark-4':
+                  extractFirstRoutePart(pathname) ===
+                  extractFirstRoutePart(route)
               })}
             >
               <NavLink to={route} className='flex gap-4 items-center p-4'>
                 <Icon
-                  className={cn('size-6 group-hover:invert-white', {
-                    'invert-white': pathname === route
+                  className={cn('size-6 group-hover:fill-secondary-500', {
+                    'fill-secondary-500':
+                      extractFirstRoutePart(pathname) ===
+                      extractFirstRoutePart(route)
                   })}
                 />
                 {label}
