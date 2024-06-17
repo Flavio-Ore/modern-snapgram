@@ -1,11 +1,11 @@
 import LoaderIcon from '@/components/icons/LoaderIcon'
+import ProfileActions from '@/components/shared/profile/ProfileActions'
+import ProfileStats from '@/components/shared/profile/ProfileStats'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useGetUserById, useUser } from '@/lib/queries/queries'
 import { type UserStats } from '@/types'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import ProfileActions from './ProfileActions'
-import ProfileStats from './ProfileStats'
 
 const ProfileDetails = () => {
   const { id } = useParams()

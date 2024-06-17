@@ -1,115 +1,141 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { appwriteService } from '@/services'
+import { follows, messages, posts, saves, users } from '@/services/appwrite'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { type Models, Query } from 'appwrite'
 
-const { posts, saves, users, messages } = appwriteService
-
-const initialPageParam = ''
+const INITIAL_PAGE_PARAM = ''
 const enabledId = (id: string) =>
   id != null && id.trim().length !== 0 && id !== ''
-const INFINITY_QUERIES = {
-  RECENT_POSTS: [Query.orderDesc('$createdAt')],
-  UPDATED_POSTS: [Query.orderDesc('$updatedAt')],
-  searchPosts: ({ searchTerm }: SearchTerm) => [
-    Query.search('caption', searchTerm)
-  ],
-  SAVED_POSTS: [Query.select(['*'])],
-  USERS: [Query.orderDesc('$createdAt')]
+const getNextCursor = (lastPage: any) => {
+  if (lastPage?.data == null) return null
+  return lastPage.data.length === 0
+    ? null
+    : lastPage.data[lastPage.data.length - 1].$id
 }
 
-const nextCursorAppwriteModel = (lastPage: Models.Document[] | null) => {
-  if (lastPage == null) return null
-  if (lastPage.length === 0) return null
-  return lastPage[lastPage.length - 1].$id
+export const useGetInfiniteUsers = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_USERS],
+    queryFn: async ({ pageParam }) =>
+      await users.findInfiniteRecentUsers({
+        lastId: pageParam
+      }),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
+}
+
+export const useGetInfiniteSearchedUsers = ({
+  searchTerm
+}: {
+  searchTerm: string
+}) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_SEARCHED_USERS, searchTerm],
+    queryFn: async ({ pageParam }) =>
+      await users.findInfiniteSearchedUsers({
+        lastId: pageParam,
+        searchTerm
+      }),
+    enabled: enabledId(searchTerm),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
 }
 
 export const useGetInfiniteRecentPosts = () => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+    queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS],
     queryFn: async ({ pageParam }) =>
-      await posts.findInfinitePosts({
-        lastId: pageParam,
-        queries: INFINITY_QUERIES.RECENT_POSTS
+      await posts.findInfiniteRecentPosts({
+        lastId: pageParam
       }),
-    getNextPageParam: nextCursorAppwriteModel,
-    initialPageParam
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
   })
 }
 
 export function useGetInfinitePosts () {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+    queryKey: [QUERY_KEYS.GET_INFINITE_UPDATED_POSTS],
     queryFn: async ({ pageParam }) =>
-      await posts.findInfinitePosts({
-        lastId: pageParam,
-        queries: INFINITY_QUERIES.UPDATED_POSTS
+      await posts.findInfiniteUpdatedPosts({
+        lastId: pageParam
       }),
-    getNextPageParam: nextCursorAppwriteModel,
-    initialPageParam
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
   })
 }
 
-interface SearchTerm {
+export const useGetInfiniteSearchedPosts = ({
+  searchTerm
+}: {
   searchTerm: string
-}
-export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
+}) => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
+    queryKey: [QUERY_KEYS.GET_INFINITE_SEARCHED_POSTS, searchTerm],
     queryFn: async ({ pageParam }) =>
-      await posts.findInfinitePosts({
+      await posts.findInfiniteSearchedPosts({
         lastId: pageParam,
-        queries: INFINITY_QUERIES.searchPosts({ searchTerm })
+        searchTerm
       }),
     enabled: enabledId(searchTerm),
-    getNextPageParam: nextCursorAppwriteModel,
-    initialPageParam
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
   })
 }
-
-// ============================================================
-// USERS
-// ============================================================
-
-export const useGetInfiniteUsers = () => {
+export const useGetInfiniteUserPosts = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_USERS],
+    queryKey: [QUERY_KEYS.GET_INFINITE_USER_POSTS, userId],
     queryFn: async ({ pageParam }) =>
-      await users.findInfiniteUsers({
+      await posts.findInfinitePostsByUserId({
         lastId: pageParam,
-        queries: INFINITY_QUERIES.USERS
+        userId
       }),
-
-    getNextPageParam: lastPage => {
-      if (lastPage?.data == null) return null
-      return lastPage.data.length === 0
-        ? null
-        : lastPage.data[lastPage.data.length - 1].$id
-    },
-    initialPageParam
+    enabled: enabledId(userId),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
   })
 }
-
-// ============================================================
-// SAVED POSTS
-// ============================================================
 
 export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
+    queryKey: [QUERY_KEYS.GET_INFINITE_SAVED_POSTS, userId],
     queryFn: async ({ pageParam }) =>
       await saves.findInfiniteSaves({
         lastId: pageParam,
         userId
       }),
     enabled: enabledId(userId),
-    getNextPageParam: lastPage => {
-      if (lastPage?.data == null) return null
-      return lastPage.data.length === 0
-        ? null
-        : lastPage.data[lastPage.data.length - 1].$id
-    },
-    initialPageParam
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
+}
+
+export const useGetInfiniteFollowings = ({ userId }: { userId: string }) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_FOLLOWINGS, userId],
+    queryFn: async ({ pageParam }) =>
+      await follows.findInfiniteFollowings({
+        lastId: pageParam,
+        userId
+      }),
+    enabled: enabledId(userId),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
+}
+
+export const useGetInfiniteFollowers = ({ userId }: { userId: string }) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_FOLLOWERS, userId],
+    queryFn: async ({ pageParam }) =>
+      await follows.findInfiniteFollowers({
+        lastId: pageParam,
+        userId
+      }),
+    enabled: enabledId(userId),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
   })
 }
 
@@ -129,12 +155,7 @@ export const useGetInfiniteMessages = ({
         receiversId
       }),
     enabled: enabledId(senderId),
-    getNextPageParam: lastPage => {
-      if (lastPage?.data == null) return null
-      return lastPage.data.length === 0
-        ? null
-        : lastPage.data[lastPage.data.length - 1].$id
-    },
-    initialPageParam
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
   })
 }

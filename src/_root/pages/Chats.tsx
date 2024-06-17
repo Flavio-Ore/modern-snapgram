@@ -1,7 +1,7 @@
 import ChatsIcon from '@/components/icons/ChatsIcon'
 import Loader from '@/components/shared/app/Loader'
 import Chat from '@/components/shared/chats/Chat'
-import { useGetUserById, useGetUsers, useUser } from '@/lib/queries/queries'
+import { useGetTopUsers, useGetUserById, useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
 import { Link, useParams } from 'react-router-dom'
 
@@ -11,7 +11,7 @@ const Chats = () => {
     data: users,
     isLoading: isUsersLoading,
     isError: isUsersError
-  } = useGetUsers({ limit: 10 })
+  } = useGetTopUsers({ limit: 10 })
   const { id: userId } = useParams()
   const {
     data: userToChat,
@@ -30,8 +30,8 @@ const Chats = () => {
           })}
         >
           <div className='flex-start gap-3 mb-4'>
-            <ChatsIcon className='size-9 fill-light-1' />
-            <h1 className='h1-bold'>All Chats</h1>
+            <ChatsIcon className='size-9 fill-primary-500' />
+            <h1 className='md:h2-bold h3-bold'>All Chats</h1>
           </div>
           {isUsersLoading && <Loader />}
           {isUsersError && (

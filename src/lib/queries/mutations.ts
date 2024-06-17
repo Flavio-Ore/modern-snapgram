@@ -35,7 +35,7 @@ export const useCreatePost = () => {
     mutationFn: async (newPost: NewPostData) => await posts.createPost(newPost),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
       })
     }
   })
@@ -54,10 +54,10 @@ export const useUpdatePost = () => {
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, updatedPost.$id]
       })
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_USER_POSTS, updatedPost.creator.$id]
+        queryKey: [QUERY_KEYS.GET_INFINITE_USER_POSTS, updatedPost.creator.$id]
       })
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
       })
     }
   })
@@ -70,13 +70,13 @@ export const useDeletePost = () => {
       await posts.deletePost({ postId, filesId }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
       })
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_INFINITE_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_UPDATED_POSTS]
       })
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.SEARCH_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_SEARCHED_POSTS]
       })
     }
   })
@@ -90,7 +90,7 @@ export const useLikePost = () => {
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
       })
       void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
       })
     }
   })
@@ -146,7 +146,7 @@ export const useUpdateUser = () => {
       await users.updateUser({ user: updatedUser }),
     onSuccess: success => {
       void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USERS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_USERS]
       })
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
@@ -226,7 +226,7 @@ export const useBetaCreatePost = () => {
       await posts.betaCreatePost(newPost),
     onSuccess: () => {
       void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
       })
     }
   })

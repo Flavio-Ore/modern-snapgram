@@ -1,13 +1,13 @@
 import {
-    account,
-    appwriteConfig,
-    avatars,
-    databases
+  account,
+  appwriteConfig,
+  avatars,
+  databases
 } from '@/services/appwrite/config'
 import {
-    APPWRITE_ERROR_TYPES,
-    APPWRITE_RESPONSE_CODES,
-    appwriteResponse
+  APPWRITE_ERROR_TYPES,
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
 } from '@/services/appwrite/util'
 import type { INewUser, UserModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
@@ -51,14 +51,14 @@ export async function createUserAccount (user: INewUser) {
           message:
             'This email address is not available. Choose a different address.',
           code: e.code,
-          status: e.name
+          status: e.type
         })
       }
       return appwriteResponse({
         data: null,
         message: e.message,
         code: e.code,
-        status: e.name
+        status: e.type
       })
     }
     return null
@@ -82,10 +82,10 @@ export async function signInAccount (user: { email: string, password: string }) 
       e.type === APPWRITE_ERROR_TYPES.user_invalid_credentials
     ) {
       return appwriteResponse({
-        code: e.code,
         data: null,
+        code: e.code,
         message: e.message,
-        status: e.name
+        status: e.type
       })
     }
     return null
@@ -116,10 +116,10 @@ export async function getAccount () {
     if (e instanceof AppwriteException) {
       if (e.code === 401 && e.type === APPWRITE_ERROR_TYPES.user_not_found) {
         return appwriteResponse({
-          code: e.code,
           data: null,
+          code: e.code,
           message: e.message,
-          status: e.name
+          status: e.type
         })
       }
     }
@@ -143,8 +143,8 @@ export async function getUser () {
     console.log('currentUserAccountData :>> ', user.documents[0] ?? 'NO USER DATA')
 
     return appwriteResponse({
-      code: APPWRITE_RESPONSE_CODES.OK.code,
       data: user.documents[0],
+      code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'User retrieved successfully',
       status: APPWRITE_RESPONSE_CODES.OK.status
     })
@@ -156,7 +156,7 @@ export async function getUser () {
           code: e.code,
           data: null,
           message: e.message,
-          status: e.name
+          status: e.type
         })
       }
     }
