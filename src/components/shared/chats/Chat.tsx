@@ -1,37 +1,51 @@
-import DeleteIcon from '@/components/icons/DeleteIcon'
-import Loader from '@/components/shared/app/Loader'
+import LoaderIcon from '@/components/icons/LoaderIcon'
+import PhoneIcon from '@/components/icons/PhoneIcon'
+import SendIcon from '@/components/icons/SendIcon'
+import VideoIcon from '@/components/icons/VideoIcon'
+import ChatBubble from '@/components/shared/chats/ChatBubble'
+import MessagesSkeleton from '@/components/shared/skeletons/MessagesSkeleton'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/components/ui/use-toast'
 import { useGetInfiniteMessages } from '@/lib/queries/infiniteQueries'
+import { useCreateMessage } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { cn, multiFormatDateString } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { MessageValidationSchema } from '@/lib/validations'
-import { appwriteConfig, client, databases } from '@/services/appwrite/config'
 import { type UserModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ID, Permission, Role } from 'appwrite'
-import { PhoneIcon, SendIcon, VideoIcon } from 'lucide-react'
-import { useEffect, useMemo } from 'react'
+import { MessageCircleWarningIcon } from 'lucide-react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
+import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
 import { type z } from 'zod'
 
-const Chat = ({ user }: { user: UserModel }) => {
-  const { data: account } = useUser()
+const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
+  const bottomOfChatRef = useRef<HTMLDivElement>(null)
+  const isAtBottomOnce = useRef(false)
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const { data: currentUser } = useUser()
   const {
-    data: messagesPages,
+    data: messagesResponse,
     isLoading,
     isError,
-    refetch: refetchMessages
+    isFetching,
+    hasNextPage,
+    isRefetching,
+    fetchNextPage
   } = useGetInfiniteMessages({
-    senderId: account?.accountId ?? '',
-    receiversId: [user.accountId]
+    senderId: currentUser?.accountId ?? '',
+    receiversId: [userToChatWith.accountId]
   })
-  console.log('messages :>> ', messagesPages)
-  const recieverId = user.accountId
+  const { mutateAsync: createMessage } = useCreateMessage()
+  const { toast } = useToast()
+  const { ref, inView } = useInView({
+    threshold: 0
+  })
 
-  const form = useForm<z.infer<typeof MessageValidationSchema>>({
+  const messageForm = useForm<z.infer<typeof MessageValidationSchema>>({
     resolver: zodResolver(MessageValidationSchema),
     defaultValues: {
       body: ''
@@ -39,185 +53,183 @@ const Chat = ({ user }: { user: UserModel }) => {
   })
 
   const messages = useMemo(
-    () =>
-      messagesPages?.pages.flatMap(
-        page => page?.data.flatMap(message => message) ?? []
-      ) ?? [],
-    [messagesPages]
+    () => messagesResponse?.pages.flatMap(page => page?.data ?? []) ?? [],
+    [messagesResponse]
   )
+  const accountId = useMemo(() => currentUser?.accountId ?? '', [currentUser])
 
-  const accountId = useMemo(() => account?.accountId ?? '', [account])
-  console.log('accountId :>> ', accountId)
+  console.log('messages :>> ', messagesResponse)
 
-  const handleDeleteMessage =
-    (messageId: string) =>
-      async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault()
-        try {
-          const message = await databases.deleteDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.messageCollectionId,
-            messageId
-          )
-          console.log('DELETED MESSAGE', message)
-        } catch (e) {
-          console.error({ e })
-        }
-      }
-
-  async function onSubmit (values: z.infer<typeof MessageValidationSchema>) {
+  async function onSubmitMessage (
+    values: z.infer<typeof MessageValidationSchema>
+  ) {
     try {
-      const payload = {
+      const messageRes = await createMessage({
+        body: values.body,
         sender: accountId,
-        receivers: [recieverId],
-        body: values.body
+        receivers: [userToChatWith.accountId]
+      })
+      if (messageRes?.data != null) {
+        messageForm.reset()
+        if (textAreaRef.current != null) {
+          textAreaRef.current.style.height = '40px'
+        }
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error sending message!',
+          description: 'Try again later.'
+        })
       }
-      console.log('payload :>> ', payload)
-      console.log('permissions :>> ', [
-        Permission.write(Role.user(account?.accountId ?? ''))
-      ])
-
-      const message = await databases.createDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
-        ID.unique(),
-        payload,
-        [Permission.write(Role.user(accountId))]
-      )
-      console.log('CREATED MESSAGE', message)
-
-      form.reset()
     } catch (e) {
       console.error({ e })
     }
   }
+  useEffect(() => {
+    const formSubscription = messageForm.watch(() => {
+      if (textAreaRef.current != null) {
+        textAreaRef.current.style.height = '40px'
+        textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`
+      }
+    })
+    return () => {
+      formSubscription.unsubscribe()
+    }
+  }, [messageForm.watch('body')])
 
   useEffect(() => {
-    const unsubscribe = client.subscribe(
-      `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`,
-      response => {
-        console.log('Chat:', response)
-        if (
-          response.events.includes(
-            'databases.*.collections.*.documents.*.create'
-          ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.update'
-          ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.delete'
-          )
-        ) {
-          refetchMessages()
-        }
-      }
-    )
-
-    return () => {
-      unsubscribe()
+    if (bottomOfChatRef.current != null && !isRefetching) {
+      bottomOfChatRef.current?.scrollIntoView({
+        behavior: 'smooth'
+      })
     }
-  }, [])
+  }, [isRefetching])
+
+  useEffect(() => {
+    if (bottomOfChatRef.current != null && !isAtBottomOnce.current) {
+      isAtBottomOnce.current = true
+      bottomOfChatRef.current?.scrollIntoView({
+        behavior: 'instant'
+      })
+    }
+  }, [messagesResponse])
+
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) void fetchNextPage()
+  }, [inView])
 
   return (
-    <div className='flex-between flex-col basis-2/3 size-full bg-dark-3 rounded-xl border border-light-4/40 px-6 py-4 gap-y-2'>
+    <div className='flex-between flex-col lg:h-[85dvh] flex-1 basis-2/3 size-full bg-dark-1 rounded-xl border border-dark-4 px-6 py-4'>
       <div className='flex-between w-full'>
-        <Link className='flex items-center gap-3' to={`/profile/${user?.$id}`}>
-          <div className="relative before:absolute before:rounded-full before:content-[''] before:bottom-0 before:right-0 before:size-4 before:bg-green-500 hover:before:animate-rubber-band hover:before:animate-iteration-count-infinite hover:before:animate-duration-[3000ms] before:z-50">
+        <Link
+          className='flex items-center gap-3'
+          to={`/profile/${userToChatWith?.$id}`}
+        >
+          <div className="relative before:absolute before:rounded-full before:content-[''] before:bottom-0 before:right-0 before:size-4 before:bg-green-500 hover:before:animate-rubber-band hover:before:animate-iteration-count-infinite hover:before:animate-duration-[3000ms] before:z-10">
             <img
-              src={user?.imageUrl}
+              src={userToChatWith?.imageUrl}
               alt='Chat profile picture'
               height='70'
               width='70'
-              className='relative rounded-full aspect-square object-cover'
+              className='rounded-full aspect-square object-cover'
             />
           </div>
-          <div className='flex gap-1 flex-col'>
-            <p className='base-medium lg:body-bold text-light-1'>
-              {user?.name}
+          <div className='flex gap-1 flex-col overflow-ellipsis'>
+            <p className='base-medium lg:body-medium overflow-ellipsis'>
+              {userToChatWith?.name}
             </p>
             <p className='subtle-semibold text-light-3 lg:small-regular'>
-              online
+              Online
             </p>
           </div>
         </Link>
         <div className='flex-center gap-4'>
           <PhoneIcon
-            size={28}
-            className='stroke-light-3 hover:stroke-primary-500/50 cursor-pointer'
+            strokeWidth={1}
+            className='size-7 hover:stroke-primary-500 cursor-pointer'
           />
           <VideoIcon
-            size={28}
-            className='stroke-light-3 hover:stroke-primary-500/50 cursor-pointer'
+            strokeWidth={1}
+            className='size-7 hover:stroke-primary-500 cursor-pointer'
           />
         </div>
       </div>
-      <hr className='border w-full border-dark-4/80' />
-      <div className='flex flex-col size-full max-h-[600px] custom-scrollbar overflow-y-scroll py-4'>
-        {isLoading && (
-          <div className='flex-center size-full'>
-            <Loader />
-          </div>
-        )}
-        {isError && (
-          <div className='flex-center flex-col gap-4'>
-            <h1 className='h1-bold'>Error fetching messages</h1>
-            <Link to='/chats' className='button_secondary'>
-              Try again
-            </Link>
-          </div>
-        )}
-        {!isLoading &&
-          !isError &&
-          messages.map(message => (
-            <div
-              key={message.$id}
-              className={cn(
-                'flex-between gap-2 py-2 px-4 rounded-xl base-regular max-w-max',
-                {
-                  'self-end bg-dark-4': message.sender === accountId,
-                  'bg-dark-2': message.sender !== accountId
-                }
-              )}
-            >
-              <p>{message.body}</p>
-              <small className='subtle-semibold text-light-4'>
-                {multiFormatDateString(message.$createdAt)}
-              </small>
-              {message.$permissions.includes(`delete("user:${accountId}")`) && (
-                <Button onClick={handleDeleteMessage(message.$id)} className=''>
-                  <DeleteIcon className='size-3 stroke-red-500 hover:stroke-500/50' />
-                </Button>
-              )}
+      <hr className='border w-full border-dark-4 my-2' />
+      <div className='flex flex-col size-full custom-scrollbar overflow-y-scroll py-4'>
+        <>
+          {isLoading && <MessagesSkeleton />}
+          {isError && (
+            <div className='flex-center size-full flex-col text-light-3 animate-pulse'>
+              <MessageCircleWarningIcon size={64} />
+              <h3 className='h1-bold'>Error receiving messages!</h3>
+              <p className='text-primary-500'>Try again later.</p>
             </div>
-          ))}
+          )}
+          {!isLoading &&
+            !isError &&
+            messagesResponse != null &&
+            messages.length === 0 && (
+              <p className='text-light-4 mt-10 text-center body-bold w-full animate-pulse'>
+                Type a message to start chatting!
+              </p>
+          )}
+          {!isLoading &&
+            !isError &&
+            messagesResponse != null &&
+            messages.length !== 0 && (
+              <>
+                {!hasNextPage && (
+                  <p className='text-light-4 mb-10 text-center w-full animate-pulse'>
+                    You reached the end!
+                  </p>
+                )}
+                {hasNextPage && (
+                  <div
+                    ref={ref}
+                    className={cn('flex mb-10 flex-center w-full', {
+                      'animate-fade-out-down animate-duration-1000 animate-delay-1000':
+                        inView
+                    })}
+                  >
+                    <LoaderIcon className='stroke-secondary-500' />
+                  </div>
+                )}
+                {messages.map(message => (
+                  <ChatBubble key={message.$id} message={message} />
+                ))}
+                <div ref={bottomOfChatRef} />
+              </>
+          )}
+        </>
       </div>
-      <hr className='border w-full border-dark-4/80' />
-      <Form {...form}>
+      <hr className='border w-full border-dark-4 my-4' />
+      <Form {...messageForm}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className='flex gap-x-4 w-full max-w-5xl '
+          onSubmit={messageForm.handleSubmit(onSubmitMessage)}
+          className='flex-center gap-x-4 w-full max-w-5xl'
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              messageForm.handleSubmit(onSubmitMessage)(e)
+            }
+          }}
         >
           <FormField
-            control={form.control}
+            control={messageForm.control}
             name='body'
             render={({ field }) => (
               <FormItem className='flex-auto'>
                 <FormControl>
-                  <Input
-                    type='text'
-                    placeholder='Write your message here...'
-                    className='shad-input w-full flex-auto'
+                  <Textarea
+                    placeholder='Type a message...'
                     {...field}
+                    ref={textAreaRef}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
-          <Button
-            type='submit'
-            className='shad-button_secondary whitespace-nowrap flex-initial'
-          >
-            <SendIcon size={17.5} className='stroke-dark-2' />
+          <Button type='submit' className='size-12 bg-dark-4 hover:bg-dark-2'>
+            <SendIcon className='size-full stroke-secondary-500 group-hover:stroke-primary-500 ' />
           </Button>
         </form>
       </Form>

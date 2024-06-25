@@ -67,7 +67,9 @@
   .subtle-semibold {
     @apply text-[12px] font-semibold leading-[140%];
   }
-
+  .subtle-regular {
+    @apply text-[12px] font-normal leading-[140%];
+  }
   .tiny-medium {
     @apply text-[10px] font-medium leading-[140%];
   }
@@ -228,7 +230,7 @@
 
   /*! Left Sidebar */
   .leftsidebar {
-    @apply hidden md:flex px-6 py-10 flex-col justify-between max-w-[270px] bg-dark-2;
+    @apply hidden md:flex px-4 xl:px-6 py-10 flex-col justify-between max-w-[270px] bg-dark-2 overflow-scroll custom-scrollbar;
   }
 
   .leftsidebar-link {

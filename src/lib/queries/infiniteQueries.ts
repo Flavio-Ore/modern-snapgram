@@ -1,11 +1,15 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import { follows, messages, posts, saves, users } from '@/services/appwrite'
+import { type AppwriteResponse } from '@/services/appwrite/util'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { type Models } from 'appwrite'
 
 const INITIAL_PAGE_PARAM = ''
 const enabledId = (id: string) =>
   id != null && id.trim().length !== 0 && id !== ''
-const getNextCursor = (lastPage: any) => {
+const getNextCursor = <T extends Models.Document>(
+  lastPage: AppwriteResponse<T[]> | null
+) => {
   if (lastPage?.data == null) return null
   return lastPage.data.length === 0
     ? null
@@ -154,7 +158,25 @@ export const useGetInfiniteMessages = ({
         senderId,
         receiversId
       }),
-    enabled: enabledId(senderId),
+    select: infiniteData => {
+      const responsesInDisarray = infiniteData.pages.map(
+        response => {
+          if (response?.data == null) {
+            return response
+          }
+          const messagesInDisorder = structuredClone(response.data)
+          return {
+            ...response,
+            data: messagesInDisorder.reverse()
+          }
+        }
+      )
+      return {
+        pages: responsesInDisarray.reverse(),
+        pageParams: infiniteData.pageParams
+      } satisfies typeof infiniteData
+    },
+    enabled: enabledId(senderId) && receiversId.some(id => enabledId(id)),
     getNextPageParam: getNextCursor,
     initialPageParam: INITIAL_PAGE_PARAM
   })
