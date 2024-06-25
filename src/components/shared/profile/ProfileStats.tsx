@@ -9,6 +9,7 @@ const ProfileStats = ({ stats }: ProfileStatsProps) => (
     {stats.map(({ name, value }) => (
       <Button
         key={name}
+        variant='ghost'
         className='shad-button_ghost small-medium md:body-medium'
       >
         <span className='text-primary-500'>{value}</span> {name}

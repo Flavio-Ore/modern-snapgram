@@ -6,6 +6,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    dedupe: ['@radix-ui/react-dismissable-layer'],
     alias: {
       '@': path.resolve(__dirname, './src')
     }

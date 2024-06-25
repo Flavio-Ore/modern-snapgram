@@ -6,7 +6,6 @@ import PeopleIcon from '@/components/icons/PeopleIcon'
 import ReelsIcon from '@/components/icons/ReelsIcon'
 import SaveIcon from '@/components/icons/SaveIcon'
 
-
 export enum E_USERS {
   ALL_USERS = 'ALL_USERS',
   TOP_CREATORS = 'TOP_CREATORS'
@@ -98,14 +97,20 @@ export const links = {
       label: 'Explore'
     },
     {
+      Icon: CreatePostIcon,
+      route: '/create-post',
+      label: 'Create'
+    },
+    {
       Icon: SaveIcon,
       route: '/saved',
       label: 'Saved'
     },
+
     {
-      Icon: CreatePostIcon,
-      route: '/create-post',
-      label: 'Create'
+      Icon: ChatsIcon,
+      route: '/chats',
+      label: 'Chats'
     }
   ]
 }
