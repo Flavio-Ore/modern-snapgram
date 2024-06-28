@@ -1,6 +1,6 @@
 import SavedIcon from '@/components/icons/SavedIcon'
 import SaveIcon from '@/components/icons/SaveIcon'
-
+import { Button } from '@/components/ui/button'
 import {
   useDeleteSavedPost,
   useLikePost,
@@ -26,22 +26,19 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { mutate: deleteSave, isPending: isDeletingSave } = useDeleteSavedPost()
   const { data: currentUser, isLoading, isRefetching } = useUser()
   const { $id: postId } = post
-  console.log('currentUser.saves :>> ', currentUser)
-  console.log('post :>> ', post)
-  console.log('likes :>> ', likes)
+
   const savedRecordId = useMemo(
     () =>
       currentUser?.saves?.find(record => record.post.$id === postId)?.$id ?? '',
     [currentUser]
   )
   const likesCount = useMemo(() => likes.length, [likes])
-  console.log('savedRecordId :>> ', savedRecordId)
   useEffect(() => {
     setIsSaved(savedRecordId !== '')
   }, [savedRecordId])
 
   const handleLikePost = (
-    e: React.MouseEvent<HTMLImageElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation()
     let usersLikes = [...likes]
@@ -65,8 +62,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     save({ postId, userId })
   }
   return (
-    <div className='flex justify-between item-center z-20'>
-      <div className='flex gap-2 mr-5'>
+    <div className='flex-between z-20'>
+      <div className='flex-center'>
         {(isLoading || isRefetching || isLiking) && (
           <HeartIcon
             size={20}
@@ -74,7 +71,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           />
         )}
         {!isLoading && !isRefetching && !isLiking && (
-          <div onClick={handleLikePost} className='flex-center cursor-pointer'>
+          <Button
+            variant='ghost'
+            onClick={handleLikePost}
+            className='gap-x-2 px-2'
+          >
             {likes.includes(userId)
               ? (
               <HeartIcon
@@ -88,9 +89,9 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                 size={20}
               />
                 )}
-          </div>
+            <span className='small-medium lg:base-medium'>{likesCount}</span>
+          </Button>
         )}
-        <p className='small-medium lg:base-medium'>{likesCount}</p>
       </div>
       <div className='flex gap-2'>
         {(isLoading || isRefetching || isSaving || isDeletingSave) && (
@@ -100,9 +101,10 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           />
         )}
         {!isLoading && !isRefetching && !isSaving && !isDeletingSave && (
-          <button
+          <Button
+            variant='ghost'
             onClick={handleSavePost}
-            className='flex-center cursor-pointer'
+            className='px-2'
           >
             {isSaved
               ? (
@@ -111,7 +113,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
               : (
               <SaveIcon className='hover:fill-primary-500/50' />
                 )}
-          </button>
+          </Button>
         )}
       </div>
     </div>

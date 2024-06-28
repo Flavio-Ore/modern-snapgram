@@ -24,7 +24,6 @@ export async function findInfiniteSaves ({
   if (lastId.trim().length !== 0) {
     query.push(Query.cursorAfter(lastId))
   }
-  console.log('query :>> ', query)
   try {
     const { documents: savesDocuments } =
       await databases.listDocuments<SaveModel>(
@@ -48,8 +47,6 @@ export async function findInfiniteSaves ({
       ...savesDocuments[index],
       post
     }))
-
-    console.log('savesDocumentList: ', savesDocuments)
     return appwriteResponse({
       data: saves,
       message: APPWRITE_RESPONSE_CODES.OK.message,
@@ -118,7 +115,6 @@ export async function updateSave ({
         post: postId
       }
     )
-    console.log('saveRecord :>> ', saveRecord)
     return appwriteResponse({
       data: saveRecord,
       message: 'Post saved successfully.',

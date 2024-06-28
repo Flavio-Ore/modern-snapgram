@@ -1,9 +1,13 @@
 import DeleteIcon from '@/components/icons/DeleteIcon'
 import FileUploadIcon from '@/components/icons/FileUploadIcon'
+import {
+  FilePreviewImage,
+  VideoFilePreview
+} from '@/components/shared/files/FilesPreviews'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { type FileWithPath, useDropzone } from 'react-dropzone'
 
 interface FileUploaderProps {
@@ -11,60 +15,10 @@ interface FileUploaderProps {
   fileLimit: number
 }
 
-const FileUploaderImagePreview = ({ file }: { file: File }) => {
-  const imgRef = useRef<HTMLImageElement>(null)
-
-  useEffect(() => {
-    if (!(file != null && imgRef.current != null)) {
-      return
-    }
-    if (!(file instanceof File)) {
-      return
-    }
-    const objectURL = URL.createObjectURL(file)
-    imgRef.current.src = objectURL
-
-    return () => {
-      URL.revokeObjectURL(objectURL)
-    }
-  }, [file])
-
-  return <img ref={imgRef} alt='Image to post' className='file_uploader-img' loading='lazy'/>
-}
-
-const FileUploaderVideoPreview = ({ file }: { file: File }) => {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    if (!(file != null && videoRef.current != null)) {
-      return
-    }
-    const objectURL = URL.createObjectURL(file)
-    videoRef.current.src = objectURL
-
-    return () => {
-      URL.revokeObjectURL(objectURL)
-    }
-  }, [file])
-
-  return (
-    <video
-      ref={videoRef}
-      controls
-      loop
-      className='file_uploader-img cursor-pointer'
-    />
-  )
-}
-
 const FileUploader = ({ fieldChange, fileLimit = 10 }: FileUploaderProps) => {
   const [files, setFiles] = useState<File[]>([])
-  console.log('files .>>', files)
-  console.log({ fileLimit })
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      console.log('acceptedFiles .>>', acceptedFiles)
-
       const filteredFiles = acceptedFiles.filter(
         (file, i) =>
           file.name.match(/\.(jpg|png|svg|gif|mp4)$/) != null &&
@@ -120,7 +74,11 @@ const FileUploader = ({ fieldChange, fileLimit = 10 }: FileUploaderProps) => {
         <p className='text-red-400/60 small-regular mb-6'>
           JPG is accepted but JPEG is not!
         </p>
-        <Button type='button' variant='ghost' className='shad-button_dark_4 hover:bg-dark-2'>
+        <Button
+          type='button'
+          variant='ghost'
+          className='shad-button_dark_4 hover:bg-dark-2'
+        >
           Select from computer
         </Button>
       </div>
@@ -131,10 +89,10 @@ const FileUploader = ({ fieldChange, fileLimit = 10 }: FileUploaderProps) => {
               file.type
             )
               ? (
-              <FileUploaderImagePreview file={file} />
+              <FilePreviewImage file={file} />
                 )
               : (
-              <FileUploaderVideoPreview file={file} />
+              <VideoFilePreview file={file} />
                 )}
             <Button
               className='absolute flex gap-3 top-5 right-5 z-50 bg-dark-1 rounded-full p-2 group hover:bg-dark-4/80'

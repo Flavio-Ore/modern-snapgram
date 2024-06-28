@@ -131,7 +131,7 @@ export async function getAccount () {
 export async function getUser () {
   try {
     const sessionAccount = await account.get()
-    console.log('currentAccount :>> ', sessionAccount ?? '')
+
     const user = await databases.listDocuments<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
@@ -139,8 +139,6 @@ export async function getUser () {
         Query.equal('accountId', [sessionAccount.$id])
       ]
     )
-
-    console.log('currentUserAccountData :>> ', user.documents[0] ?? 'NO USER DATA')
 
     return appwriteResponse({
       data: user.documents[0],

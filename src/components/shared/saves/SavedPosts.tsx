@@ -18,12 +18,11 @@ const SavedPosts = () => {
 
   const posts = useMemo(
     () =>
-      data?.pages.flatMap(page =>
-        page?.data.flatMap(record => record.post) ?? []
+      data?.pages.flatMap(
+        page => page?.data.flatMap(record => record.post) ?? []
       ) ?? [],
     [data]
   )
-  console.log('useGetInfiniteSavedPosts data :>> ', { data })
   return (
     <InfiniteScroll
       data={data}

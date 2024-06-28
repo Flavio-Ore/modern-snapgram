@@ -65,8 +65,8 @@ const PostsCarousel = ({
           <CircleIcon
             key={snapPointPosition}
             size={16}
-            className={cn('cursor-pointer opacity-50', {
-              'fill-primary-500': index === current - 1
+            className={cn('cursor-pointer stroke-light-3', {
+              'fill-light-3': index === current - 1
             })}
             onClick={handleDotClick(index)}
           />

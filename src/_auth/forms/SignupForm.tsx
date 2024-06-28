@@ -28,7 +28,6 @@ const SignupForm = () => {
     useCreateAccount()
   const { mutateAsync: signInAccount } = useSignIn()
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidationSchema>>({
     resolver: zodResolver(SignupValidationSchema),
     defaultValues: {
@@ -39,11 +38,9 @@ const SignupForm = () => {
     }
   })
 
-  // 2. Define a submit handler. Create a user
   const handleSignup = async (user: z.infer<typeof SignupValidationSchema>) => {
     try {
       const createdUserResponse = await createUserAccount(user)
-      console.log({ newUser: createdUserResponse })
       if (createdUserResponse?.data == null) {
         toast({
           title: 'Something went wrong.',
@@ -84,13 +81,16 @@ const SignupForm = () => {
   }
   return (
     <Form {...form}>
-      <div className='sm:w-420 flex-center flex-col'>
+      <div className='flex flex-col sm:w-420 w-full p-5'>
         <Logo />
-        <h2 className='h3-bold md:h2-bold pt-5 sm:pt-12'>
+        <h2 className='h3-bold md:h2-bold pt-5 sm:pt-9'>
           Create a new account
         </h2>
-        <p className='text-light-3 small-medium md:base-regular mt-2'>
-          To use Snapgram, please enter your account details
+        <p className='text-light-3 small-medium md:base-regular'>
+          Sign up to see what&apos;s new in the world!
+        </p>
+        <p className='text-green-500 small-regular'>
+          All fields are required. &#40;*&#41;
         </p>
         <form
           onSubmit={form.handleSubmit(handleSignup)}
@@ -101,12 +101,12 @@ const SignupForm = () => {
             name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Name *</FormLabel>
                 <FormControl>
                   <Input
                     className='shad-input'
                     type='text'
-                    placeholder='Name*'
+                    placeholder='My name is...'
                     {...field}
                   />
                 </FormControl>
@@ -114,18 +114,17 @@ const SignupForm = () => {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name='username'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Username *</FormLabel>
                 <FormControl>
                   <Input
                     className='shad-input'
                     type='text'
-                    placeholder='Username*'
+                    placeholder='@username'
                     {...field}
                   />
                 </FormControl>
@@ -138,12 +137,13 @@ const SignupForm = () => {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email *</FormLabel>
                 <FormControl>
                   <Input
                     className='shad-input'
                     type='email'
-                    placeholder='Email*'
+                    placeholder='username@domain.com'
+                    autoComplete='email'
                     {...field}
                   />
                 </FormControl>
@@ -156,12 +156,13 @@ const SignupForm = () => {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Password *</FormLabel>
                 <FormControl>
                   <Input
                     className='shad-input'
                     type='password'
-                    placeholder='Password*'
+                    placeholder='Type the hardest password ever!'
+                    autoComplete='off'
                     {...field}
                   />
                 </FormControl>
@@ -169,16 +170,22 @@ const SignupForm = () => {
               </FormItem>
             )}
           />
-          <Button className='shad-button_primary' type='submit'>
-            {isCreatingAccount || isSessionLoading ? <LoaderIcon /> : 'Signup'}
+          <Button
+            type='submit'
+            variant='default'
+            disabled={!form.formState.isDirty || !form.formState.isValid}
+          >
+            {isCreatingAccount || isSessionLoading
+              ? (
+              <LoaderIcon />
+                )
+              : (
+                  'Create my account'
+                )}
           </Button>
-
-          <p className='text-small-regular text-light-2 text-center mt-2'>
+          <p className='small-regular text-light-2'>
             Already have an account?{' '}
-            <Link
-              to='/sign-in'
-              className='text-primary-500 text-small-semibold ml-1'
-            >
+            <Link to='/sign-in' className='text-primary-500 small-semibold'>
               Log in
             </Link>
           </p>

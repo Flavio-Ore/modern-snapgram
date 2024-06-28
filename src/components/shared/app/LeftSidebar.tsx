@@ -1,32 +1,26 @@
 import Logo from '@/components/icons/Logo'
 import LogoSmall from '@/components/icons/LogoSmall'
+import LogoutDialog from '@/components/shared/app/LogoutDialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useSignOut, useUpdateUser } from '@/lib/queries/mutations'
+import { useUpdateUser } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { links } from '@/values'
-import { LucideLogOut, SettingsIcon } from 'lucide-react'
+import { SettingsIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import {
   Link,
   NavLink,
   useLocation,
-  useNavigate,
   useParams
 } from 'react-router-dom'
 
 const LeftSidebar = () => {
   const { pathname } = useLocation()
-  const navigate = useNavigate()
   const { data: user, isLoading, isError, refetch } = useUser()
   const { isSuccess: userUpdate } = useUpdateUser()
-  const { mutate: signOut, isSuccess } = useSignOut()
   const { id: profileId } = useParams()
-  console.log('userUpdate :>> ', userUpdate)
-  const handleLogOut = () => {
-    signOut()
-  }
 
   useEffect(() => {
     refetch()
@@ -35,10 +29,6 @@ const LeftSidebar = () => {
   useEffect(() => {
     if (userUpdate) refetch()
   }, [userUpdate])
-
-  useEffect(() => {
-    if (isSuccess) navigate(0)
-  }, [isSuccess])
 
   return (
     <nav className='leftsidebar min-w-20 xl:min-w-56 '>
@@ -93,11 +83,14 @@ const LeftSidebar = () => {
             >
               <NavLink
                 to={route}
-                className={cn('flex gap-4 justify-center xl:justify-start items-center py-4 xl:p-4', {
-                  'body-bold':
-                    extractFirstRoutePart(pathname) ===
-                    extractFirstRoutePart(route)
-                })}
+                className={cn(
+                  'flex gap-4 justify-center xl:justify-start items-center py-4 xl:p-4',
+                  {
+                    'body-bold':
+                      extractFirstRoutePart(pathname) ===
+                      extractFirstRoutePart(route)
+                  }
+                )}
               >
                 <Icon
                   className={cn('size-6 group-hover:fill-secondary-500', {
@@ -113,27 +106,19 @@ const LeftSidebar = () => {
         </ul>
       </div>
       <div className='flex flex-col gap-2 mt-12'>
-        <Button
-          variant='ghost'
-          className='flex gap-x-3 w-full justify-center xl:justify-start items-center p-0 xl:px-4 hover:bg-red-600'
-          onClick={handleLogOut}
-        >
-          <LucideLogOut
-            size={24}
-            className='stroke-red-500 group-hover:stroke-white'
-          />
-          <span className='hidden xl:inline group-hover:text-light-2 small-regular'>Logout</span>
-        </Button>
+        <LogoutDialog />
         <Button
           variant='ghost'
           className='flex gap-x-3 w-full justify-center xl:justify-start items-center p-0 xl:px-4 hover:bg-primary-600'
         >
           <SettingsIcon
             size={24}
-            strokeWidth={1.5}
+            strokeWidth={1.1}
             className='stroke-primary-500 group-hover:stroke-secondary-500'
           />
-          <span className='hidden xl:inline group-hover:text-secondary-500 small-regular'>Settings</span>
+          <span className='hidden xl:inline group-hover:text-secondary-500 small-regular'>
+            Settings
+          </span>
         </Button>
       </div>
     </nav>

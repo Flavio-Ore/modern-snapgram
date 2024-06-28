@@ -1,3 +1,4 @@
+import BackIcon from '@/components/icons/BackIcon'
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import PhoneIcon from '@/components/icons/PhoneIcon'
 import SendIcon from '@/components/icons/SendIcon'
@@ -45,7 +46,7 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
     threshold: 0
   })
 
-  const messageForm = useForm<z.infer<typeof MessageValidationSchema>>({
+  const chatForm = useForm<z.infer<typeof MessageValidationSchema>>({
     resolver: zodResolver(MessageValidationSchema),
     defaultValues: {
       body: ''
@@ -58,8 +59,6 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
   )
   const accountId = useMemo(() => currentUser?.accountId ?? '', [currentUser])
 
-  console.log('messages :>> ', messagesResponse)
-
   async function onSubmitMessage (
     values: z.infer<typeof MessageValidationSchema>
   ) {
@@ -70,7 +69,7 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
         receivers: [userToChatWith.accountId]
       })
       if (messageRes?.data != null) {
-        messageForm.reset()
+        chatForm.reset()
         if (textAreaRef.current != null) {
           textAreaRef.current.style.height = '40px'
         }
@@ -86,7 +85,11 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
     }
   }
   useEffect(() => {
-    const formSubscription = messageForm.watch(() => {
+    if (textAreaRef.current != null) {
+      textAreaRef.current.style.height = '40px'
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`
+    }
+    const formSubscription = chatForm.watch(() => {
       if (textAreaRef.current != null) {
         textAreaRef.current.style.height = '40px'
         textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`
@@ -95,7 +98,7 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
     return () => {
       formSubscription.unsubscribe()
     }
-  }, [messageForm.watch('body')])
+  }, [chatForm.watch('body')])
 
   useEffect(() => {
     if (bottomOfChatRef.current != null && !isRefetching) {
@@ -119,30 +122,35 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
   }, [inView])
 
   return (
-    <div className='flex-between flex-col lg:h-[85dvh] flex-1 basis-2/3 size-full bg-dark-1 rounded-xl border border-dark-4 px-6 py-4'>
+    <div className='flex-between flex-col lg:basis-2/3 size-full bg-dark-1 rounded-xl border border-dark-4 px-6 py-4'>
       <div className='flex-between w-full'>
-        <Link
-          className='flex items-center gap-3'
-          to={`/profile/${userToChatWith?.$id}`}
-        >
-          <div className="relative before:absolute before:rounded-full before:content-[''] before:bottom-0 before:right-0 before:size-4 before:bg-green-500 hover:before:animate-rubber-band hover:before:animate-iteration-count-infinite hover:before:animate-duration-[3000ms] before:z-10">
-            <img
-              src={userToChatWith?.imageUrl}
-              alt='Chat profile picture'
-              height='70'
-              width='70'
-              className='rounded-full aspect-square object-cover'
-            />
-          </div>
-          <div className='flex gap-1 flex-col overflow-ellipsis'>
-            <p className='base-medium lg:body-medium overflow-ellipsis'>
-              {userToChatWith?.name}
-            </p>
-            <p className='subtle-semibold text-light-3 lg:small-regular'>
-              Online
-            </p>
-          </div>
-        </Link>
+        <div className='inline-flex gap-x-4'>
+          <Link to='/chats' className='flex gap-3 items-center'>
+            <BackIcon className='size-7' />
+          </Link>
+          <Link
+            className='flex items-center gap-3'
+            to={`/profile/${userToChatWith?.$id}`}
+          >
+            <div className="relative before:absolute before:rounded-full before:content-[''] before:bottom-0 before:right-0 before:size-4 before:bg-green-500 hover:before:animate-rubber-band hover:before:animate-iteration-count-infinite hover:before:animate-duration-[3000ms] before:z-10">
+              <img
+                src={userToChatWith?.imageUrl}
+                alt='Chat profile picture'
+                height='68'
+                width='68'
+                className='rounded-full aspect-square object-cover'
+              />
+            </div>
+            <div className='flex gap-1 flex-col overflow-ellipsis'>
+              <p className='base-medium lg:body-medium overflow-ellipsis'>
+                {userToChatWith?.name}
+              </p>
+              <p className='subtle-semibold text-light-3 lg:small-regular'>
+                Online
+              </p>
+            </div>
+          </Link>
+        </div>
         <div className='flex-center gap-4'>
           <PhoneIcon
             strokeWidth={1}
@@ -203,18 +211,18 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
         </>
       </div>
       <hr className='border w-full border-dark-4 my-4' />
-      <Form {...messageForm}>
+      <Form {...chatForm}>
         <form
-          onSubmit={messageForm.handleSubmit(onSubmitMessage)}
+          onSubmit={chatForm.handleSubmit(onSubmitMessage)}
           className='flex-center gap-x-4 w-full max-w-5xl'
           onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey) {
-              messageForm.handleSubmit(onSubmitMessage)(e)
+              chatForm.handleSubmit(onSubmitMessage)(e)
             }
           }}
         >
           <FormField
-            control={messageForm.control}
+            control={chatForm.control}
             name='body'
             render={({ field }) => (
               <FormItem className='flex-auto'>

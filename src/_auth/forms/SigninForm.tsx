@@ -25,7 +25,7 @@ const SigninForm = () => {
   const { checkAuth, isLoading } = useAccount()
   const { mutateAsync: signInAccount, isPending } = useSignIn()
 
-  const form = useForm<z.infer<typeof SigninValidationSchema>>({
+  const signinForm = useForm<z.infer<typeof SigninValidationSchema>>({
     resolver: zodResolver(SigninValidationSchema),
     defaultValues: {
       email: '',
@@ -39,7 +39,6 @@ const SigninForm = () => {
         email: user.email,
         password: user.password
       })
-      console.log('session :>> ', sessionResponse)
       if (sessionResponse?.data == null) {
         toast({
           title: 'Login failed.',
@@ -51,7 +50,7 @@ const SigninForm = () => {
         const isLoggedIn = await checkAuth()
 
         if (isLoggedIn) {
-          form.reset()
+          signinForm.reset()
           navigate('/')
         } else {
           toast({
@@ -66,21 +65,21 @@ const SigninForm = () => {
     }
   }
   return (
-    <Form {...form}>
-      <div className='sm:w-420 flex-center flex-col'>
+    <Form {...signinForm}>
+      <div className='flex flex-col sm:w-420 w-full p-5'>
         <Logo />
-        <h2 className='h3-bold md:h2-bold pt-5 sm:pt-12'>
+        <h2 className='h3-bold md:h2-bold pt-5 sm:pt-9'>
           Log in into your account
         </h2>
-        <p className='text-light-3 small-medium md:base-regular mt-2'>
-          Welcome back! Log in to your account to continue
+        <p className='text-light-3 small-medium md:base-regular'>
+          Welcome back master, we miss you!
         </p>
         <form
-          onSubmit={form.handleSubmit(handleSignin)}
+          onSubmit={signinForm.handleSubmit(handleSignin)}
           className='flex flex-col gap-5 w-full mt-4'
         >
           <FormField
-            control={form.control}
+            control={signinForm.control}
             name='email'
             render={({ field }) => (
               <FormItem>
@@ -89,7 +88,8 @@ const SigninForm = () => {
                   <Input
                     className='shad-input'
                     type='email'
-                    placeholder='Email*'
+                    placeholder='username@domain.com'
+                    autoComplete='email'
                     {...field}
                   />
                 </FormControl>
@@ -98,7 +98,7 @@ const SigninForm = () => {
             )}
           />
           <FormField
-            control={form.control}
+            control={signinForm.control}
             name='password'
             render={({ field }) => (
               <FormItem>
@@ -107,7 +107,8 @@ const SigninForm = () => {
                   <Input
                     className='shad-input'
                     type='password'
-                    placeholder='Password*'
+                    placeholder='Top secret!'
+                    autoComplete='off'
                     {...field}
                   />
                 </FormControl>
@@ -115,16 +116,17 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
-          <Button className='shad-button_primary' type='submit'>
-            {(isLoading || isPending) ? <LoaderIcon /> : 'Sign in'}
+          <Button
+            type='submit'
+            variant='default'
+            disabled={!signinForm.formState.isDirty || !signinForm.formState.isValid}
+          >
+            {isLoading || isPending ? <LoaderIcon /> : 'Sign in'}
           </Button>
 
-          <p className='text-small-regular text-light-2 text-center mt-2'>
+          <p className='small-regular text-light-2'>
             Don&apos;t have an account?{' '}
-            <Link
-              to='/sign-up'
-              className='text-primary-500 text-small-semibold ml-1'
-            >
+            <Link to='/sign-up' className='text-primary-500 small-semibold'>
               Sign up
             </Link>
           </p>

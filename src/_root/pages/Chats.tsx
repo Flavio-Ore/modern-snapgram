@@ -23,13 +23,12 @@ const Chats = () => {
     userId: userChatId ?? ''
   })
 
-  console.log('usersToChat :>> ', usersToChat)
   return (
-    <div className='common-container flex-center'>
-      <div className='flex-center flex-1 size-full gap-4 flex-col md:flex-row'>
+    <div className='flex flex-col flex-1 items-center gap-10 overflow-y-scroll p-0 md:py-10 md:px-8 lg:p-14 custom-scrollbar'>
+      <div className='flex-center md:flex-1 size-full gap-4 flex-col md:flex-row'>
         <div
           className={cn(
-            'size-full p-2 gap-4 transition-[flex-basis] basis-1/3',
+            'size-full p-2 gap-4 transition-[flex-basis] lg:basis-1/3',
             {
               hidden: usersToChat != null && usersToChat?.length <= 0,
               'hidden lg:block': userChatId != null
