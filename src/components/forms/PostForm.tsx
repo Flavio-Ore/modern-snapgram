@@ -1,5 +1,5 @@
-import FileUploader from '@/components/shared/app/FileUploader'
 import Loader from '@/components/shared/app/Loader'
+import FileUploader from '@/components/shared/files/FileUploader'
 import PreviousFiles from '@/components/shared/posts/PreviousFiles'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,6 +19,7 @@ import { PostValidationSchema } from '@/lib/validations'
 import { type FileModelWithUrl, type Post } from '@/types'
 import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
@@ -29,6 +30,7 @@ interface PostFormProps {
   action: Actions
 }
 const PostForm = ({ post, action }: PostFormProps) => {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
@@ -37,7 +39,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const { toast } = useToast()
   const navigate = useNavigate()
 
-  const form = useForm<z.infer<typeof PostValidationSchema>>({
+  const postForm = useForm<z.infer<typeof PostValidationSchema>>({
     resolver: zodResolver(PostValidationSchema),
     defaultValues: {
       caption: post?.caption ?? '',
@@ -49,14 +51,12 @@ const PostForm = ({ post, action }: PostFormProps) => {
   })
 
   const handlePreviousFileDelete = (fileId: FileModelWithUrl['$id']) => () => {
-    form.setValue(
+    postForm.setValue(
       'originalFiles',
-      form.getValues('originalFiles').filter(file => file.$id !== fileId)
+      postForm.getValues('originalFiles').filter(file => file.$id !== fileId)
     )
   }
   const onSubmit = async (value: z.infer<typeof PostValidationSchema>) => {
-    console.log({ value })
-    console.log({ post })
     try {
       if (post != null && action === 'UPDATE') {
         const originalFileIds = new Set(post?.files?.map(file => file.$id))
@@ -66,9 +66,6 @@ const PostForm = ({ post, action }: PostFormProps) => {
         const removedFileIds = [...originalFileIds].filter(
           id => !currentFileIds.has(id)
         )
-        console.log('originalFileIds :>> ', originalFileIds)
-        console.log('currentFileIds :>> ', currentFileIds)
-        console.log('removedFileIds :>> ', removedFileIds)
         const updatedPostResponse = await updatePost({
           ...value,
           filesToRemoveById: removedFileIds,
@@ -109,53 +106,81 @@ const PostForm = ({ post, action }: PostFormProps) => {
       console.error(error)
     }
   }
+  useEffect(() => {
+    const formSubscription = postForm.watch(() => {
+      if (textAreaRef.current != null) {
+        textAreaRef.current.style.height = '40px'
+        textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`
+      }
+    })
+    return () => {
+      formSubscription.unsubscribe()
+    }
+  }, [postForm.watch('caption')])
   return (
-    <Form {...form}>
+    <Form {...postForm}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-9 w-full max-w-5xl'
+        onSubmit={postForm.handleSubmit(onSubmit)}
+        className='flex flex-col gap-8 w-full max-w-5xl'
       >
+        <div className='self-start'>
+          <h3 className='text-light-3 h3-bold'>
+            Share your moments, inspire the world!
+          </h3>
+          <p className='text-light-3 body-bold'>
+            Your stories and experiences can light up someone&apos;s day.
+          </p>
+        </div>
         <FormField
-          control={form.control}
+          control={postForm.control}
           name='caption'
           render={({ field }) => (
             <FormItem>
               <FormLabel className='shad-form_label'>Caption</FormLabel>
               <FormControl>
                 <Textarea
-                  className='shad-textarea custom-scrollbar'
+                  placeholder={
+                    action === 'CREATE'
+                      ? 'Tell us your story...'
+                      : 'Update your story...'
+                  }
                   {...field}
+                  ref={textAreaRef}
                 />
               </FormControl>
-
               <FormMessage className='shad-form_message' />
             </FormItem>
           )}
         />
         <FormField
-          control={form.control}
+          control={postForm.control}
           name='location'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='shad-form_label'>Add Location</FormLabel>
+              <FormLabel className='shad-form_label'>Location</FormLabel>
               <FormControl>
-                <Input type='text' className='shad-input' {...field} />
+                <Input
+                  type='text'
+                  placeholder='The moon'
+                  className='shad-input'
+                  {...field}
+                />
               </FormControl>
-
               <FormMessage className='shad-form_message' />
             </FormItem>
           )}
         />
         <FormField
-          control={form.control}
+          control={postForm.control}
           name='tags'
           render={({ field }) => (
             <FormItem>
               <FormLabel className='shad-form_label body-medium'>
-                Add tags{' '}
-                <span className='tiny-medium text-light-4'>
+                Tags{' '}
+                <span className='subtle-regular text-light-3'>
                   , separated by comma &quot; , &quot;
-                </span>
+                </span>{' '}
+                <span className='text-light-3 small-regular'>- optional</span>
               </FormLabel>
               <FormControl>
                 <Input
@@ -165,19 +190,18 @@ const PostForm = ({ post, action }: PostFormProps) => {
                   {...field}
                 />
               </FormControl>
-
               <FormMessage className='shad-form_message' />
             </FormItem>
           )}
         />
         {action === 'UPDATE' && (
           <FormField
-            control={form.control}
+            control={postForm.control}
             name='originalFiles'
             render={({ field }) => {
               console.log(
                 'PREVIOUS UPDATED FILES VALUES: ',
-                form.getValues('originalFiles')
+                postForm.getValues('originalFiles')
               )
               return (
                 <FormItem>
@@ -197,34 +221,34 @@ const PostForm = ({ post, action }: PostFormProps) => {
           />
         )}
         <FormField
-          control={form.control}
+          control={postForm.control}
           name='newFiles'
-          render={({ field }) => {
-            console.log('ADDED FILES VALUE: ', form.getValues('newFiles'))
-            return (
-              <FormItem>
-                <FormLabel className='shad-form_label'>
-                  Add photos or videos or both
-                </FormLabel>
-                <FormControl>
-                  <FileUploader
-                    fieldChange={field.onChange}
-                    fileLimit={
-                      action === 'UPDATE' && post?.files != null && post.files.length > 0
-                        ? 10 - post.files.length
-                        : 10
-                    }
-                  />
-                </FormControl>
-                <FormMessage className='shad-form_message' />
-              </FormItem>
-            )
-          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='shad-form_label'>
+                Photos, videos or both!
+              </FormLabel>
+              <FormControl>
+                <FileUploader
+                  fieldChange={field.onChange}
+                  fileLimit={
+                    action === 'UPDATE' &&
+                    post?.files != null &&
+                    post.files.length > 0
+                      ? 10 - post.files.length
+                      : 10
+                  }
+                />
+              </FormControl>
+              <FormMessage className='shad-form_message' />
+            </FormItem>
+          )}
         />
 
         <div className='flex gap-4 items-center justify-end'>
           <Button
             type='button'
+            variant='outline'
             className='shad-button_dark_4'
             onClick={() => {
               navigate(-1)
@@ -235,14 +259,21 @@ const PostForm = ({ post, action }: PostFormProps) => {
           <Button
             type='submit'
             className='shad-button_primary whitespace-nowrap'
-            disabled={isLoadingCreate || isLoadingUpdate}
+            disabled={
+              isLoadingCreate ||
+              isLoadingUpdate ||
+              (!postForm.formState.isValid && postForm.formState.isDirty)
+            }
           >
             {isLoadingCreate || isLoadingUpdate
               ? (
               <Loader />
                 )
               : (
-              `${action[0].toUpperCase() + action.slice(1)} Post`
+              `${
+                action[0].toLocaleUpperCase() +
+                action.slice(1).toLocaleLowerCase()
+              } Post`
                 )}
           </Button>
         </div>

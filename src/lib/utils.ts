@@ -1,4 +1,3 @@
-import { type EmptyObject, type ObjectWithKeys } from '@/types'
 import { clsx, type ClassValue } from 'clsx'
 
 import { twMerge } from 'tailwind-merge'
@@ -10,22 +9,10 @@ export function cn (...inputs: ClassValue[]) {
 // !!'' => false                                      undefined => '' !== '' => false
 // !!' ' => true                                       'asdasd' => 'asdasd' !== '' => true
 export const doubleNegationStr = (str?: string) => (str?.trim() ?? '') !== ''
-export const pathToBase = (path: string) => {
-  console.log('PAT RELATIVE : ', path.split('/')[1])
-  return path.split('/')[1]
-}
 
 export const extractFirstRoutePart = (route: string) => {
   const match = route.match(/^\/([^/]+)\/?/)
-  return match != null ? match[1] : null // Returns the matched group or null if no match
-}
-export const isObjectEmpty = (
-  objectName?: EmptyObject | ObjectWithKeys | null | undefined
-) => {
-  return (
-    objectName == null ||
-    (Object.keys(objectName).length === 0 && objectName.constructor === Object)
-  )
+  return match != null ? match[1] : null
 }
 
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file)

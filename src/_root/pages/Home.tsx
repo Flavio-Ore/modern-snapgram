@@ -4,7 +4,7 @@ import PostCard from '@/components/shared/posts/PostCard'
 import HomePostSkeleton from '@/components/shared/skeletons/HomePostSkeleton'
 import RightSidebar from '@/components/shared/users/RightSidebar'
 import { useGetInfiniteRecentPosts } from '@/lib/queries/infiniteQueries'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const HomePosts = () => {
   const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } =
@@ -32,6 +32,22 @@ const HomePosts = () => {
 }
 
 const Home = () => {
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280)
+
+  const handleResize = () => {
+    setIsLargeScreen(window.innerWidth >= 1280)
+  }
+  useEffect(() => {
+    if (isLargeScreen) {
+      return () => {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [isLargeScreen])
   return (
     <div className='flex flex-1'>
       <div className='home-container'>
@@ -43,7 +59,7 @@ const Home = () => {
           <HomePosts />
         </div>
       </div>
-      <RightSidebar />
+      {isLargeScreen && <RightSidebar />}
     </div>
   )
 }

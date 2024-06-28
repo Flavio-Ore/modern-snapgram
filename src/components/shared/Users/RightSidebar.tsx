@@ -10,7 +10,6 @@ const TopCreators = () => {
     isError
   } = useGetTopUsers({ limit: 8 })
 
-  console.log({ topCreators })
   return (
     <ul className='home-creators_grid'>
       {isLoading &&

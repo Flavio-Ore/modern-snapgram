@@ -19,6 +19,7 @@ export const QUERY_KEYS = {
   // INFINITE POST KEYS
   GET_INFINITE_UPDATED_POSTS: 'findInfiniteUpdatedPosts',
   GET_INFINITE_RECENT_POSTS: 'findInfiniteRecentPosts',
+  GET_INFINITE_RELATED_POSTS: 'findInfiniteRelatedPostsByUserIdAndPostIdToExclude',
   GET_INFINITE_USER_POSTS: 'useGetInfiniteUserPosts',
 
   //  SEARCH KEYS

@@ -1,7 +1,7 @@
 import { appwriteConfig, storage } from '@/services/appwrite/config'
 import {
-    APPWRITE_RESPONSE_CODES,
-    appwriteResponse
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
 } from '@/services/appwrite/util'
 import { type FileModelWithUrl } from '@/types'
 import { AppwriteException, ID, ImageGravity } from 'appwrite'
@@ -116,8 +116,6 @@ export async function getFilePreview (fileId: string) {
       ImageGravity.Top,
       10
     )
-    console.log(fileUrl)
-
     return appwriteResponse({
       data: fileUrl.toString(),
       code: APPWRITE_RESPONSE_CODES.OK.code,

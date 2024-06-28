@@ -107,12 +107,6 @@ export async function findChatUsers () {
     })
     setOfUniqueUsersIds.delete(userAccount.$id)
 
-    console.log('chatUsersIds :>> ', chatUsersIds)
-    console.log(
-      'Array.from(setOfUniqueUsersIds) :>> ',
-      Array.from(setOfUniqueUsersIds)
-    )
-
     if (setOfUniqueUsersIds.size === 0) {
       return appwriteResponse({
         data: [],
@@ -268,7 +262,6 @@ export async function updateUser ({ user }: { user: UserUpdateData }) {
       id: user.imageId
     }
     const hasFile = user.file.length > 0 && user.file[0]
-    console.log({ user })
     if (hasFile !== false) {
       const file = await storage.createFile(
         appwriteConfig.profileStorageId,

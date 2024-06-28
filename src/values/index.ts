@@ -105,12 +105,6 @@ export const links = {
       Icon: SaveIcon,
       route: '/saved',
       label: 'Saved'
-    },
-
-    {
-      Icon: ChatsIcon,
-      route: '/chats',
-      label: 'Chats'
     }
   ]
 }

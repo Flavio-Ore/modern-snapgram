@@ -92,9 +92,9 @@ const AuthLayout = () => {
           <Dialog>
             <DialogTrigger
               asChild
-              className='shad-button_ghost  border mt-2 p-2 cursor-pointer bg-dark-1 text-secondary-500 hover:text-light-1'
+              className='mt-2 p-2 cursor-pointer bg-dark-1 text-secondary-500 hover:text-light-3'
             >
-              <h3 className='body-medium  text-pretty text-center'>
+              <h3 className='body-medium text-pretty text-center'>
                 Try logging in without having to create an account!
               </h3>
             </DialogTrigger>

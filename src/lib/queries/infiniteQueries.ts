@@ -101,6 +101,27 @@ export const useGetInfiniteUserPosts = ({ userId }: { userId: string }) => {
   })
 }
 
+export const useGetInfiniteRelatedPosts = ({
+  postId,
+  userId
+}: {
+  postId: string
+  userId: string
+}) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_RELATED_POSTS, postId, userId],
+    queryFn: async ({ pageParam }) =>
+      await posts.findInfiniteRelatedPostsByUserIdAndPostIdToExclude({
+        lastId: pageParam,
+        postId,
+        userId
+      }),
+    enabled: enabledId(postId) && enabledId(userId),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
+}
+
 export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_SAVED_POSTS, userId],
