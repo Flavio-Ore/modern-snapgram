@@ -1,28 +1,102 @@
 import ChatsIcon from '@/components/icons/ChatsIcon'
+import Loader from '@/components/shared/app/Loader'
 import Chat from '@/components/shared/chats/Chat'
 import ChatItem from '@/components/shared/chats/ChatItem'
 import ChatSkeleton from '@/components/shared/skeletons/ChatSkeleton'
 import ChatsSkeleton from '@/components/shared/skeletons/UsersToChatSkeleton'
-import { useGetAliveChats, useGetUserById } from '@/lib/queries/queries'
+import { useGetInfiniteMessagesByChatRoomId } from '@/lib/queries/infiniteQueries'
+import { useCreateChatRoomFromUsers } from '@/lib/queries/mutations'
+import { useGetAllChatRoomsByUserId, useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
-import { FlameKindlingIcon, MessageSquareWarningIcon, TentTreeIcon, TreesIcon } from 'lucide-react'
+import { appwriteConfig } from '@/services/appwrite/config'
+import {
+  FlameKindlingIcon,
+  MessageSquareWarningIcon,
+  TentTreeIcon,
+  TreesIcon
+} from 'lucide-react'
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 const Chats = () => {
-  const { id: userChatId } = useParams()
+  const { chatRoomId } = useParams()
+  const { data: user, isLoading: loadingUser, isError: errorUser } = useUser()
+  const { isPending: isPendingChatRoom, isSuccess: isSuccessChatRoom } =
+    useCreateChatRoomFromUsers()
   const {
-    data: usersToChat,
-    isLoading: isUsersLoading,
-    isError: isUsersError
-  } = useGetAliveChats()
-  const {
-    data: userToChat,
-    isLoading: isChatLoading,
-    isError: isChatError
-  } = useGetUserById({
-    userId: userChatId ?? ''
+    data: chatRooms,
+    isLoading: loadingChats,
+    isError: errorChats,
+    refetch: refetchChats
+  } = useGetAllChatRoomsByUserId({
+    userId: user?.$id ?? ''
   })
+  const membersExceptCurrentUser = useMemo(
+    () =>
+      chatRooms?.flatMap(chatRoom =>
+        chatRoom.members.filter(chat => chat.member.$id !== user?.$id)
+      ) ?? [],
+    [chatRooms]
+  )
 
+  const chatRoomSelected = useMemo(
+    () => chatRooms?.find(chat => chat.$id === chatRoomId) ?? null,
+    [chatRooms, chatRoomId]
+  )
+  const chatMemberChannels = useMemo(
+    () =>
+      membersExceptCurrentUser.map(
+        chatMemberId =>
+          `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.chatMemberCollectionId}.documents.${chatMemberId.$id}`
+      ),
+    [membersExceptCurrentUser]
+  )
+  console.log({
+    chatRooms
+  })
+  const { refetch: refetchMessages } = useGetInfiniteMessagesByChatRoomId({
+    chatRoomId: chatRoomId ?? ''
+  })
+  // useEffect(() => {
+  //   const unsubscribeOtherMemberChats = client.subscribe<ChatMemberModel>(
+  //     chatMemberChannels,
+  //     response => {
+  //       console.log('response from unsubscribeMemberChats :>> ', response)
+  //       if (
+  //         response.events.includes(
+  //           `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.chatMemberCollectionId}.documents.*.update`
+  //         )
+  //       ) {
+  //         // refetchChats()
+  //       }
+  //     }
+  //   )
+  //   const unsubscribe = client.subscribe(
+  //     [
+  //       `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
+  //     ],
+  //     response => {
+  //       console.log({ realTimeResponse: response })
+  //       if (
+  //         response.events.includes(
+  //           'databases.*.collections.*.documents.*.create'
+  //         ) ||
+  //         response.events.includes(
+  //           'databases.*.collections.*.documents.*.update'
+  //         ) ||
+  //         response.events.includes(
+  //           'databases.*.collections.*.documents.*.delete'
+  //         )
+  //       ) {
+  //         // refetchChats()
+  //       }
+  //     }
+  //   )
+  //   return () => {
+  //     unsubscribe()
+  //     unsubscribeOtherMemberChats()
+  //   }
+  // }, [])
   return (
     <div className='flex flex-col flex-1 items-center gap-10 overflow-y-scroll p-0 md:py-10 md:px-8 lg:p-14 custom-scrollbar'>
       <div className='flex-center md:flex-1 size-full gap-4 flex-col md:flex-row'>
@@ -30,8 +104,8 @@ const Chats = () => {
           className={cn(
             'size-full p-2 gap-4 transition-[flex-basis] lg:basis-1/3',
             {
-              hidden: usersToChat != null && usersToChat?.length <= 0,
-              'hidden lg:block': userChatId != null
+              hidden: chatRooms != null && chatRooms.length <= 0,
+              'hidden lg:block': chatRoomId != null
             }
           )}
         >
@@ -39,25 +113,45 @@ const Chats = () => {
             <ChatsIcon className='size-9 fill-primary-500' />
             <h1 className='xs:h2-bold h3-bold'>All Chats</h1>
           </div>
-          {isUsersLoading && <ChatsSkeleton />}
-          {isUsersError && (
+          {(loadingUser || loadingChats) && <ChatsSkeleton />}
+          {(errorUser || errorChats) && (
             <div className='flex-center size-full flex-col text-center  text-light-3 animate-pulse'>
               <MessageSquareWarningIcon size={64} />
               <h3 className='h1-bold'>Error finding friends!</h3>
               <p className='text-primary-500'>Try again later.</p>
             </div>
           )}
+          {(chatRooms == null || chatRooms.length <= 0) &&
+            !loadingUser &&
+            !loadingChats &&
+            !errorUser &&
+            !errorChats && (
+              <div className='flex-center size-full flex-col text-center  text-light-3'>
+                <MessageSquareWarningIcon size={64} />
+                <h3 className='h1-bold'>No chats found!</h3>
+                <p className='text-primary-500'>Start chatting with friends.</p>
+              </div>
+          )}
           <ul>
-            {usersToChat != null &&
-              usersToChat.length > 0 &&
-              !isUsersError &&
-              !isUsersLoading &&
-              usersToChat.map(user => (
-                <ChatItem key={user.$id} userSelectableToChat={user} />
+            {isPendingChatRoom && (
+              <li className='flex-center gap-2'>
+                <Loader />
+                <p className='text-light-3'>Creating chat...</p>
+              </li>
+            )}
+            {chatRooms != null &&
+              user != null &&
+              chatRooms.length > 0 &&
+              chatRooms.map(chatRoom => (
+                <ChatItem
+                  key={chatRoom.$id}
+                  selectableChatRoom={chatRoom}
+                  currentUser={user}
+                />
               ))}
           </ul>
         </div>
-        {userChatId == null && (
+        {chatRoomId == null && (
           <div className='flex-center flex-col basis-2/3 size-full gap-12'>
             <h2 className='h2-bold'>Select a chat to start messaging!</h2>
             <div className='flex-center'>
@@ -84,8 +178,8 @@ const Chats = () => {
             </Link>
           </div>
         )}
-        {userChatId != null && isChatLoading && <ChatSkeleton />}
-        {userChatId != null && isChatError && (
+        {chatRoomId != null && loadingUser && <ChatSkeleton />}
+        {chatRoomId != null && errorUser && (
           <div className='basis-2/3 flex-center flex-col gap-4'>
             <h1 className='h1-bold'>User not found</h1>
             <Link to='/chats' className='button_secondary'>
@@ -93,9 +187,14 @@ const Chats = () => {
             </Link>
           </div>
         )}
-        {userChatId != null && userToChat != null && (
-          <Chat userToChatWith={userToChat} />
-        )}
+        {chatRoomId != null &&
+          user != null &&
+          chatRooms != null &&
+          chatRoomSelected != null &&
+          !loadingUser &&
+          !loadingChats &&
+          !errorUser &&
+          !errorChats && <Chat chatRoom={chatRoomSelected} />}
       </div>
     </div>
   )

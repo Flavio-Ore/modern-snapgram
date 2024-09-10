@@ -1,5 +1,12 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { follows, messages, posts, saves, users } from '@/services/appwrite'
+import {
+  chatsMember,
+  follows,
+  messages,
+  posts,
+  saves,
+  users
+} from '@/services/appwrite'
 import { type AppwriteResponse } from '@/services/appwrite/util'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models } from 'appwrite'
@@ -164,41 +171,112 @@ export const useGetInfiniteFollowers = ({ userId }: { userId: string }) => {
   })
 }
 
-export const useGetInfiniteMessages = ({
-  senderId,
-  receiversId
-}: {
-  senderId: string
-  receiversId: string[]
-}) => {
+export const useGetInfiniteChats = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES, senderId, ...receiversId],
+    queryKey: [QUERY_KEYS.GET_INFINITE_CHATS_MEMBER, userId],
     queryFn: async ({ pageParam }) =>
-      await messages.findInfiniteMessages({
-        lastId: pageParam,
-        senderId,
-        receiversId
-      }),
-    select: infiniteData => {
-      const responsesInDisarray = infiniteData.pages.map(
-        response => {
-          if (response?.data == null) {
-            return response
-          }
-          const messagesInDisorder = structuredClone(response.data)
-          return {
-            ...response,
-            data: messagesInDisorder.reverse()
-          }
-        }
-      )
-      return {
-        pages: responsesInDisarray.reverse(),
-        pageParams: infiniteData.pageParams
-      } satisfies typeof infiniteData
-    },
-    enabled: enabledId(senderId) && receiversId.some(id => enabledId(id)),
+      await chatsMember.findInfiniteChats({ userId, lastId: pageParam }),
+    enabled: enabledId(userId),
     getNextPageParam: getNextCursor,
     initialPageParam: INITIAL_PAGE_PARAM
   })
 }
+
+export const useGetInfiniteMessagesByChatRoomId = ({
+  chatRoomId
+}: {
+  chatRoomId: string
+}) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID, chatRoomId],
+    queryFn: async ({ pageParam }) =>
+      await messages.findInfiniteMessagesByChatRoomId({
+        lastId: pageParam,
+        chatRoomId
+      }),
+    enabled: enabledId(chatRoomId),
+    select: infiniteData => {
+      const responsesInDisarray = infiniteData.pages.map(response => {
+        if (response?.data == null) {
+          return response
+        }
+        const messagesInDisorder = structuredClone(response.data)
+        return {
+          ...response,
+          data: messagesInDisorder.reverse()
+        }
+      })
+      return {
+        pages: responsesInDisarray.reverse(),
+        pageParams: infiniteData.pageParams
+      }
+    },
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
+}
+
+export const useGetInfiniteMessagesByAuthorsAndReceivers = ({
+  authorChatId,
+  receiversChatId
+}: {
+  authorChatId: string
+  receiversChatId: string[]
+}) => {
+  return useInfiniteQuery({
+    queryKey: [
+      QUERY_KEYS.GET_INFINITE_MESSAGES_BY_AUTHORS_AND_RECEIVERS,
+      authorChatId,
+      ...receiversChatId
+    ],
+    queryFn: async ({ pageParam }) =>
+      await messages.findInfiniteMessagesByAuthorsAndReceivers({
+        lastId: pageParam,
+        receiversChatId,
+        authorChatId
+      }),
+    enabled:
+      enabledId(authorChatId) && receiversChatId.some(id => enabledId(id)),
+    getNextPageParam: getNextCursor,
+    initialPageParam: INITIAL_PAGE_PARAM
+  })
+}
+
+// export const useGetInfiniteMessages = ({
+//   senderId,
+//   receiversId
+// }: {
+//   senderId: string
+//   receiversId: string[]
+// }) => {
+//   return useInfiniteQuery({
+//     queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES, senderId, ...receiversId],
+//     queryFn: async ({ pageParam }) =>
+//       await messages.findInfiniteMessages({
+//         lastId: pageParam,
+//         authorChatId: senderId,
+//         receiversChatId: receiversId
+//       }),
+//     select: infiniteData => {
+//       const responsesInDisarray = infiniteData.pages.map(
+//         response => {
+//           if (response?.data == null) {
+//             return response
+//           }
+//           const messagesInDisorder = structuredClone(response.data)
+//           return {
+//             ...response,
+//             data: messagesInDisorder.reverse()
+//           }
+//         }
+//       )
+//       return {
+//         pages: responsesInDisarray.reverse(),
+//         pageParams: infiniteData.pageParams
+//       } satisfies typeof infiniteData
+//     },
+//     enabled: enabledId(senderId) && receiversId.some(id => enabledId(id)),
+//     getNextPageParam: getNextCursor,
+//     initialPageParam: INITIAL_PAGE_PARAM
+//   })
+// }

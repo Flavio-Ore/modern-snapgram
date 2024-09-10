@@ -1,4 +1,6 @@
 export * as auth from '@/services/appwrite/auth'
+export * as chatRooms from '@/services/appwrite/chatRoom'
+export * as chatsMember from '@/services/appwrite/chatsMember'
 export * as file from '@/services/appwrite/file'
 export * as follows from '@/services/appwrite/follows'
 export * as likes from '@/services/appwrite/likes'

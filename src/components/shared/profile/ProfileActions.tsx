@@ -1,7 +1,11 @@
 import EditIcon from '@/components/icons/EditIcon'
 import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
-import { useFollow, useUnfollow } from '@/lib/queries/mutations'
+import {
+  useCreateChatRoomFromUsers,
+  useFollow,
+  useUnfollow
+} from '@/lib/queries/mutations'
 import { type UserModel } from '@/types'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -21,6 +25,7 @@ const ProfileActions = ({
       record => record.followed.$id === profileUser.$id
     )
   })
+  const { mutateAsync: createChatRoomFromUsers } = useCreateChatRoomFromUsers()
   const { mutateAsync: follow, isPending: isPendindFollow } = useFollow()
   const { mutateAsync: unfollow, isPending: isPendindUnfollow } = useUnfollow()
   const followRecordId = useMemo(
@@ -53,6 +58,16 @@ const ProfileActions = ({
     try {
       await unfollow({ followRecordId })
       setIsFollowing(false)
+    } catch (e) {
+      console.error({ e })
+    }
+  }
+  const handleNewChat = async () => {
+    if (isCurrentUser) return
+    try {
+      await createChatRoomFromUsers({
+        users: [currentUser, profileUser]
+      })
     } catch (e) {
       console.error({ e })
     }
@@ -92,7 +107,7 @@ const ProfileActions = ({
             className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-primary-600 small-semibold'
             asChild
           >
-            <Link key='message' to={`/chats/${profileUser.$id}`}>
+            <Link key='message' to='/chats' onClick={handleNewChat}>
               Message
             </Link>
           </Button>
