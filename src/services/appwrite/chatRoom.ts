@@ -1,11 +1,14 @@
+import { appwriteConfig, databases } from '@/services/appwrite/config'
+import {
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from '@/services/appwrite/util'
 import {
   type ChatMemberModel,
   type ChatRoomModel,
   type UserModel
 } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
-import { appwriteConfig, databases } from './config'
-import { APPWRITE_RESPONSE_CODES, appwriteResponse } from './util'
 
 export async function findAllChatRoomsByMemberId ({
   memberId
@@ -58,7 +61,6 @@ export async function findAllChatRoomsByUserId ({
       appwriteConfig.chatRoomCollectionId,
       [Query.equal('$id', chatRoomsIds)]
     )
-    console.log({ chatRooms })
     return appwriteResponse({
       data: chatRooms.documents,
       message: 'Chat rooms found successfully.',

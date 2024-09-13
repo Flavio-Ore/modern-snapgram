@@ -159,10 +159,6 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
     }
     setIsFirstTimeInChat(false)
 
-    console.log('Setting messages to read to zero', {
-      currentChatMemberId: currentMember.$id,
-      currentMessagesToRead: currentMember.messages_to_read
-    })
     setMessagesReadToZero({
       chatId: currentMember.$id
     })
@@ -179,13 +175,6 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
         `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
       ],
       ({ events, channels, payload: newMessage }) => {
-        console.log({
-          realTimeResponse: {
-            events,
-            channels,
-            newMessage
-          }
-        })
         if (
           events.includes(
             `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
@@ -203,7 +192,6 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
               ownChatMembersIds.some(ownId => ownId === id)
             )
           ) {
-            console.log('Refetching all chat messages')
             refetchMessages()
           }
         }
@@ -287,7 +275,7 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
               <p className='text-light-4 mt-10 text-center body-bold w-full animate-pulse'>
                 Type a message to start chatting!
               </p>
-            )}
+          )}
           {!isLoading &&
             !isError &&
             currentMember != null &&
@@ -319,7 +307,7 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
                 ))}
                 <div ref={bottomOfChatRef} />
               </>
-            )}
+          )}
         </>
       </div>
       <hr className='border w-full border-dark-4 my-4' />

@@ -47,7 +47,6 @@ const ProfileForm = () => {
       imageUrl: user?.imageUrl ?? '',
       imageId: user?.imageId ?? ''
     })
-    console.log({ updatedUser })
     if (updatedUser?.data == null) {
       toast({
         title: 'Profile update error',

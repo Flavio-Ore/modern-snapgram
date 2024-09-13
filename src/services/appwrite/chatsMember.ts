@@ -1,7 +1,10 @@
+import { appwriteConfig, databases } from '@/services/appwrite/config'
+import {
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from '@/services/appwrite/util'
 import { type ChatMemberModel, type UserModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
-import { appwriteConfig, databases } from './config'
-import { APPWRITE_RESPONSE_CODES, appwriteResponse } from './util'
 
 export async function findInfiniteChats ({
   lastId = '',
@@ -76,7 +79,11 @@ export async function findAllOtherMembersFromAllChatsByUserId ({
   }
 }
 
-export async function findAllMemberChatsByUserId ({ userId }: { userId: UserModel['$id'] }) {
+export async function findAllMemberChatsByUserId ({
+  userId
+}: {
+  userId: UserModel['$id']
+}) {
   try {
     const query = [Query.equal('member', [userId])]
     const chatMemberships = await databases.listDocuments<ChatMemberModel>(
@@ -212,15 +219,16 @@ export async function updateChatMemberOnlineStatus ({
 }) {
   try {
     const updatedMemberChats = await Promise.all(
-      chatIds.map(async chatId =>
-        await databases.updateDocument<ChatMemberModel>(
-          appwriteConfig.databaseId,
-          appwriteConfig.chatMemberCollectionId,
-          chatId,
-          {
-            online
-          }
-        )
+      chatIds.map(
+        async chatId =>
+          await databases.updateDocument<ChatMemberModel>(
+            appwriteConfig.databaseId,
+            appwriteConfig.chatMemberCollectionId,
+            chatId,
+            {
+              online
+            }
+          )
       )
     )
 

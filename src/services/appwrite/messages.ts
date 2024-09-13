@@ -1,3 +1,8 @@
+import { appwriteConfig, databases } from '@/services/appwrite/config'
+import {
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from '@/services/appwrite/util'
 import {
   type ChatMemberModel,
   type ChatRoomModel,
@@ -5,8 +10,6 @@ import {
   type UserModel
 } from '@/types'
 import { AppwriteException, ID, Permission, Query, Role } from 'appwrite'
-import { appwriteConfig, databases } from './config'
-import { APPWRITE_RESPONSE_CODES, appwriteResponse } from './util'
 
 export async function findInfiniteMessages ({
   lastId = '',
