@@ -9,42 +9,63 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useGetInfiniteMessages } from '@/lib/queries/infiniteQueries'
-import { useCreateMessage } from '@/lib/queries/mutations'
+import { useGetInfiniteMessagesByChatRoomId } from '@/lib/queries/infiniteQueries'
+import {
+  useCreateMessage,
+  useSetMessagesReadToZero
+} from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
 import { MessageValidationSchema } from '@/lib/validations'
-import { type UserModel } from '@/types'
+import { appwriteConfig, client } from '@/services/appwrite/config'
+import { type ChatRoomModel, type MessageModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MessageCircleWarningIcon } from 'lucide-react'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
 import { type z } from 'zod'
 
-const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
+const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
+  const [isFirstTimeInChat, setIsFirstTimeInChat] = useState(true)
   const bottomOfChatRef = useRef<HTMLDivElement>(null)
   const isAtBottomOnce = useRef(false)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  const { data: currentUser } = useUser()
+  const { toast } = useToast()
+  const { ref: topChatRef, inView: topChatInView } = useInView({
+    threshold: 0
+  })
+  const { data: user } = useUser()
+  const { mutateAsync: createMessage } = useCreateMessage()
+  const { mutateAsync: setMessagesReadToZero, isPending } =
+    useSetMessagesReadToZero()
   const {
     data: messagesResponse,
     isLoading,
     isError,
+    refetch: refetchMessages,
     isFetching,
     hasNextPage,
     isRefetching,
     fetchNextPage
-  } = useGetInfiniteMessages({
-    senderId: currentUser?.accountId ?? '',
-    receiversId: [userToChatWith.accountId]
+  } = useGetInfiniteMessagesByChatRoomId({
+    chatRoomId: chatRoom.$id
   })
-  const { mutateAsync: createMessage } = useCreateMessage()
-  const { toast } = useToast()
-  const { ref, inView } = useInView({
-    threshold: 0
-  })
+  const currentMember = useMemo(
+    () =>
+      chatRoom.members.find(
+        chatMember => chatMember.member.$id === user?.$id
+      ) ?? null,
+    [chatRoom, user]
+  )
+  const membersExceptCurrentUser = useMemo(
+    () =>
+      chatRoom.members.filter(
+        chatMember => chatMember.member.$id !== user?.$id
+      ) ?? [],
+    [chatRoom, user]
+  )
 
   const chatForm = useForm<z.infer<typeof MessageValidationSchema>>({
     resolver: zodResolver(MessageValidationSchema),
@@ -52,21 +73,26 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
       body: ''
     }
   })
-
   const messages = useMemo(
     () => messagesResponse?.pages.flatMap(page => page?.data ?? []) ?? [],
     [messagesResponse]
   )
-  const accountId = useMemo(() => currentUser?.accountId ?? '', [currentUser])
-
+  const ownChatMembersIds = useMemo(
+    () => user?.chats.map(chat => chat.$id) ?? [],
+    [user]
+  )
+  const accountId = useMemo(() => user?.accountId ?? '', [user])
   async function onSubmitMessage (
     values: z.infer<typeof MessageValidationSchema>
   ) {
     try {
+      if (currentMember == null) return
       const messageRes = await createMessage({
         body: values.body,
-        sender: accountId,
-        receivers: [userToChatWith.accountId]
+        authorAccountId: accountId,
+        authorChat: currentMember,
+        receiversChat: membersExceptCurrentUser,
+        chatRoomId: chatRoom.$id
       })
       if (messageRes?.data != null) {
         chatForm.reset()
@@ -84,6 +110,7 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
       console.error({ e })
     }
   }
+
   useEffect(() => {
     if (textAreaRef.current != null) {
       textAreaRef.current.style.height = '40px'
@@ -118,8 +145,62 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
   }, [messagesResponse])
 
   useEffect(() => {
-    if (inView && !isFetching && hasNextPage) void fetchNextPage()
-  }, [inView])
+    if (topChatInView && !isFetching && hasNextPage) void fetchNextPage()
+  }, [topChatInView])
+
+  useEffect(() => {
+    if (
+      currentMember == null ||
+      isPending ||
+      currentMember.messages_to_read <= 0 ||
+      !isFirstTimeInChat
+    ) {
+      return
+    }
+    setIsFirstTimeInChat(false)
+
+    setMessagesReadToZero({
+      chatId: currentMember.$id
+    })
+      .then()
+      .catch(e => {
+        console.error({ e })
+      })
+  }, [currentMember])
+
+  useEffect(() => {
+    if (ownChatMembersIds.length <= 0) return
+    const unsubscribeMessages = client.subscribe<MessageModel>(
+      [
+        `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
+      ],
+      ({ events, payload: newMessage }) => {
+        if (
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
+          ) ||
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.update`
+          ) ||
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.delete`
+          )
+        ) {
+          if (
+            ownChatMembersIds.some(id => id === newMessage.author_chat_id) ||
+            newMessage.receivers_chat_id.some(id =>
+              ownChatMembersIds.some(ownId => ownId === id)
+            )
+          ) {
+            refetchMessages()
+          }
+        }
+      }
+    )
+    return () => {
+      unsubscribeMessages()
+    }
+  }, [ownChatMembersIds])
 
   return (
     <div className='flex-between flex-col lg:basis-2/3 size-full bg-dark-1 rounded-xl border border-dark-4 px-6 py-4'>
@@ -130,11 +211,23 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
           </Link>
           <Link
             className='flex items-center gap-3'
-            to={`/profile/${userToChatWith?.$id}`}
+            to={`/profile/${membersExceptCurrentUser[0].member.$id}`}
           >
-            <div className="relative before:absolute before:rounded-full before:content-[''] before:bottom-0 before:right-0 before:size-4 before:bg-green-500 hover:before:animate-rubber-band hover:before:animate-iteration-count-infinite hover:before:animate-duration-[3000ms] before:z-10">
+            <div
+              className={cn(
+                "relative before:absolute before:rounded-full before:content-[''] before:bottom-0 before:right-0 before:size-4 hover:before:animate-rubber-band hover:before:animate-iteration-count-infinite hover:before:animate-duration-[3000ms] before:z-10 lg:before:bg-transparent",
+                {
+                  'before:bg-green-500': membersExceptCurrentUser.some(
+                    memberChat => memberChat.online
+                  ),
+                  'before:bg-red-500': membersExceptCurrentUser.every(
+                    memberChat => !memberChat.online
+                  )
+                }
+              )}
+            >
               <img
-                src={userToChatWith?.imageUrl}
+                src={membersExceptCurrentUser[0].member.imageUrl}
                 alt='Chat profile picture'
                 height='68'
                 width='68'
@@ -143,10 +236,12 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
             </div>
             <div className='flex gap-1 flex-col overflow-ellipsis'>
               <p className='base-medium lg:body-medium overflow-ellipsis'>
-                {userToChatWith?.name}
+                {membersExceptCurrentUser[0].member.name}
               </p>
               <p className='subtle-semibold text-light-3 lg:small-regular'>
-                Online
+                {membersExceptCurrentUser.some(memberChat => memberChat.online)
+                  ? 'Online'
+                  : 'Offline'}
               </p>
             </div>
           </Link>
@@ -183,27 +278,32 @@ const Chat = ({ userToChatWith }: { userToChatWith: UserModel }) => {
           )}
           {!isLoading &&
             !isError &&
+            currentMember != null &&
             messagesResponse != null &&
             messages.length !== 0 && (
               <>
                 {!hasNextPage && (
                   <p className='text-light-4 mb-10 text-center w-full animate-pulse'>
-                    You reached the end!
+                    You reached the beginning!
                   </p>
                 )}
                 {hasNextPage && (
                   <div
-                    ref={ref}
+                    ref={topChatRef}
                     className={cn('flex mb-10 flex-center w-full', {
                       'animate-fade-out-down animate-duration-1000 animate-delay-1000':
-                        inView
+                        topChatInView
                     })}
                   >
                     <LoaderIcon className='stroke-secondary-500' />
                   </div>
                 )}
                 {messages.map(message => (
-                  <ChatBubble key={message.$id} message={message} />
+                  <ChatBubble
+                    key={message.$id}
+                    message={message}
+                    currentChatMember={currentMember}
+                  />
                 ))}
                 <div ref={bottomOfChatRef} />
               </>

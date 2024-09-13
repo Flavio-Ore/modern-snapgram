@@ -10,15 +10,32 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { useSignOut } from '@/lib/queries/mutations'
+import { useSetChatMemberOnline, useSignOut } from '@/lib/queries/mutations'
+import { useGetAllMemberChats, useUser } from '@/lib/queries/queries'
 import { LucideLogOut } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const LogoutDialog = () => {
+  const { data: user } = useUser()
+  const { data: ownMembers } = useGetAllMemberChats({
+    userId: user?.$id ?? ''
+  })
+  const { mutateAsync: updateStatus } = useSetChatMemberOnline()
   const { mutate: signOut, isSuccess } = useSignOut()
   const navigate = useNavigate()
 
+  const chatMembersIds = useMemo(
+    () => ownMembers?.map(chatMember => chatMember.$id) ?? [],
+    [ownMembers]
+  )
+  const handleLogout = async () => {
+    await updateStatus({
+      chatIds: chatMembersIds,
+      online: false
+    })
+    signOut()
+  }
   useEffect(() => {
     if (isSuccess) navigate(0)
   }, [isSuccess])
@@ -44,11 +61,7 @@ const LogoutDialog = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => {
-              signOut()
-            }}
-          >
+          <AlertDialogAction onClick={handleLogout}>
             <div className='flex-center gap-x-2'>
               <span className='text-red-500 group-hover:text-primary-500'>
                 Logout

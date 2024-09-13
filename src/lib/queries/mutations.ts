@@ -2,6 +2,8 @@ import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 
 import {
   auth,
+  chatRooms,
+  chatsMember,
   follows,
   likes,
   messages,
@@ -166,24 +168,76 @@ export const useUpdateUser = () => {
   })
 }
 
-export const useCreateMessage = () => {
+export const useCreateChatStatus = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ userId }: { userId: string }) =>
+      await chatsMember.createChat({ userId }),
+    onSuccess: () => {
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID]
+      })
+    }
+  })
+}
+export const useCreateChatRoomFromUsers = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({
-      body,
-      sender,
-      receivers
-    }: Parameters<typeof messages.createMessage>[0]) =>
-      await messages.createMessage({ body, sender, receivers }),
+      users
+    }: Parameters<typeof chatRooms.createChatRoomFromUsers>[0]) =>
+      await chatRooms.createChatRoomFromUsers({ users }),
     onSuccess: response => {
-      if (response != null) {
-        void queryClient.refetchQueries({
-          queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
-        })
-        void queryClient.refetchQueries({
-          queryKey: [QUERY_KEYS.GET_CHAT_USERS]
-        })
+      if (response?.data == null) {
+        return
       }
+      void queryClient.refetchQueries()
+    }
+  })
+}
+export const useDeleteChat = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ chatId }: { chatId: string }) =>
+      await chatsMember.deleteChat({ chatId }),
+    onSuccess: () => {
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID]
+      })
+    }
+  })
+}
+
+export const useCreateMessage = () => {
+  return useMutation({
+    mutationFn: async ({
+      body,
+      authorAccountId,
+      authorChat,
+      receiversChat,
+      chatRoomId
+    }: Parameters<typeof messages.createMessage>[0]) =>
+      await messages.createMessage({
+        body,
+        authorChat,
+        receiversChat,
+        authorAccountId,
+        chatRoomId
+      })
+  })
+}
+
+export const useSetMessagesReadToZero = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      chatId
+    }: Parameters<typeof chatsMember.resetMessagesToRead>[0]) =>
+      await chatsMember.resetMessagesToRead({ chatId }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID]
+      })
     }
   })
 }
@@ -198,7 +252,7 @@ export const useEditMessage = () => {
       await messages.editMessage({ messageId, newBody }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID]
       })
     }
   })
@@ -212,7 +266,7 @@ export const useDeleteMessage = () => {
       await messages.deleteMessage({ messageId }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID]
       })
     }
   })
@@ -257,5 +311,15 @@ export const useUnfollow = () => {
         })
       }
     }
+  })
+}
+
+export const useSetChatMemberOnline = () => {
+  return useMutation({
+    mutationFn: async ({
+      chatIds,
+      online
+    }: Parameters<typeof chatsMember.updateChatMemberOnlineStatus>[0]) =>
+      await chatsMember.updateChatMemberOnlineStatus({ chatIds, online })
   })
 }

@@ -13,12 +13,11 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<AppwriteException>()
   const navigate = useNavigate()
+
   const checkAuth = async () => {
     try {
       setIsLoading(true)
-      const session = await account.getSession('current')
-      console.log('session :>> ', session)
-
+      await account.getSession('current')
       setIsAuthenticated(true)
       return true
     } catch (error) {
@@ -34,6 +33,41 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  useEffect(() => {
+    if (
+      window.localStorage.getItem('cookieFallback') === '[]' ||
+      window.localStorage.getItem('cookieFallback') == null
+    ) {
+      setIsAuthenticated(false)
+      navigate('/sign-in')
+    } else {
+      account
+        .getSession('current')
+        .then(session => {
+          if (session == null) {
+            setIsAuthenticated(false)
+            navigate('/sign-in')
+            return
+          }
+          if (
+            window.localStorage.getItem('cookieFallback') === '[]' ||
+            window.localStorage.getItem('cookieFallback') == null
+          ) {
+            setIsAuthenticated(false)
+            navigate('/sign-in')
+            return
+          }
+          setIsAuthenticated(true)
+          navigate('/')
+        })
+        .catch(sessionError => {
+          console.error({ sessionError })
+          setIsAuthenticated(false)
+          navigate('/sign-in')
+        })
+    }
+  }, [])
+
   const value = {
     isLoading,
     isAuthenticated,
@@ -41,19 +75,6 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
     checkAuth,
     error
   }
-
-  useEffect(() => {
-    if (
-      window.localStorage.getItem('cookieFallback') === '[]' ||
-      window.localStorage.getItem('cookieFallback') == null
-    ) {
-      navigate('/sign-in')
-      setIsAuthenticated(false)
-    } else {
-      setIsAuthenticated(true)
-      checkAuth()
-    }
-  }, [])
 
   return (
     <AccountContext.Provider value={value}>{children}</AccountContext.Provider>
