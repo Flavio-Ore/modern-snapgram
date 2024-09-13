@@ -7,104 +7,12 @@ import {
   saves,
   users
 } from '@/services/appwrite'
-import { appwriteConfig, client } from '@/services/appwrite/config'
-import { type MessageModel } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
   if (id === '') return false
   return true
-}
-
-// export const useMessagesNotifications = ({
-//   currentUser
-// }: {
-//   currentUser: UserModel
-// }) => {
-//   const [payload, setPayload] = useState<{
-//     numberOfMessages: number
-//     showNotification: boolean
-//     lastMessage?: MessageModel | null
-//     chatsToRead: string[]
-//   }>({
-//     numberOfMessages: 0,
-//     showNotification: false,
-//     lastMessage: null,
-//     chatsToRead: []
-//   })
-//   const reset = (reset = false) => {
-//     if (reset) {
-//       setPayload({
-//         numberOfMessages: 0,
-//         showNotification: false,
-//         lastMessage: null,
-//         chatsToRead: []
-//       })
-//     } else {
-//       setPayload(prev => ({
-//         ...prev,
-//         showNotification: false
-//       }))
-//     }
-//   }
-//   useEffect(() => {
-//     const unsubscribe = client.subscribe<MessageModel>(
-//       [
-//         `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
-//       ],
-//       response => {
-//         // This should be done by a backend instead of a client where anyone who has access to the client can listen to the messages by hacking the client
-//         if (
-//           currentUser?.accountId != null &&
-//           response.payload.receivers.includes(currentUser?.accountId)
-//         ) {
-//           setPayload(prev => ({
-//             ...prev,
-//             showNotification: true,
-//             lastMessage: response.payload,
-//             chatsToRead: [
-//               ...new Set([...prev.chatsToRead, response.payload.sender])
-//             ]
-//           }))
-//           console.log('New message received:', response)
-//         }
-//         console.log({ messagesFullDuplex: response })
-//       }
-//     )
-
-//     return () => {
-//       unsubscribe()
-//     }
-//   }, [])
-
-//   return useQuery({
-//     queryKey: [
-//       QUERY_KEYS.GET_MESSAGES_NOTIFICATIONS,
-//       currentUser?.accountId,
-//       payload
-//     ],
-//     queryFn: async () => payload,
-//     placeholderData: { numberOfMessages: 0, showNotification: false }
-//   })
-// }
-
-export const useSubscribeToMessages = () => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_MESSAGES_NOTIFICATIONS],
-    queryFn: async () => {
-      const unsubscribe = client.subscribe<MessageModel>(
-        [
-          `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
-        ],
-        response => {
-          console.log({ messagesFullDuplex: response })
-        }
-      )
-
-      return unsubscribe
-    }
-  })
 }
 
 export const useGetPostById = ({ postId }: { postId: string }) => {
@@ -146,57 +54,20 @@ export const useGetAllMemberChats = ({ userId }: { userId: string }) => {
 }
 
 export const useGetAllChatRoomsByUserId = ({
-  userId
+  chatRoomsIds
 }: {
-  userId: string
+  chatRoomsIds: string[]
 }) => {
   return useQuery({
-    queryKey: [QUERY_KEYS.GET_ALL_CHATS_BY_USER_ID, userId],
+    queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID, ...chatRoomsIds],
     queryFn: async () =>
       await chatRooms.findAllChatRoomsByUserId({
-        userId
+        chatRoomsIds
       }),
-    enabled: enabledId(userId),
+    enabled: chatRoomsIds.length > 0,
     select: response => response?.data
   })
 }
-
-// export const useGetAllChatRoomsByMemberId = ({
-//   memberChatId
-// }: {
-//   memberChatId: ChatMemberModel['$id']
-// }) => {
-//   return useQuery({
-//     queryKey: [QUERY_KEYS.GET_ALL_CHATS_BY_MEMBER_ID, memberChatId],
-//     queryFn: async () =>
-//       await chatRooms.findAllChatRoomsByMemberId({
-//         memberId: memberChatId
-//       }),
-//     select: response => response?.data,
-//     enabled: enabledId(memberChatId)
-//   })
-// }
-
-// export const useGetChatRoomsByIds = ({ chatRoomIds }: { chatRoomIds: string[] }) => {
-//   return useQuery({
-//     queryKey: [QUERY_KEYS.GET_CHAT_ROOMS_BY_IDS, ...chatRoomIds],
-//     queryFn: async () =>
-//       await chatRooms.findChatRoomsByIds({
-//         chatRoomIds
-//       }),
-//     select: response => response?.data,
-//     enabled: chatRoomIds.length > 0
-//   })
-// }
-
-// export const useGetChatRoomById = ({ chatRoomId }: { chatRoomId: string }) => {
-//   return useQuery({
-//     queryKey: [QUERY_KEYS.GET_CHAT_ROOM_BY_ID, chatRoomId],
-//     queryFn: async () => await chatRooms.findChatRoomById({ chatRoomId }),
-//     enabled: enabledId(chatRoomId),
-//     select: response => response?.data
-//   })
-// }
 
 export const useGetTopUsers = ({ limit }: { limit?: number }) => {
   return useQuery({

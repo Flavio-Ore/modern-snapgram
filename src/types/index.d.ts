@@ -79,6 +79,8 @@ interface MessageModel extends Models.Document {
   author_chat: ChatMemberModel
   receivers_chat: ChatMemberModel[]
   related_chat: ChatRoomModel
+  author_chat_id: ChatMemberModel['$id']
+  receivers_chat_id: Array<ChatMemberModel['$id']>
 }
 
 interface ChatRoomModel extends Models.Document {

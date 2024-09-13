@@ -175,7 +175,7 @@ export const useCreateChatStatus = () => {
       await chatsMember.createChat({ userId }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_CHATS_BY_USER_ID]
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID]
       })
     }
   })
@@ -202,7 +202,7 @@ export const useDeleteChat = () => {
       await chatsMember.deleteChat({ chatId }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_ALL_CHATS_BY_USER_ID]
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID]
       })
     }
   })
@@ -228,11 +228,17 @@ export const useCreateMessage = () => {
 }
 
 export const useSetMessagesReadToZero = () => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({
       chatId
     }: Parameters<typeof chatsMember.resetMessagesToRead>[0]) =>
-      await chatsMember.resetMessagesToRead({ chatId })
+      await chatsMember.resetMessagesToRead({ chatId }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID]
+      })
+    }
   })
 }
 
@@ -246,7 +252,7 @@ export const useEditMessage = () => {
       await messages.editMessage({ messageId, newBody }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID]
       })
     }
   })
@@ -260,7 +266,7 @@ export const useDeleteMessage = () => {
       await messages.deleteMessage({ messageId }),
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID]
       })
     }
   })
@@ -305,5 +311,15 @@ export const useUnfollow = () => {
         })
       }
     }
+  })
+}
+
+export const useSetChatMemberOnline = () => {
+  return useMutation({
+    mutationFn: async ({
+      chatIds,
+      online
+    }: Parameters<typeof chatsMember.updateChatMemberOnlineStatus>[0]) =>
+      await chatsMember.updateChatMemberOnlineStatus({ chatIds, online })
   })
 }

@@ -185,7 +185,48 @@ export async function resetMessagesToRead ({
 
     return appwriteResponse({
       data: chatMembership,
-      message: 'Chat updated successfully.',
+      message: 'Messages from chat marked as read successfully.',
+      status: APPWRITE_RESPONSE_CODES.OK.status,
+      code: APPWRITE_RESPONSE_CODES.OK.code
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.type
+      })
+    }
+    return null
+  }
+}
+
+export async function updateChatMemberOnlineStatus ({
+  chatIds,
+  online
+}: {
+  chatIds: Array<ChatMemberModel['$id']>
+  online: boolean
+}) {
+  try {
+    const updatedMemberChats = await Promise.all(
+      chatIds.map(async chatId =>
+        await databases.updateDocument<ChatMemberModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.chatMemberCollectionId,
+          chatId,
+          {
+            online
+          }
+        )
+      )
+    )
+
+    return appwriteResponse({
+      data: updatedMemberChats,
+      message: 'Chat member online status updated successfully.',
       status: APPWRITE_RESPONSE_CODES.OK.status,
       code: APPWRITE_RESPONSE_CODES.OK.code
     })

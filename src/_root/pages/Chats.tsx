@@ -4,39 +4,42 @@ import Chat from '@/components/shared/chats/Chat'
 import ChatItem from '@/components/shared/chats/ChatItem'
 import ChatSkeleton from '@/components/shared/skeletons/ChatSkeleton'
 import ChatsSkeleton from '@/components/shared/skeletons/UsersToChatSkeleton'
-import { useGetInfiniteMessagesByChatRoomId } from '@/lib/queries/infiniteQueries'
 import { useCreateChatRoomFromUsers } from '@/lib/queries/mutations'
 import { useGetAllChatRoomsByUserId, useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
-import { appwriteConfig } from '@/services/appwrite/config'
+import { appwriteConfig, client } from '@/services/appwrite/config'
+import { type ChatMemberModel } from '@/types'
 import {
   FlameKindlingIcon,
   MessageSquareWarningIcon,
   TentTreeIcon,
   TreesIcon
 } from 'lucide-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 const Chats = () => {
   const { chatRoomId } = useParams()
   const { data: user, isLoading: loadingUser, isError: errorUser } = useUser()
-  const { isPending: isPendingChatRoom, isSuccess: isSuccessChatRoom } =
-    useCreateChatRoomFromUsers()
+  const { isPending: isPendingChatRoom } = useCreateChatRoomFromUsers()
+  const chatRoomsIds = useMemo(
+    () => user?.chats.map(chat => chat.chat_room.$id) ?? [],
+    [user]
+  )
   const {
     data: chatRooms,
     isLoading: loadingChats,
     isError: errorChats,
     refetch: refetchChats
   } = useGetAllChatRoomsByUserId({
-    userId: user?.$id ?? ''
+    chatRoomsIds
   })
   const membersExceptCurrentUser = useMemo(
     () =>
       chatRooms?.flatMap(chatRoom =>
         chatRoom.members.filter(chat => chat.member.$id !== user?.$id)
       ) ?? [],
-    [chatRooms]
+    [chatRooms, user]
   )
 
   const chatRoomSelected = useMemo(
@@ -51,52 +54,28 @@ const Chats = () => {
       ),
     [membersExceptCurrentUser]
   )
-  console.log({
-    chatRooms
-  })
-  const { refetch: refetchMessages } = useGetInfiniteMessagesByChatRoomId({
-    chatRoomId: chatRoomId ?? ''
-  })
-  // useEffect(() => {
-  //   const unsubscribeOtherMemberChats = client.subscribe<ChatMemberModel>(
-  //     chatMemberChannels,
-  //     response => {
-  //       console.log('response from unsubscribeMemberChats :>> ', response)
-  //       if (
-  //         response.events.includes(
-  //           `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.chatMemberCollectionId}.documents.*.update`
-  //         )
-  //       ) {
-  //         // refetchChats()
-  //       }
-  //     }
-  //   )
-  //   const unsubscribe = client.subscribe(
-  //     [
-  //       `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
-  //     ],
-  //     response => {
-  //       console.log({ realTimeResponse: response })
-  //       if (
-  //         response.events.includes(
-  //           'databases.*.collections.*.documents.*.create'
-  //         ) ||
-  //         response.events.includes(
-  //           'databases.*.collections.*.documents.*.update'
-  //         ) ||
-  //         response.events.includes(
-  //           'databases.*.collections.*.documents.*.delete'
-  //         )
-  //       ) {
-  //         // refetchChats()
-  //       }
-  //     }
-  //   )
-  //   return () => {
-  //     unsubscribe()
-  //     unsubscribeOtherMemberChats()
-  //   }
-  // }, [])
+
+  useEffect(() => {
+    if (chatMemberChannels.length <= 0 || user == null) return
+    const unsubscribeOtherMemberChats = client.subscribe<ChatMemberModel>(
+      chatMemberChannels,
+      ({ payload, events }) => {
+        if (
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.chatMemberCollectionId}.documents.*.update`
+          )
+        ) {
+          if (membersExceptCurrentUser.some(chat => chat.$id === payload.$id)) {
+            refetchChats()
+          }
+        }
+      }
+    )
+
+    return () => {
+      unsubscribeOtherMemberChats()
+    }
+  }, [user, chatMemberChannels])
   return (
     <div className='flex flex-col flex-1 items-center gap-10 overflow-y-scroll p-0 md:py-10 md:px-8 lg:p-14 custom-scrollbar'>
       <div className='flex-center md:flex-1 size-full gap-4 flex-col md:flex-row'>
@@ -134,7 +113,7 @@ const Chats = () => {
           )}
           <ul>
             {isPendingChatRoom && (
-              <li className='flex-center gap-2'>
+              <li className='flex-center gap-2 w-10'>
                 <Loader />
                 <p className='text-light-3'>Creating chat...</p>
               </li>

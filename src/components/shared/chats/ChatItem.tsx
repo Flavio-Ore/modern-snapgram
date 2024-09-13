@@ -25,14 +25,18 @@ const ChatItem = ({
       ) ?? [],
     [selectableChatRoom, currentUser]
   )
-  console.log('membersExceptCurrentUser :>> ', membersExceptCurrentUser)
-  console.log('currentMember :>> ', currentMember)
-
   const lastMessage = useMemo(() => {
     const messages = selectableChatRoom?.messages ?? []
     return messages[messages.length - 1]
   }, [selectableChatRoom])
 
+  const lastMessageAuthor = useMemo(() => {
+    return (
+      selectableChatRoom.members.find(
+        member => member.$id === lastMessage.author_chat_id
+      )?.member.name ?? ''
+    )
+  }, [lastMessage])
 
   return (
     <li className='relative'>
@@ -70,6 +74,7 @@ const ChatItem = ({
             </div>
             <div>
               <p className='subtle-regular text-light-2 lg:text-justify max-w-64 overflow-ellipsis'>
+                <span className='text-light-3'>{lastMessageAuthor}</span> :{' '}
                 {lastMessage?.body ?? ''}
               </p>
               <p className='tiny-medium text-light-3'>
@@ -78,10 +83,8 @@ const ChatItem = ({
               {currentMember?.messages_to_read != null &&
                 currentMember.messages_to_read > 0 && (
                   <span className='block absolute text-dark-1 subtle-regular bg-secondary-500 size-4 text-center pb-4 rounded-sm shadow-[0px_0px_6px_0.5px_#FFB620] shadow-secondary-500 top-1/2 right-4'>
-                  {
-                    currentMember.messages_to_read
-                  }
-                </span>
+                    {currentMember.messages_to_read}
+                  </span>
               )}
             </div>
           </div>

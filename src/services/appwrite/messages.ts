@@ -1,5 +1,6 @@
 import {
   type ChatMemberModel,
+  type ChatRoomModel,
   type MessageModel,
   type UserModel
 } from '@/types'
@@ -50,7 +51,7 @@ export async function findInfiniteMessagesByChatRoomId ({
   chatRoomId
 }: {
   lastId: MessageModel['$id']
-  chatRoomId: ChatMemberModel['chat_room']['$id']
+  chatRoomId: ChatRoomModel['$id']
 }) {
   return await findInfiniteMessages({
     lastId,
@@ -74,12 +75,12 @@ export async function findInfiniteMessagesByAuthorsAndReceivers ({
     query: [
       Query.or([
         Query.and([
-          Query.contains('author_chat', [authorChatId]),
-          Query.contains('receivers_chat', receiversChatId)
+          Query.contains('author_chat_id', [authorChatId]),
+          Query.contains('receivers_chat_id', receiversChatId)
         ]),
         Query.and([
-          Query.contains('author_chat', receiversChatId),
-          Query.contains('receivers_chat', [authorChatId])
+          Query.contains('author_chat_id', receiversChatId),
+          Query.contains('receivers_chat_id', [authorChatId])
         ])
       ]),
       Query.orderDesc('$createdAt'),
@@ -109,7 +110,9 @@ export async function createMessage ({
       {
         body,
         author_chat: authorChat.$id,
+        author_chat_id: authorChat.$id,
         receivers_chat: receiversChat.map(receiverChat => receiverChat.$id),
+        receivers_chat_id: receiversChat.map(receiverChat => receiverChat.$id),
         related_chat: chatRoomId
       },
       [Permission.write(Role.user(authorAccountId))]

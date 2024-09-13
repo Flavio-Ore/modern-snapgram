@@ -18,16 +18,17 @@ import { useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
 import { MessageValidationSchema } from '@/lib/validations'
 import { appwriteConfig, client } from '@/services/appwrite/config'
-import { type ChatRoomModel } from '@/types'
+import { type ChatRoomModel, type MessageModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MessageCircleWarningIcon } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
 import { type z } from 'zod'
 
 const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
+  const [isFirstTimeInChat, setIsFirstTimeInChat] = useState(true)
   const bottomOfChatRef = useRef<HTMLDivElement>(null)
   const isAtBottomOnce = useRef(false)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -35,9 +36,10 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
   const { ref: topChatRef, inView: topChatInView } = useInView({
     threshold: 0
   })
-  const { data: currentUser } = useUser()
+  const { data: user } = useUser()
   const { mutateAsync: createMessage } = useCreateMessage()
-  const { mutateAsync: setMessagesReadToZero } = useSetMessagesReadToZero()
+  const { mutateAsync: setMessagesReadToZero, isPending } =
+    useSetMessagesReadToZero()
   const {
     data: messagesResponse,
     isLoading,
@@ -52,17 +54,17 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
   })
   const currentMember = useMemo(
     () =>
-      chatRoom?.members.find(
-        chatMember => chatMember.member.$id === currentUser?.$id
+      chatRoom.members.find(
+        chatMember => chatMember.member.$id === user?.$id
       ) ?? null,
-    [chatRoom, currentUser]
+    [chatRoom, user]
   )
   const membersExceptCurrentUser = useMemo(
     () =>
-      chatRoom?.members.filter(
-        chatMember => chatMember.member.$id !== currentUser?.$id
+      chatRoom.members.filter(
+        chatMember => chatMember.member.$id !== user?.$id
       ) ?? [],
-    [chatRoom, currentUser]
+    [chatRoom, user]
   )
 
   const chatForm = useForm<z.infer<typeof MessageValidationSchema>>({
@@ -75,7 +77,11 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
     () => messagesResponse?.pages.flatMap(page => page?.data ?? []) ?? [],
     [messagesResponse]
   )
-  const accountId = useMemo(() => currentUser?.accountId ?? '', [currentUser])
+  const ownChatMembersIds = useMemo(
+    () => user?.chats.map(chat => chat.$id) ?? [],
+    [user]
+  )
+  const accountId = useMemo(() => user?.accountId ?? '', [user])
   async function onSubmitMessage (
     values: z.infer<typeof MessageValidationSchema>
   ) {
@@ -104,31 +110,6 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
       console.error({ e })
     }
   }
-
-  const setMessagesToReadToZero = useCallback(
-    ({
-      currentChatMemberId,
-      currentMessagesToRead
-    }: {
-      currentChatMemberId: string
-      currentMessagesToRead: number
-    }) => {
-      if (currentMessagesToRead === 0 || currentMember == null) return
-
-      console.log('Setting messages to read to zero', {
-        currentChatMemberId,
-        currentMessagesToRead
-      })
-      setMessagesReadToZero({
-        chatId: currentChatMemberId
-      })
-        .then()
-        .catch(e => {
-          console.error({ e })
-        })
-    },
-    [currentUser, chatRoom]
-  )
 
   useEffect(() => {
     if (textAreaRef.current != null) {
@@ -168,40 +149,70 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
   }, [topChatInView])
 
   useEffect(() => {
-    console.log({ currentMember })
-    if (currentMember != null) {
-      setMessagesToReadToZero({
-        currentChatMemberId: currentMember.$id,
-        currentMessagesToRead: currentMember.messages_to_read
-      })
+    if (
+      currentMember == null ||
+      isPending ||
+      currentMember.messages_to_read <= 0 ||
+      !isFirstTimeInChat
+    ) {
+      return
     }
-  }, [currentMember, chatRoom])
+    setIsFirstTimeInChat(false)
+
+    console.log('Setting messages to read to zero', {
+      currentChatMemberId: currentMember.$id,
+      currentMessagesToRead: currentMember.messages_to_read
+    })
+    setMessagesReadToZero({
+      chatId: currentMember.$id
+    })
+      .then()
+      .catch(e => {
+        console.error({ e })
+      })
+  }, [currentMember])
+
   useEffect(() => {
-    const unsubscribe = client.subscribe(
+    if (ownChatMembersIds.length <= 0) return
+    const unsubscribeMessages = client.subscribe<MessageModel>(
       [
         `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
       ],
-      response => {
-        console.log({ realTimeResponse: response })
+      ({ events, channels, payload: newMessage }) => {
+        console.log({
+          realTimeResponse: {
+            events,
+            channels,
+            newMessage
+          }
+        })
         if (
-          response.events.includes(
-            'databases.*.collections.*.documents.*.create'
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
           ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.update'
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.update`
           ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.delete'
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.delete`
           )
         ) {
-          refetchMessages()
+          if (
+            ownChatMembersIds.some(id => id === newMessage.author_chat_id) ||
+            newMessage.receivers_chat_id.some(id =>
+              ownChatMembersIds.some(ownId => ownId === id)
+            )
+          ) {
+            console.log('Refetching all chat messages')
+            refetchMessages()
+          }
         }
       }
     )
     return () => {
-      unsubscribe()
+      unsubscribeMessages()
     }
-  }, [])
+  }, [ownChatMembersIds])
 
   return (
     <div className='flex-between flex-col lg:basis-2/3 size-full bg-dark-1 rounded-xl border border-dark-4 px-6 py-4'>
@@ -276,7 +287,7 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
               <p className='text-light-4 mt-10 text-center body-bold w-full animate-pulse'>
                 Type a message to start chatting!
               </p>
-          )}
+            )}
           {!isLoading &&
             !isError &&
             currentMember != null &&
@@ -308,7 +319,7 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
                 ))}
                 <div ref={bottomOfChatRef} />
               </>
-          )}
+            )}
         </>
       </div>
       <hr className='border w-full border-dark-4 my-4' />
