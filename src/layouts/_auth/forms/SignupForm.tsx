@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { SignupValidationSchema } from '@/lib/validations/signup.validation.schema'
+import { SignupValidationSchema } from '@/lib/validations/schemas/signup.validation.schema'
 import { useAccount } from '@/states/account/hooks/useAccountContext'
 import { useCreateAccount } from '@/states/query/hooks/mutations'
 import { zodResolver } from '@hookform/resolvers/zod'
