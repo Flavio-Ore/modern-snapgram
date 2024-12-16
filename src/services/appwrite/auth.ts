@@ -23,7 +23,23 @@ export async function createUserAccount (user: INewUser) {
       user.password,
       user.name
     )
+    console.log({
+      'New Account': newAccount
+    })
     const avatarUrl = avatars.getInitials(user.name)
+    console.log({
+      'Avatar URL': avatarUrl
+    })
+
+    const session = await account.createEmailPasswordSession(
+      user.email,
+      user.password
+    )
+
+    console.log({
+      'Starting the session': session
+    })
+
     const newUser = await databases.createDocument<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
@@ -36,6 +52,9 @@ export async function createUserAccount (user: INewUser) {
         imageUrl: avatarUrl
       }
     )
+    console.log({
+      'New User': newUser
+    })
     return appwriteResponse({
       data: newUser,
       message: 'Account created successfully',
@@ -135,9 +154,7 @@ export async function getUser () {
     const user = await databases.listDocuments<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
-      [
-        Query.equal('accountId', [sessionAccount.$id])
-      ]
+      [Query.equal('accountId', [sessionAccount.$id])]
     )
 
     return appwriteResponse({

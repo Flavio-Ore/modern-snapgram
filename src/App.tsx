@@ -6,24 +6,35 @@ import { Analytics } from '@vercel/analytics/react'
 import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-const AuthLayout = lazy(async () => await import('@/_auth/AuthLayout'))
-const RootLayout = lazy(async () => await import('@/_root/RootLayout'))
-const SignInForm = lazy(async () => await import('@/_auth/forms/SigninForm'))
-const SignupForm = lazy(async () => await import('@/_auth/forms/SignupForm'))
-const Home = lazy(async () => await import('@/_root/pages/Home'))
-const Explore = lazy(async () => await import('@/_root/pages/Explore'))
-const People = lazy(async () => await import('@/_root/pages/People'))
-const Saved = lazy(async () => await import('@/_root/pages/Saved'))
-const Reels = lazy(async () => await import('@/_root/pages/Reels'))
-const Chats = lazy(async () => await import('@/_root/pages/Chats'))
-const CreatePost = lazy(async () => await import('@/_root/pages/CreatePost'))
-const EditPost = lazy(async () => await import('@/_root/pages/EditPost'))
-const PostDetails = lazy(async () => await import('@/_root/pages/PostDetails'))
-const Profile = lazy(async () => await import('@/_root/pages/Profile'))
-const UpdateProfile = lazy(
-  async () => await import('@/_root/pages/UpdateProfile')
+const AuthLayout = lazy(async () => await import('@/layouts/_auth/AuthLayout'))
+const RootLayout = lazy(async () => await import('@/layouts/_root/RootLayout'))
+const SignInForm = lazy(
+  async () => await import('@/layouts/_auth/forms/SigninForm')
 )
-const NotFound = lazy(async () => await import('@/_root/pages/NotFound'))
+const SignupForm = lazy(
+  async () => await import('@/layouts/_auth/forms/SignupForm')
+)
+const Home = lazy(async () => await import('@/layouts/_root/pages/Home'))
+const Explore = lazy(async () => await import('@/layouts/_root/pages/Explore'))
+const People = lazy(async () => await import('@/layouts/_root/pages/People'))
+const Saved = lazy(async () => await import('@/layouts/_root/pages/Saved'))
+const Chats = lazy(async () => await import('@/layouts/_root/pages/Chats'))
+const CreatePost = lazy(
+  async () => await import('@/layouts/_root/pages/CreatePost')
+)
+const EditPost = lazy(
+  async () => await import('@/layouts/_root/pages/EditPost')
+)
+const PostDetails = lazy(
+  async () => await import('@/layouts/_root/pages/PostDetails')
+)
+const Profile = lazy(async () => await import('@/layouts/_root/pages/Profile'))
+const UpdateProfile = lazy(
+  async () => await import('@/layouts/_root/pages/UpdateProfile')
+)
+const NotFound = lazy(
+  async () => await import('@/layouts/_root/pages/NotFound')
+)
 
 const App = () => {
   return (
@@ -55,7 +66,6 @@ const App = () => {
           <Route path={PRIVATE_ROUTES.EXPLORE} element={<Explore />} />
           <Route path={PRIVATE_ROUTES.PEOPLE} element={<People />} />
           <Route path={PRIVATE_ROUTES.SAVED} element={<Saved />} />
-          <Route path={PRIVATE_ROUTES.REELS} element={<Reels />} />
           <Route path={PRIVATE_ROUTES.CHATS} element={<Chats />} />
           <Route path={PRIVATE_ROUTES.CHATS_ROOM} element={<Chats />} />
           <Route path={PRIVATE_ROUTES.CREATE_POST} element={<CreatePost />} />

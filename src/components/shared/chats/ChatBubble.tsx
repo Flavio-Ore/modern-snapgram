@@ -30,9 +30,12 @@ import {
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useDeleteMessage, useEditMessage } from '@/lib/queries/mutations'
 import { cn, multiFormatDateString } from '@/lib/utils'
-import { EditionMessageValidationSchema } from '@/lib/validations'
+import { EditionMessageValidationSchema } from '@/lib/validations/schemas/edition-message.validation.schema'
+import {
+  useDeleteMessage,
+  useEditMessage
+} from '@/states/query/hooks/mutations'
 import { type ChatMemberModel, type MessageModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CopyIcon, Edit2Icon, GripIcon, SendHorizonalIcon } from 'lucide-react'

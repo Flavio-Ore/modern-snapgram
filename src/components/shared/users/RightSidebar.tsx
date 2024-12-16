@@ -1,6 +1,6 @@
 import UserCard from '@/components/shared/users/UserCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useGetTopUsers } from '@/lib/queries/queries'
+import { useGetTopUsers } from '@/states/query/hooks/queries'
 import { E_USERS } from '@/values'
 
 const TopCreators = () => {

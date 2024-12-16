@@ -2,8 +2,8 @@ import ChatsIcon from '@/components/icons/ChatsIcon'
 import Logo from '@/components/icons/Logo'
 import LogoutDialog from '@/components/shared/app/LogoutDialog'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUser } from '@/lib/queries/queries'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
+import { useUser } from '@/states/query/hooks/queries'
 import { Link, useLocation, useParams } from 'react-router-dom'
 const Topbar = ({
   totalMessagesToRead = 0
