@@ -1,6 +1,6 @@
 import ManyPostIcon from '@/components/icons/ManyPostIcon'
 import PostStats from '@/components/shared/posts/PostStats'
-import { useUser } from '@/lib/queries/queries'
+import { useUser } from '@/states/query/hooks/queries'
 import { type Post } from '@/types'
 import { Link } from 'react-router-dom'
 

@@ -3,7 +3,6 @@ import CreatePostIcon from '@/components/icons/CreatePostIcon'
 import ExploreIcon from '@/components/icons/ExploreIcon'
 import HomeIcon from '@/components/icons/HomeIcon'
 import PeopleIcon from '@/components/icons/PeopleIcon'
-import ReelsIcon from '@/components/icons/ReelsIcon'
 import SaveIcon from '@/components/icons/SaveIcon'
 
 export enum E_USERS {
@@ -68,11 +67,6 @@ export const links = {
       Icon: SaveIcon,
       route: '/saved',
       label: 'Saved'
-    },
-    {
-      Icon: ReelsIcon,
-      route: '/reels',
-      label: 'Reels'
     },
     {
       Icon: ChatsIcon,

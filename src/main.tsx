@@ -1,6 +1,6 @@
 import LazyPages from '@/components/shared/app/LazyPages'
-import AccountProvider from '@/context/AccountContext'
-import QueryProvider from '@/lib/queries/QueryProvider'
+import AccountProvider from '@/states/account/providers/AccountProvider'
+import QueryProvider from '@/states/query/providers/QueryProvider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'

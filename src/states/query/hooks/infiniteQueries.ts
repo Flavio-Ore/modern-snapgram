@@ -1,4 +1,3 @@
-import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import {
   follows,
   messages,
@@ -7,6 +6,7 @@ import {
   users
 } from '@/services/appwrite'
 import { type AppwriteResponse } from '@/services/appwrite/util'
+import { QUERY_KEYS } from '@/states/query/keys/queryKeys'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models } from 'appwrite'
 

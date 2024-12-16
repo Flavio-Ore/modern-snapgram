@@ -1,8 +1,8 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
-import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
-import { useUser } from '@/lib/queries/queries'
+import { useGetInfiniteSavedPosts } from '@/states/query/hooks/infiniteQueries'
+import { useUser } from '@/states/query/hooks/queries'
 import { useMemo } from 'react'
 
 const SavedPosts = () => {

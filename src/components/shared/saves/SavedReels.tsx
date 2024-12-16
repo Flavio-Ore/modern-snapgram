@@ -1,8 +1,6 @@
-import { NotFound } from '@/_root/pages'
+import { NotFound } from '@/layouts/_root/pages'
 
 const SavedReels = () => {
-  return (
-    <NotFound />
-  )
+  return <NotFound />
 }
 export default SavedReels

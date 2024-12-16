@@ -1,4 +1,3 @@
-import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import {
   auth,
   chatRooms,
@@ -7,6 +6,7 @@ import {
   saves,
   users
 } from '@/services/appwrite'
+import { QUERY_KEYS } from '@/states/query/keys/queryKeys'
 import { useQuery } from '@tanstack/react-query'
 
 const enabledId = (id: string) => {

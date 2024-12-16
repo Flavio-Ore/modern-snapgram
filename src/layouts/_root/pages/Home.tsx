@@ -3,7 +3,7 @@ import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import PostCard from '@/components/shared/posts/PostCard'
 import HomePostSkeleton from '@/components/shared/skeletons/HomePostSkeleton'
 import RightSidebar from '@/components/shared/users/RightSidebar'
-import { useGetInfiniteRecentPosts } from '@/lib/queries/infiniteQueries'
+import { useGetInfiniteRecentPosts } from '@/states/query/hooks/infiniteQueries'
 import { useEffect, useMemo, useState } from 'react'
 
 const HomePosts = () => {

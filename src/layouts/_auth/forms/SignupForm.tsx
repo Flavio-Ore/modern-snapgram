@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useAccount } from '@/context/useAccountContext'
-import { useCreateAccount, useSignIn } from '@/lib/queries/mutations'
-import { SignupValidationSchema } from '@/lib/validations'
+import { SignupValidationSchema } from '@/lib/validations/signup.validation.schema'
+import { useAccount } from '@/states/account/hooks/useAccountContext'
+import { useCreateAccount } from '@/states/query/hooks/mutations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -26,7 +26,6 @@ const SignupForm = () => {
   const { checkAuth, isLoading: isSessionLoading } = useAccount()
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateAccount()
-  const { mutateAsync: signInAccount } = useSignIn()
 
   const form = useForm<z.infer<typeof SignupValidationSchema>>({
     resolver: zodResolver(SignupValidationSchema),
@@ -40,7 +39,13 @@ const SignupForm = () => {
 
   const handleSignup = async (user: z.infer<typeof SignupValidationSchema>) => {
     try {
+      console.log({
+        'Creating new User': user
+      })
       const createdUserResponse = await createUserAccount(user)
+      console.log({
+        'Created User Response': createdUserResponse
+      })
       if (createdUserResponse?.data == null) {
         toast({
           title: 'Something went wrong.',
@@ -49,30 +54,16 @@ const SignupForm = () => {
           variant: 'destructive'
         })
       } else {
-        const sessionResponse = await signInAccount({
-          email: user.email,
-          password: user.password
-        })
-
-        if (sessionResponse?.data == null) {
+        const isLoggedIn = await checkAuth()
+        if (isLoggedIn) {
+          form.reset()
+          navigate('/')
+        } else {
           toast({
-            title: 'Something went wrong.',
-            description: sessionResponse?.message ?? 'Please try again later.',
+            title: 'Login failed.',
+            description: 'Please try again.',
             variant: 'destructive'
           })
-          navigate('/sign-in')
-        } else {
-          const isLoggedIn = await checkAuth()
-          if (isLoggedIn) {
-            form.reset()
-            navigate('/')
-          } else {
-            toast({
-              title: 'Login failed.',
-              description: 'Please try again.',
-              variant: 'destructive'
-            })
-          }
         }
       }
     } catch (error) {

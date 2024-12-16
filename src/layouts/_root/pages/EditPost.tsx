@@ -1,7 +1,7 @@
 import PostForm from '@/components/forms/PostForm'
 import CreatePostIcon from '@/components/icons/CreatePostIcon'
 import Loader from '@/components/shared/app/Loader'
-import { useGetPostById } from '@/lib/queries/queries'
+import { useGetPostById } from '@/states/query/hooks/queries'
 import { E_FORM_ACTIONS } from '@/values'
 import { useParams } from 'react-router-dom'
 
