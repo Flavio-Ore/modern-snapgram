@@ -23,7 +23,7 @@ import { type z } from 'zod'
 const SignupForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { checkAuth, isLoading: isSessionLoading } = useAccount()
+  const { isAuthenticated, isLoading: isSessionLoading } = useAccount()
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateAccount()
 
@@ -54,8 +54,7 @@ const SignupForm = () => {
           variant: 'destructive'
         })
       } else {
-        const isLoggedIn = await checkAuth()
-        if (isLoggedIn) {
+        if (isAuthenticated) {
           form.reset()
           navigate('/')
         } else {

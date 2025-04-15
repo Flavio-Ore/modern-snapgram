@@ -50,7 +50,7 @@ const App = () => {
             </LazyPages>
           }
         >
-          <Route path={PUBLIC_ROUTES.SIGN_IN} element={<SignInForm />} />
+          <Route index path={PUBLIC_ROUTES.SIGN_IN} element={<SignInForm />} />
           <Route path={PUBLIC_ROUTES.SIGN_UP} element={<SignupForm />} />
         </Route>
 
@@ -62,7 +62,7 @@ const App = () => {
             </LazyPages>
           }
         >
-          <Route index element={<Home />} />
+          <Route path={PRIVATE_ROUTES.HOME} element={<Home />} />
           <Route path={PRIVATE_ROUTES.EXPLORE} element={<Explore />} />
           <Route path={PRIVATE_ROUTES.PEOPLE} element={<People />} />
           <Route path={PRIVATE_ROUTES.SAVED} element={<Saved />} />

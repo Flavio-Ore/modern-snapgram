@@ -22,7 +22,7 @@ import { type z } from 'zod'
 const SigninForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { checkAuth, isLoading } = useAccount()
+  const { isLoading } = useAccount()
   const { mutateAsync: signInAccount, isPending } = useSignIn()
 
   const signinForm = useForm<z.infer<typeof SigninValidationSchema>>({
@@ -47,18 +47,7 @@ const SigninForm = () => {
         })
         navigate('/sign-in')
       } else {
-        const isLoggedIn = await checkAuth()
-
-        if (isLoggedIn) {
-          signinForm.reset()
-          navigate('/')
-        } else {
-          toast({
-            title: 'Login failed.',
-            description: 'Please try again.',
-            variant: 'destructive'
-          })
-        }
+        navigate('/')
       }
     } catch (error) {
       console.error(error)
@@ -119,7 +108,9 @@ const SigninForm = () => {
           <Button
             type='submit'
             variant='default'
-            disabled={!signinForm.formState.isDirty || !signinForm.formState.isValid}
+            disabled={
+              !signinForm.formState.isDirty || !signinForm.formState.isValid
+            }
           >
             {isLoading || isPending ? <LoaderIcon /> : 'Sign in'}
           </Button>

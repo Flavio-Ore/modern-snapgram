@@ -1,17 +1,28 @@
-import Bottombar from '@/components/shared/app/Bottombar'
-import LeftSidebar from '@/components/shared/app/LeftSidebar'
-import Topbar from '@/components/shared/app/Topbar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useToast } from '@/components/ui/use-toast'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { appwriteConfig, client } from '@/services/appwrite/config'
 import { useAccount } from '@/states/account/hooks/useAccountContext'
-import { useSetChatMemberOnline } from '@/states/query/hooks/mutations'
-import { useGetAllChatRoomsByUserId, useUser } from '@/states/query/hooks/queries'
+import {
+  useSetChatMemberOnline,
+  useSignOut
+} from '@/states/query/hooks/mutations'
+import {
+  useGetAllChatRoomsByUserId,
+  useUser
+} from '@/states/query/hooks/queries'
 import { type MessageModel } from '@/types'
 import { links } from '@/values'
 import { lazy, Suspense, useEffect, useMemo } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
+const Topbar = lazy(async () => await import('@/components/shared/app/Topbar'))
+const LeftSidebar = lazy(
+  async () => await import('@/components/shared/app/LeftSidebar')
+)
+const Bottombar = lazy(
+  async () => await import('@/components/shared/app/Bottombar')
+)
 const Outlet = lazy(
   async () =>
     await import('react-router-dom').then(module => ({
@@ -20,8 +31,10 @@ const Outlet = lazy(
 )
 
 const RootLayout = () => {
+  const { toast } = useToast()
+  const { isPending: isSigninOut } = useSignOut()
   const { pathname } = useLocation()
-  const { isAuthenticated, isLoading } = useAccount()
+  const { isAuthenticated } = useAccount()
   const { data: user } = useUser()
   const { mutateAsync: updateStatus } = useSetChatMemberOnline()
   const chatRoomsIds = useMemo(
@@ -95,8 +108,17 @@ const RootLayout = () => {
     }
   }, [ownChatMembersIds])
 
-  return isAuthenticated || !isLoading
-    ? (
+  useEffect(() => {
+    if (isSigninOut) {
+      toast({
+        title: 'Logging out...',
+        description: 'Please wait while we log you out.',
+        variant: 'default'
+      })
+    }
+  }, [isSigninOut])
+
+  return (
     <div className='w-full md:flex'>
       <Topbar totalMessagesToRead={totalMessagesToRead} />
       <LeftSidebar totalMessagesToRead={totalMessagesToRead} />
@@ -125,10 +147,7 @@ const RootLayout = () => {
       </section>
       <Bottombar />
     </div>
-      )
-    : (
-    <Navigate to={'/sign-in'} />
-      )
+  )
 }
 
 export default RootLayout
