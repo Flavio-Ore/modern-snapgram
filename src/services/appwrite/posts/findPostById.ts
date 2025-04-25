@@ -1,7 +1,5 @@
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import {
-  getFilesWithUrlsByIds
-} from '@/services/appwrite/file'
+import { getFilesWithUrlsByIds } from '@/services/appwrite/files/getFilesWithUrlsByIds'
 import { appwriteResponse } from '@/services/appwrite/utils/appwriteResponse'
 import { APPWRITE_RESPONSE_CODES } from '@/services/appwrite/utils/constants/APPWRITE_RESPONSE_CODES'
 import {

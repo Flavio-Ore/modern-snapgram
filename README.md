@@ -1,6 +1,6 @@
 <div align="center">
-  <h1>Snapgram 📷</h1>
-  <h2 align="center">A Social Media Application 💪</h3>
+  <h1>Modern Snapgram 📷</h1>
+  <h2 align="center">A Social Media Application 🏞️</h3>
   <p>Snapgram is a social networking application that allows users to share posts with each other</p>
   <p>It allows chatting between users 💭.</p>
   <p>Displays the most popular posts as well as the user's feed according to what they see. 👀</p>
@@ -53,7 +53,7 @@ Also, you can contact me on discord, here's my user id: **ph4lanx**
 
 The same as those in: [adrianhajdin/social_media_app/features](https://github.com/adrianhajdin/social_media_app?tab=readme-ov-file#-features)
 
-## <a name="quick-start">🤸 Quick Start</a>
+## <a name="quick-start">🏃🏿Quick Start</a>
 
 Follow these steps to set up the project locally on your machine.
 
@@ -68,8 +68,8 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/Flavio-Ore/Snapgram-2.git
-cd social_media_app
+git clone https://github.com/Flavio-Ore/modern-snapgram.git
+cd modern-snapgram
 ```
 
 **Installation**
@@ -85,20 +85,25 @@ pnpm install
 Create a new file named `.env` in the root of your project and add the following content:
 
 ```env
-VITE_APPWRITE_URL=
 VITE_APPWRITE_PROJECT_ID=
-VITE_APPWRITE_DATABASE_ID=
-VITE_APPWRITE_STORAGE_ID=
-VITE_APPWRITE_USER_COLLECTION_ID=
-VITE_APPWRITE_POST_COLLECTION_ID=
-VITE_APPWRITE_SAVES_COLLECTION_ID=
+VITE_APPWRITE_ENDPOINT=
+VITE_APPWRITE_DATABASE=
+VITE_APPWRITE_STORAGE_POSTS_FILES=
+VITE_APPWRITE_STORAGE_PROFILE_IMAGES=
+VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_FOLLOWERS_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_MESSAGE_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_CHAT_MEMBER_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_CHAT_ROOM_ID=
 ```
 
 Replace the placeholder values with your actual Appwrite credentials. You can obtain these credentials by signing up on the [Appwrite website](https://appwrite.io/).
 
 **Running the Project**
 
-See the commands available using pnpm run:
+See the commands available using `npm`, `pnpm` or `yarn` run:
 
 ```bash
 pnpm run

@@ -1,13 +1,9 @@
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import {
-  createFiles,
-  deleteManyFilesByIds
-} from '@/services/appwrite/file'
-import {
-  APPWRITE_RESPONSE_CODES,
-  appwriteResponse,
-  tagsToArray
-} from '@/services/appwrite/interfaces'
+import { createFiles } from '@/services/appwrite/files/createFiles'
+import { deleteManyFilesByIds } from '@/services/appwrite/files/deleteManyFilesByIds'
+import { appwriteResponse } from '@/services/appwrite/utils/appwriteResponse'
+import { APPWRITE_RESPONSE_CODES } from '@/services/appwrite/utils/constants/APPWRITE_RESPONSE_CODES'
+import { tagsToArray } from '@/services/appwrite/utils/tagsToArray'
 import {
   type Post,
   type PostModel,
