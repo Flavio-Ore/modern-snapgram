@@ -2,14 +2,15 @@ import LoaderIcon from '@/components/icons/LoaderIcon'
 import ProfileActions from '@/components/shared/profile/ProfileActions'
 import ProfileStats from '@/components/shared/profile/ProfileStats'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useGetUserById, useUser } from '@/states/query/hooks/queries'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
+import { useGetUserById } from '@/states/TanStack-query/hooks/queries/users/useGetUserById'
 import { type UserStats } from '@/types'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 const ProfileDetails = () => {
   const { id } = useParams()
-  const { data: sessionUser, isLoading: isSessionLoading } = useUser()
+  const { data: sessionUser, isLoading: isSessionLoading } = useSessionUser()
   const {
     data: profileUser,
     isLoading: isUserLoading,

@@ -1,12 +1,10 @@
 import SavedIcon from '@/components/icons/SavedIcon'
 import SaveIcon from '@/components/icons/SaveIcon'
 import { Button } from '@/components/ui/button'
-import {
-  useDeleteSavedPost,
-  useLikePost,
-  useSavePost
-} from '@/states/query/hooks/mutations'
-import { useUser } from '@/states/query/hooks/queries'
+import { useLikePost } from '@/states/TanStack-query/hooks/mutations/likes/useLikePost'
+import { useDeleteSavedPost } from '@/states/TanStack-query/hooks/mutations/saves/useDeleteSavedPost'
+import { useSavePost } from '@/states/TanStack-query/hooks/mutations/saves/useSavePost'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type Post, type UserModel } from '@/types'
 import { BookmarkIcon, HeartIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -24,7 +22,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { mutate: like, isPending: isLiking } = useLikePost()
   const { mutate: save, isPending: isSaving } = useSavePost()
   const { mutate: deleteSave, isPending: isDeletingSave } = useDeleteSavedPost()
-  const { data: currentUser, isLoading, isRefetching } = useUser()
+  const { data: currentUser, isLoading, isRefetching } = useSessionUser()
   const { $id: postId } = post
 
   const savedRecordId = useMemo(
@@ -101,11 +99,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           />
         )}
         {!isLoading && !isRefetching && !isSaving && !isDeletingSave && (
-          <Button
-            variant='ghost'
-            onClick={handleSavePost}
-            className='px-2'
-          >
+          <Button variant='ghost' onClick={handleSavePost} className='px-2'>
             {isSaved
               ? (
               <SavedIcon className='hover:fill-primary-500/50' />

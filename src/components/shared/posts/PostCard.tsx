@@ -3,7 +3,7 @@ import PostStats from '@/components/shared/posts//PostStats'
 import PostsSlider from '@/components/shared/posts/PostsCarousel'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, multiFormatDateString } from '@/lib/utils'
-import { useUser } from '@/states/query/hooks/queries'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type Post } from '@/types'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -12,7 +12,7 @@ interface PostCardProps {
   post: Post | undefined | null
 }
 const PostCard = ({ post }: PostCardProps) => {
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   const userId = useMemo(() => user?.$id ?? '', [user])
   if (post == null) {
     return (

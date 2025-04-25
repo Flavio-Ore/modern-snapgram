@@ -11,17 +11,16 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import {
-  useSetChatMemberOnline,
-  useSignOut
-} from '@/states/query/hooks/mutations'
-import { useGetAllMemberChats, useUser } from '@/states/query/hooks/queries'
+import { useSetChatMemberOnline } from '@/states/TanStack-query/hooks/mutations/chats/useSetChatMemberOnline'
+import { useSignOut } from '@/states/TanStack-query/hooks/mutations/session/useSignOut'
+import { useGetAllMemberChats } from '@/states/TanStack-query/hooks/queries/chats/useGetAllMemberChats'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { LucideLogOut } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const LogoutDialog = () => {
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   const { toast } = useToast()
   const { data: ownMembers } = useGetAllMemberChats({
     userId: user?.$id ?? ''

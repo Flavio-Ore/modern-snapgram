@@ -3,8 +3,8 @@ import LogoSmall from '@/components/icons/LogoSmall'
 import LogoutDialog from '@/components/shared/app/LogoutDialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
-import { useUpdateUser } from '@/states/query/hooks/mutations'
-import { useUser } from '@/states/query/hooks/queries'
+import { useUpdateSessionUser } from '@/states/TanStack-query/hooks/mutations/session/useUpdateSessionUser'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { links } from '@/values'
 import { useEffect } from 'react'
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
@@ -15,8 +15,8 @@ const LeftSidebar = ({
   totalMessagesToRead?: number
 }) => {
   const { pathname } = useLocation()
-  const { data: user, isLoading, isError, refetch } = useUser()
-  const { isSuccess: userUpdate } = useUpdateUser()
+  const { data: user, isLoading, isError, refetch } = useSessionUser()
+  const { isSuccess: userUpdate } = useUpdateSessionUser()
   const { id: profileId } = useParams()
 
   useEffect(() => {

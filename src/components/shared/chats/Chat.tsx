@@ -12,12 +12,10 @@ import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
 import { MessageValidationSchema } from '@/lib/validations/schemas/message.validation.schema'
 import { appwriteConfig, client } from '@/services/appwrite/config'
-import { useGetInfiniteMessagesByChatRoomId } from '@/states/query/hooks/infiniteQueries'
-import {
-  useCreateMessage,
-  useSetMessagesReadToZero
-} from '@/states/query/hooks/mutations'
-import { useUser } from '@/states/query/hooks/queries'
+import { useGetInfiniteMessagesByChatRoomId } from '@/states/TanStack-query/hooks/infinite-queries/chats/useGetInfiniteMessagesByChatRoomId'
+import { useCreateMessage } from '@/states/TanStack-query/hooks/mutations/messages/useCreateMessage'
+import { useSetMessagesReadToZero } from '@/states/TanStack-query/hooks/mutations/messages/useSetMessagesReadToZero'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type ChatRoomModel, type MessageModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MessageCircleWarningIcon } from 'lucide-react'
@@ -36,7 +34,7 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
   const { ref: topChatRef, inView: topChatInView } = useInView({
     threshold: 0
   })
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   const { mutateAsync: createMessage } = useCreateMessage()
   const { mutateAsync: setMessagesReadToZero, isPending } =
     useSetMessagesReadToZero()

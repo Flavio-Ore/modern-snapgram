@@ -1,12 +1,12 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
-import { useGetInfiniteSavedPosts } from '@/states/query/hooks/infiniteQueries'
-import { useUser } from '@/states/query/hooks/queries'
+import { useGetInfiniteSavedPosts } from '@/states/TanStack-query/hooks/infinite-queries/saves/useGetInfiniteSavedPosts'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { useMemo } from 'react'
 
 const SavedPosts = () => {
-  const { data: user, isLoading: isUserLoading } = useUser()
+  const { data: user, isLoading: isUserLoading } = useSessionUser()
   const {
     data,
     isError,

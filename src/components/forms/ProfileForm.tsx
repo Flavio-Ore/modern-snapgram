@@ -14,8 +14,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { ProfileValidationSchema } from '@/lib/validations/schemas/profile.validation.schema'
-import { useUpdateUser } from '@/states/query/hooks/mutations'
-import { useUser } from '@/states/query/hooks/queries'
+import { useUpdateSessionUser } from '@/states/TanStack-query/hooks/mutations/session/useUpdateSessionUser'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
@@ -24,8 +24,8 @@ import { type z } from 'zod'
 
 const ProfileForm = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  const { data: user, isLoading, isError } = useUser()
-  const { mutateAsync: updateUser, isPending } = useUpdateUser()
+  const { data: user, isLoading, isError } = useSessionUser()
+  const { mutateAsync: updateUser, isPending } = useUpdateSessionUser()
   const { toast } = useToast()
   const navigate = useNavigate()
   const profileForm = useForm<z.infer<typeof ProfileValidationSchema>>({
