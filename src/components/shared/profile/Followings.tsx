@@ -1,7 +1,7 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import AllUsersSkeleton from '@/components/shared/skeletons/AllUsersSkeleton'
 import UserCard from '@/components/shared/users/UserCard'
-import { useGetInfiniteFollowings } from '@/states/query/hooks/infiniteQueries'
+import { useGetInfiniteFollowings } from '@/states/TanStack-query/hooks/infinite-queries/followers/useGetInfiniteFollowings'
 import { E_USERS } from '@/values'
 import { useMemo } from 'react'
 

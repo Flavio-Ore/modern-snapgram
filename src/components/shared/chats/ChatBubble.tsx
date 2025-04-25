@@ -32,10 +32,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { cn, multiFormatDateString } from '@/lib/utils'
 import { EditionMessageValidationSchema } from '@/lib/validations/schemas/edition-message.validation.schema'
-import {
-  useDeleteMessage,
-  useEditMessage
-} from '@/states/query/hooks/mutations'
+import { useDeleteMessage } from '@/states/TanStack-query/hooks/mutations/messages/useDeleteMessage'
+import { useEditMessage } from '@/states/TanStack-query/hooks/mutations/messages/useEditMessage'
 import { type ChatMemberModel, type MessageModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CopyIcon, Edit2Icon, GripIcon, SendHorizonalIcon } from 'lucide-react'

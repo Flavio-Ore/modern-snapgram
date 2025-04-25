@@ -1,6 +1,6 @@
 import ManyPostIcon from '@/components/icons/ManyPostIcon'
 import PostStats from '@/components/shared/posts/PostStats'
-import { useUser } from '@/states/query/hooks/queries'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type Post } from '@/types'
 import { Link } from 'react-router-dom'
 
@@ -14,7 +14,7 @@ const GridPostList = ({
   showUser = true,
   showStats = true
 }: GridPostListProps) => {
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   return (
     <ul className='grid-container'>
       {posts.map(post => (
@@ -24,7 +24,10 @@ const GridPostList = ({
               <ManyPostIcon className='size-6' />
             </div>
           )}
-          <Link to={`/posts/${post?.$id}`} className='relative grid-post_link overflow-hidden'>
+          <Link
+            to={`/posts/${post?.$id}`}
+            className='relative grid-post_link overflow-hidden'
+          >
             {post?.files?.length > 0 &&
             post.files[0].mimeType === 'video/mp4'
               ? (
