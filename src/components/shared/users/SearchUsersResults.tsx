@@ -2,7 +2,7 @@ import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import AllUsersSkeleton from '@/components/shared/skeletons/AllUsersSkeleton'
 import UserCard from '@/components/shared/users/UserCard'
 import { useGetInfiniteSearchedUsers } from '@/states/TanStack-query/hooks/infinite-queries/users/useGetInfiniteSearchedUsers'
-import { E_USERS } from '@/values'
+import { E_USERS } from '@/values/enums'
 import { useMemo } from 'react'
 
 interface SearchResultsProps {

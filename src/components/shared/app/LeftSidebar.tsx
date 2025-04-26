@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { useUpdateSessionUser } from '@/states/TanStack-query/hooks/mutations/session/useUpdateSessionUser'
 import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
-import { links } from '@/values'
+import { links } from '@/values/links'
 import { useEffect } from 'react'
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
 

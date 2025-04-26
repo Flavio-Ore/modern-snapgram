@@ -1,17 +1,43 @@
 import PostForm from '@/components/forms/PostForm'
 import CreatePostIcon from '@/components/icons/CreatePostIcon'
 import Loader from '@/components/shared/app/Loader'
+import { useToast } from '@/components/ui/use-toast'
 import { useGetPostById } from '@/states/TanStack-query/hooks/queries/posts/useGetPostById'
-import { E_FORM_ACTIONS } from '@/values'
-import { useParams } from 'react-router-dom'
+import { useAuth } from '@/states/TanStack-query/hooks/queries/session/useAuth'
+import { E_FORM_ACTIONS } from '@/values/enums'
+import { useEffect, useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const EditPost = () => {
+  const { toast } = useToast()
+  const navigate = useNavigate()
+  const { data: auth, refetch } = useAuth()
   const { id } = useParams()
   const {
     data: post,
     isLoading,
     isError
   } = useGetPostById({ postId: id ?? '' })
+  const authentication = useMemo(
+    () => ({
+      isAuthenticated: auth?.data ?? false,
+      errorCode: auth?.code ?? false
+    }),
+    [auth]
+  )
+  useEffect(() => {
+    refetch()
+  }, [])
+  useEffect(() => {
+    if (!authentication.isAuthenticated || authentication.errorCode === 401) {
+      toast({
+        title: 'Session expired',
+        description: 'Please sign in again to continue.',
+        variant: 'destructive'
+      })
+      navigate('/sign-in')
+    }
+  }, [auth])
   return (
     <div className='flex flex-1'>
       <div className='common-container'>

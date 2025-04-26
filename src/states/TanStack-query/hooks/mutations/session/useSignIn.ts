@@ -10,6 +10,15 @@ export const useSignIn = () => {
       void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_SESSION_USER]
       })
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.IS_AUTHENTICATED]
+      })
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
+      })
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_TOP_CREATORS]
+      })
     }
   })
 }

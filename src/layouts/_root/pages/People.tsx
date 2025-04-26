@@ -7,7 +7,7 @@ import UserCard from '@/components/shared/users/UserCard'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetInfiniteUsers } from '@/states/TanStack-query/hooks/infinite-queries/users/useGetInfiniteUsers'
-import { E_USERS } from '@/values'
+import { E_USERS } from '@/values/enums'
 import { UserSearchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
