@@ -5,46 +5,6 @@ import HomeIcon from '@/components/icons/HomeIcon'
 import PeopleIcon from '@/components/icons/PeopleIcon'
 import SaveIcon from '@/components/icons/SaveIcon'
 
-export enum E_USERS {
-  ALL_USERS = 'ALL_USERS',
-  TOP_CREATORS = 'TOP_CREATORS'
-}
-
-export enum E_FORM_ACTIONS {
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE'
-}
-export const OPERATIONS = {
-  SEARCH_POSTS: 'SEARCH_POSTS',
-  EXPLORE_POSTS: 'EXPLORE_POSTS',
-  SAVED_POSTS: 'SAVED_POSTS',
-  PEOPLE: 'PEOPLE'
-}
-
-const ROUTES = {
-  PUBLIC: 'PUBLIC',
-  PRIVATE: 'PRIVATE',
-  PUBLIC_ROUTES: {
-    SIGN_IN: '/sign-in',
-    SIGN_UP: '/sign-up'
-  },
-  PRIVATE_ROUTES: {
-    HOME: '/',
-    EXPLORE: '/explore',
-    PEOPLE: '/all-users',
-    SAVED: '/saved',
-    CHATS: '/chats',
-    CHATS_ROOM: '/chats/:chatRoomId',
-    CREATE_POST: '/create-post',
-    UPDATE_POST: '/update-post/:id',
-    POST_DETAILS: '/posts/:id',
-    PROFILE: '/profile/:id/*',
-    UPDATE_PROFILE: '/update-profile',
-    NOT_FOUND: '*'
-  }
-}
-export const { PRIVATE_ROUTES, PUBLIC_ROUTES } = ROUTES
-
 export const links = {
   sidebar: [
     {

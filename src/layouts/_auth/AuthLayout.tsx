@@ -11,8 +11,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/components/ui/use-toast'
+import { useAuth } from '@/states/TanStack-query/hooks/queries/session/useAuth'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 const Outlet = lazy(
   async () =>
     await import('react-router-dom').then(module => ({
@@ -27,6 +29,16 @@ const AuthSkeleton = () => (
 )
 
 const AuthLayout = () => {
+  const navigate = useNavigate()
+  const { data: auth } = useAuth()
+  const authentication = useMemo(
+    () => ({
+      isAuthenticated: auth?.data ?? false,
+      errorCode: auth?.code ?? false
+    }),
+    [auth]
+  )
+
   const [isEmailClicked, setIsEmailClicked] = useState(false)
   const [isPasswordClicked, setIsPasswordClicked] = useState(false)
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280)
@@ -44,7 +56,14 @@ const AuthLayout = () => {
       title: 'Email copied to clipboard'
     })
   }
-
+  useEffect(() => {
+    if (authentication.isAuthenticated && authentication.errorCode === 200) {
+      navigate('/')
+    }
+    if (!authentication.isAuthenticated || authentication.errorCode === 401) {
+      navigate('/sign-in')
+    }
+  }, [auth])
   const handleClickPasswd = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {

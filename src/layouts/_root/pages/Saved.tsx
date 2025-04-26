@@ -5,7 +5,11 @@ import { TC, TR } from '@/components/shared/app/CustomTabs'
 import SavedCollections from '@/components/shared/saves/SavedCollections'
 import SavedPosts from '@/components/shared/saves/SavedPosts'
 import { Tabs, TabsList } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/states/TanStack-query/hooks/queries/session/useAuth'
+import { useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export const SavesTabs = [
   {
@@ -21,6 +25,29 @@ export const SavesTabs = [
 ]
 
 const Saved = () => {
+  const { toast } = useToast()
+  const navigate = useNavigate()
+  const { data: auth, refetch } = useAuth()
+  const authentication = useMemo(
+    () => ({
+      isAuthenticated: auth?.data ?? false,
+      errorCode: auth?.code ?? false
+    }),
+    [auth]
+  )
+  useEffect(() => {
+    refetch()
+  }, [])
+  useEffect(() => {
+    if (!authentication.isAuthenticated || authentication.errorCode === 401) {
+      toast({
+        title: 'Session expired',
+        description: 'Please sign in again to continue.',
+        variant: 'destructive'
+      })
+      navigate('/sign-in')
+    }
+  }, [auth])
   return (
     <div className='saved-container'>
       <div className='common-inner_container'>

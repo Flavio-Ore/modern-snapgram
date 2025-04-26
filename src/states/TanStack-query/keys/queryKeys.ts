@@ -1,4 +1,5 @@
 export const QUERY_KEYS = {
+  IS_AUTHENTICATED: 'isAuthenticated',
   // USER KEYS
   GET_SESSION_USER: 'getSessionUser',
   GET_USER_BY_ID: 'findUserById',

@@ -13,7 +13,8 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = async () => {
     try {
       setIsLoading(true)
-      await account.getSession('current')
+      const session = await account.getSession('current')
+      console.log({ session })
       setIsAuthenticated(true)
       return true
     } catch (error) {
@@ -58,6 +59,7 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
         })
         .catch(sessionError => {
           console.error({ sessionError })
+          window.localStorage.removeItem('cookieFallback')
           setIsAuthenticated(false)
           navigate('/sign-in')
         })

@@ -1,7 +1,7 @@
 import LazyPages from '@/components/shared/app/LazyPages'
 import { Toaster } from '@/components/ui/toaster'
 import '@/global.css'
-import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/values'
+import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/values/routes'
 import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
