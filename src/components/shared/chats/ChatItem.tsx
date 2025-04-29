@@ -27,10 +27,11 @@ const ChatItem = ({
   )
   const lastMessage = useMemo(() => {
     const messages = selectableChatRoom?.messages ?? []
-    return messages[messages.length - 1]
+    return messages.length === 0 ? null : messages[messages.length - 1]
   }, [selectableChatRoom])
 
   const lastMessageAuthor = useMemo(() => {
+    if (lastMessage?.author_chat_id == null) return ''
     return (
       selectableChatRoom.members.find(
         member => member.$id === lastMessage.author_chat_id
