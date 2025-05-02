@@ -1,7 +1,6 @@
 import App from '@/App'
-import LazyPages from '@/components/shared/app/LazyPages'
-import QueryProvider from '@/states/TanStack-query/providers/QueryProvider'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import LazyPages from '@/components/LazyPages'
+import SnapgramProvider from '@/states/providers/SnapgramProvider'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -12,10 +11,9 @@ ReactDOM.createRoot(ROOT).render(
   <StrictMode>
     <LazyPages>
       <BrowserRouter>
-        <QueryProvider>
+        <SnapgramProvider>
           <App />
-          <ReactQueryDevtools />
-        </QueryProvider>
+        </SnapgramProvider>
       </BrowserRouter>
     </LazyPages>
   </StrictMode>

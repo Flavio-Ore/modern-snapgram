@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { type SVGProps } from 'react'
 
 const VideoIcon = ({ className }: SVGProps<SVGSVGElement>) => {
