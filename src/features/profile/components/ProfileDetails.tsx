@@ -1,10 +1,10 @@
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import { type UserStats } from '@/types'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
+import ProfileActions from '@profile/components/ProfileActions'
+import ProfileStats from '@profile/components/ProfileStats'
 import { Skeleton } from '@shadcn/skeleton'
 import { useGetUserById } from '@users/hooks/useGetUserById'
-import ProfileActions from '@users/profile/components/ProfileActions'
-import ProfileStats from '@users/profile/components/ProfileStats'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
