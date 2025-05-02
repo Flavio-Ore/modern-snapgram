@@ -1,6 +1,6 @@
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { buttonVariants } from '@shadcn/button'
 import { X } from 'lucide-react'
 import {
   type ComponentPropsWithoutRef,
