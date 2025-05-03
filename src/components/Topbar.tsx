@@ -22,7 +22,7 @@ const Topbar = ({
       })}
     >
       <div className='flex-between py-4 px-5'>
-        <Link to='/' className='flex gap-3 items-center'>
+        <Link to='/home' className='flex gap-3 items-center'>
           <Logo width={170} height={36} className='w-full' />
         </Link>
 
@@ -30,11 +30,14 @@ const Topbar = ({
           <LogoutDialog />
           <Link
             to='/chats'
-            className={cn('flex-center relative flex-col gap-1 p-2 transition', {
-              'bg-dark-4 rounded-[10px]':
-                extractFirstRoutePart(pathname) ===
-                extractFirstRoutePart('/chats')
-            })}
+            className={cn(
+              'flex-center relative flex-col gap-1 p-2 transition',
+              {
+                'bg-dark-4 rounded-[10px]':
+                  extractFirstRoutePart(pathname) ===
+                  extractFirstRoutePart('/chats')
+              }
+            )}
           >
             <div className='relative'>
               <ChatsIcon
