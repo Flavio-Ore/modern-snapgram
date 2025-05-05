@@ -31,10 +31,10 @@ const LeftSidebar = ({
   return (
     <nav className='leftsidebar min-w-20 xl:min-w-56 '>
       <div className='flex flex-col gap-8'>
-        <Link to='/' className='gap-3 items-center hidden xl:flex'>
+        <Link to='/home' className='gap-3 items-center hidden xl:flex'>
           <Logo className='w-full' />
         </Link>
-        <Link to='/' className='gap-3 items-center flex xl:hidden'>
+        <Link to='/home' className='gap-3 items-center flex xl:hidden'>
           <LogoSmall className='w-full' />
         </Link>
         {isLoading && (

@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { editMessage } from '@chats/services/editMessage'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 

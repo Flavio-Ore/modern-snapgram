@@ -1,7 +1,7 @@
 
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
-import { INITIAL_PAGE_PARAM } from '@/states/utils/constants'
-import { getNextCursor } from '@/states/utils/getNextCursor'
+import { INITIAL_PAGE_PARAM } from '@/states/constants'
+import { getNextCursor } from '@/states/getNextCursor'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { findInfiniteUpdatedPosts } from '@posts/services/findInfiniteUpdatedPosts'
 import { useInfiniteQuery } from '@tanstack/react-query'
 

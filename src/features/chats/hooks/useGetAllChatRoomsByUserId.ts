@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { findAllChatRoomsByUserId } from '@chats/services/findAllChatRoomsByUserId'
 import { useQuery } from '@tanstack/react-query'
 

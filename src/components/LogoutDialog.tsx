@@ -1,3 +1,4 @@
+import { PUBLIC_ROUTES } from '@/routes/public'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
 import { useSignOut } from '@auth/hooks/useSignOut'
 import { useGetAllMemberChats } from '@chats/hooks/useGetAllMemberChats'
@@ -17,9 +18,11 @@ import { Button } from '@shadcn/button'
 import { useToast } from '@shadcn/use-toast'
 import { LucideLogOut } from 'lucide-react'
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const LogoutDialog = () => {
   const { data: user } = useSessionUser()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const { data: ownMembers } = useGetAllMemberChats({
     userId: user?.$id ?? ''
@@ -42,6 +45,7 @@ const LogoutDialog = () => {
       online: false
     })
     signOut()
+    navigate(PUBLIC_ROUTES.SIGN_IN)
   }
 
   return (

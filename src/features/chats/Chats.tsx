@@ -1,15 +1,15 @@
-import ChatsIcon from '@/components/icons/ChatsIcon'
-import Loader from '@/components/Loader'
-import ChatItem from '@/features/chats/components/ChatItem'
 import { appwriteConfig, client } from '@/services/config'
 import { type ChatMemberModel } from '@/types'
 import { cn } from '@/utils/cn'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
 import Chat from '@chats/components/Chat'
+import ChatItem from '@chats/components/ChatItem'
 import ChatSkeleton from '@chats/components/skeletons/ChatSkeleton'
 import ChatsSkeleton from '@chats/components/skeletons/ChatsSkeleton'
 import { useCreateChatRoomFromUsers } from '@chats/hooks/useCreateChatRoomFromUsers'
 import { useGetAllChatRoomsByUserId } from '@chats/hooks/useGetAllChatRoomsByUserId'
+import ChatsIcon from '@components/icons/ChatsIcon'
+import Loader from '@components/Loader'
 import {
   FlameKindlingIcon,
   MessageSquareWarningIcon,

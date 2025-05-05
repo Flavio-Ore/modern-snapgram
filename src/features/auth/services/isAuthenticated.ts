@@ -1,38 +1,22 @@
 import {
   account
 } from '@/services/config'
-import { appwriteResponse } from '@/services/utils/appwriteResponse'
-import { APPWRITE_RESPONSE_CODES } from '@/services/utils/constants/APPWRITE_RESPONSE_CODES'
-import { AppwriteException } from 'appwrite'
 
 export async function isAuthenticated () {
-  if (window.localStorage.getItem('cookieFallback') === '[]' || window.localStorage.getItem('cookieFallback') == null) {
-    return appwriteResponse({
-      data: false,
-      code: APPWRITE_RESPONSE_CODES.OK.code,
-      message: 'User not authenticated',
-      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.status
-    })
-  }
-
   try {
-    await account.getSession('current')
-    return appwriteResponse({
-      data: true,
-      code: APPWRITE_RESPONSE_CODES.OK.code,
-      message: 'session retrieved successfully',
-      status: APPWRITE_RESPONSE_CODES.OK.status
-    })
-  } catch (e) {
-    console.error({ e })
-    if (e instanceof AppwriteException) {
-      return appwriteResponse({
-        code: e.code,
-        data: null,
-        message: e.message,
-        status: e.type
-      })
+    const session = window.localStorage.getItem('cookieFallback') ?? ''
+    if (session === '' || session === '[]') {
+      console.log('No session found')
+      await account.deleteSession('current')
+      window.localStorage.removeItem('cookieFallback')
+      return false
     }
-    return null
+
+    const isLoggedIn = await account.get()
+    console.log('isLoggedIn: ', isLoggedIn)
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
   }
 }

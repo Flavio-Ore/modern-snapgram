@@ -1,6 +1,4 @@
-import { formatDateString } from './formatDateString'
-
-//
+import { formatDateString } from '@/utils/formatDateString'
 
 export const multiFormatDateString = (timestamp: string = '') => {
   const timestampNum = Math.round(new Date(timestamp).getTime() / 1000)

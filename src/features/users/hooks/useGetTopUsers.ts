@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { findTopUsers } from '@users/services/findTopUsers'
 

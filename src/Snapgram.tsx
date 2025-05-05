@@ -1,46 +1,28 @@
+import { Skeleton } from '@/components/ui/skeleton'
 import { links } from '@/routes/links'
 import { appwriteConfig, client } from '@/services/config'
 import { type MessageModel } from '@/types'
 import { cn } from '@/utils/cn'
+import { extractFirstRoutePart } from '@/utils/extractFirstRoutePart'
 import { useAuth } from '@auth/hooks/useAuth'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
 import { useSignOut } from '@auth/hooks/useSignOut'
 import { useGetAllChatRoomsByUserId } from '@chats/hooks/useGetAllChatRoomsByUserId'
 import { useSetChatMemberOnline } from '@chats/hooks/useSetChatMemberOnline'
-import { Skeleton } from '@shadcn/skeleton'
+import Bottombar from '@components/Bottombar'
+import LeftSidebar from '@components/LeftSidebar'
+import Topbar from '@components/Topbar'
 import { useToast } from '@shadcn/use-toast'
-import { lazy, Suspense, useEffect, useMemo } from 'react'
-import { useLocation } from 'react-router-dom'
-import { extractFirstRoutePart } from './utils/extractFirstRoutePart'
-
-const Topbar = lazy(async () => await import('@/components/Topbar'))
-const LeftSidebar = lazy(
-  async () => await import('@/components/LeftSidebar')
-)
-const Bottombar = lazy(
-  async () => await import('@/components/Bottombar')
-)
-const Outlet = lazy(
-  async () =>
-    await import('react-router-dom').then(module => ({
-      default: module.Outlet
-    }))
-)
+import { Suspense, useEffect, useMemo } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 
 const Snapgram = () => {
   const { toast } = useToast()
   const { isPending: isSigninOut } = useSignOut()
   const { pathname } = useLocation()
-  const { data: auth } = useAuth()
+  const { data: isAuth, isLoading: isLoadingAuth } = useAuth()
   const { data: user } = useSessionUser()
   const { mutateAsync: updateStatus } = useSetChatMemberOnline()
-  const authentication = useMemo(
-    () => ({
-      isAuthenticated: auth?.data ?? false,
-      errorCode: auth?.code ?? false
-    }),
-    [auth]
-  )
   const chatRoomsIds = useMemo(
     () => user?.chats.map(chat => chat.chat_room.$id) ?? [],
     [user]
@@ -68,13 +50,13 @@ const Snapgram = () => {
   )
 
   useEffect(() => {
-    if (authentication.isAuthenticated) {
+    if (isAuth != null && isAuth) {
       updateStatus({
         chatIds: ownChatMembersIds,
         online: true
       })
     }
-  }, [authentication, ownChatMembersIds])
+  }, [isAuth, isLoadingAuth, ownChatMembersIds])
 
   useEffect(() => {
     if (ownChatMembersIds.length <= 0) return
