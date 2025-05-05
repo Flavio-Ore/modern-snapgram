@@ -1,7 +1,7 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
-import { INITIAL_PAGE_PARAM } from '@/states/utils/constants'
-import { enabledId } from '@/states/utils/enabledId'
-import { getNextCursor } from '@/states/utils/getNextCursor'
+import { INITIAL_PAGE_PARAM } from '@/states/constants'
+import { enabledId } from '@/states/enabledId'
+import { getNextCursor } from '@/states/getNextCursor'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { findInfiniteMessagesByChatRoomId } from '@chats/services/findInfiniteMessagesByChatRoomId'
 import { useInfiniteQuery } from '@tanstack/react-query'
 

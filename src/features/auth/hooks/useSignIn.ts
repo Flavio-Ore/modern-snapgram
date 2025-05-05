@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { signInAccount } from '@auth/services/signInAccount'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -8,10 +8,10 @@ export const useSignIn = () => {
     mutationFn: signInAccount,
     onSuccess: () => {
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.GET_SESSION_USER]
+        queryKey: [QUERY_KEYS.IS_AUTHENTICATED]
       })
       void queryClient.refetchQueries({
-        queryKey: [QUERY_KEYS.IS_AUTHENTICATED]
+        queryKey: [QUERY_KEYS.GET_SESSION_USER]
       })
       void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]

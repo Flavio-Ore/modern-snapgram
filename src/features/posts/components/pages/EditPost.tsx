@@ -1,43 +1,18 @@
 import CreatePostIcon from '@/components/icons/CreatePostIcon'
 import Loader from '@/components/Loader'
 import { FORM_ACTIONS } from '@/utils/FORM_ACTIONS'
-import { useAuth } from '@auth/hooks/useAuth'
 import PostForm from '@posts/components/forms/PostForm'
 import { useGetPostById } from '@posts/hooks/useGetPostById'
-import { useToast } from '@shadcn/use-toast'
-import { useEffect, useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 const EditPost = () => {
-  const { toast } = useToast()
-  const navigate = useNavigate()
-  const { data: auth, refetch } = useAuth()
   const { id } = useParams()
   const {
     data: post,
     isLoading,
     isError
   } = useGetPostById({ postId: id ?? '' })
-  const authentication = useMemo(
-    () => ({
-      isAuthenticated: auth?.data ?? false,
-      errorCode: auth?.code ?? false
-    }),
-    [auth]
-  )
-  useEffect(() => {
-    refetch()
-  }, [])
-  useEffect(() => {
-    if (!authentication.isAuthenticated || authentication.errorCode === 401) {
-      toast({
-        title: 'Session expired',
-        description: 'Please sign in again to continue.',
-        variant: 'destructive'
-      })
-      navigate('/sign-in')
-    }
-  }, [auth])
+
   return (
     <div className='flex flex-1'>
       <div className='common-container'>

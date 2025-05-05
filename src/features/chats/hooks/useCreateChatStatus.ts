@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { createChat } from '@chats/services/chatsMember'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 export const useCreateChatStatus = () => {

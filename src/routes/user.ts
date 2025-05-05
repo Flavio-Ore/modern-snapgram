@@ -5,6 +5,11 @@ export const USER_ROUTES = {
   CREATE_POST: '/create-post',
   UPDATE_POST: '/update-post/:id',
   PROFILE: '/profile/:id/*',
-  UPDATE_PROFILE: '/update-profile'
+  UPDATE_PROFILE: '/update-profile',
+  HOME: '/home',
+  EXPLORE: '/explore',
+  PEOPLE: '/all-users',
+  POST_DETAILS: '/posts/:id',
+  NOT_FOUND: '*'
 }
 

@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { deleteMessage } from '@chats/services/deleteMessage'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 

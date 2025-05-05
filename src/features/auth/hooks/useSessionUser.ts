@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { getSessionUser } from '@auth/services/getSessionUser'
 import { useQuery } from '@tanstack/react-query'
 

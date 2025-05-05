@@ -1,8 +1,6 @@
-import { links } from '@/routes/links'
 import { appwriteConfig, client } from '@/services/config'
 import { type MessageModel } from '@/types'
 import { cn } from '@/utils/cn'
-import { extractFirstRoutePart } from '@/utils/extractFirstRoutePart'
 import { useAuth } from '@auth/hooks/useAuth'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
 import { useSignOut } from '@auth/hooks/useSignOut'
@@ -11,16 +9,18 @@ import { useSetChatMemberOnline } from '@chats/hooks/useSetChatMemberOnline'
 import Bottombar from '@components/Bottombar'
 import LeftSidebar from '@components/LeftSidebar'
 import Topbar from '@components/Topbar'
-import { Skeleton } from '@shadcn/skeleton'
 import { useToast } from '@shadcn/use-toast'
 import { Suspense, useEffect, useMemo } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { Skeleton } from './components/ui/skeleton'
+import { links } from './routes/links'
+import { extractFirstRoutePart } from './utils/extractFirstRoutePart'
 
 const Snapgram = () => {
   const { toast } = useToast()
   const { isPending: isSigninOut } = useSignOut()
   const { pathname } = useLocation()
-  const { data: isAuth } = useAuth()
+  const { data: isAuth, isLoading: isLoadingAuth } = useAuth()
   const { data: user } = useSessionUser()
   const { mutateAsync: updateStatus } = useSetChatMemberOnline()
   const chatRoomsIds = useMemo(
@@ -50,13 +50,13 @@ const Snapgram = () => {
   )
 
   useEffect(() => {
-    if (isAuth?.data != null && isAuth.data) {
+    if (isAuth != null && isAuth) {
       updateStatus({
         chatIds: ownChatMembersIds,
         online: true
       })
     }
-  }, [isAuth, ownChatMembersIds])
+  }, [isAuth, isLoadingAuth, ownChatMembersIds])
 
   useEffect(() => {
     if (ownChatMembersIds.length <= 0) return

@@ -1,5 +1,5 @@
 import { updateFollows } from '@/features/following-followers/services/updateFollows'
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useFollow = () => {
