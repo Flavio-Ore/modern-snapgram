@@ -1,11 +1,11 @@
 import '@/global.css'
 import AuthGuard from '@/guard/AuthGuard'
+import { PUBLIC_ROUTES } from '@/routes/public'
+import { USER_ROUTES } from '@/routes/user'
 import { Toaster } from '@shadcn/toaster'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { PUBLIC_ROUTES } from './routes/public'
-import { USER_ROUTES } from './routes/user'
 
 const Auth = lazy(async () => await import('@auth/Auth'))
 const Snapgram = lazy(async () => await import('@/Snapgram'))
@@ -27,7 +27,7 @@ const EditPost = lazy(
 const PostDetails = lazy(
   async () => await import('@posts/components/pages/PostDetails')
 )
-const Profile = lazy(async () => await import('@/features/profile/Profile'))
+const Profile = lazy(async () => await import('@profile/Profile'))
 const UpdateProfile = lazy(
   async () => await import('@profile/components/pages/UpdateProfile')
 )

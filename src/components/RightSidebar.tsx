@@ -1,7 +1,7 @@
-import { E_USERS } from '@/features/users/utils/DISPLAY-USERS'
 import { Skeleton } from '@shadcn/skeleton'
 import UserCard from '@users/components/UserCard'
 import { useGetTopUsers } from '@users/hooks/useGetTopUsers'
+import { E_USERS } from '@users/utils/DISPLAY-USERS'
 
 const TopCreators = () => {
   const { data: topCreators, isLoading, isError } = useGetTopUsers({ limit: 8 })

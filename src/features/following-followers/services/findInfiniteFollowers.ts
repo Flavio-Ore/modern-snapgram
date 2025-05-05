@@ -1,5 +1,5 @@
-import { findInfiniteFollows } from '@/features/following-followers/services/findInfiniteFollows'
 import { type FollowingFollowersModel, type UserModel } from '@/types'
+import { findInfiniteFollows } from '@following-followers/services/findInfiniteFollows'
 import { Query } from 'appwrite'
 
 export async function findInfiniteFollowers ({

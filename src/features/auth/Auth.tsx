@@ -1,6 +1,7 @@
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { USER_ROUTES } from '@/routes/user'
+import { useAuth } from '@auth/hooks/useAuth'
 import { Button } from '@shadcn/button'
 import {
   Dialog,
@@ -15,7 +16,6 @@ import { useToast } from '@shadcn/use-toast'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from './hooks/useAuth'
 
 const Auth = () => {
   const { data: isAuthenticated, isLoading } = useAuth()
