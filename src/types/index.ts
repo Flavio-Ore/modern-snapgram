@@ -1,7 +1,7 @@
 import { type Models } from 'appwrite'
 import { type ReactNode } from 'react'
 
-interface UserModel extends Models.Document {
+export interface UserModel extends Models.Document {
   name: string
   username: string
   accountId: string
@@ -18,23 +18,23 @@ interface UserModel extends Models.Document {
   chats: ChatMemberModel[]
 }
 
-interface FollowingFollowersModel extends Models.Document {
-  following: UserMoodel
-  followed: UserMdel
-}
-
-interface Following extends Models.Document {
+export interface FollowingFollowersModel extends Models.Document {
+  following: UserModel
   followed: UserModel
 }
 
-interface Followers extends Models.Document {
+export interface Following extends Models.Document {
+  followed: UserModel
+}
+
+export interface Followers extends Models.Document {
   following: UserModel
 }
-interface FileModelWithUrl extends Models.File {
+export interface FileModelWithUrl extends Models.File {
   url: string
 }
 
-interface Post extends Models.Document {
+export interface Post extends Models.Document {
   caption: string
   tags: string[]
   files: FileModelWithUrl[]
@@ -44,7 +44,7 @@ interface Post extends Models.Document {
   creator: UserModel
 }
 
-interface PostModel extends Models.Document {
+export interface PostModel extends Models.Document {
   caption: string
   tags: string[]
   filesId: Array<Models.Document['$id']>
@@ -54,17 +54,17 @@ interface PostModel extends Models.Document {
   creator: UserModel
 }
 
-interface SaveModel extends Models.Document {
+export interface SaveModel extends Models.Document {
   post: PostModel
   user: UserModel
 }
 
-interface Save extends Models.Document {
+export interface Save extends Models.Document {
   post: Post
   user: UserModel
 }
 
-interface ChatMemberModel extends Models.Document {
+export interface ChatMemberModel extends Models.Document {
   member: UserModel
   own_messages: MessageModel[]
   received_messages: MessageModel[]
@@ -73,7 +73,7 @@ interface ChatMemberModel extends Models.Document {
   online: boolean
 }
 
-interface MessageModel extends Models.Document {
+export interface MessageModel extends Models.Document {
   body: string
   is_edited: boolean
   author_chat: ChatMemberModel
@@ -83,14 +83,14 @@ interface MessageModel extends Models.Document {
   receivers_chat_id: Array<ChatMemberModel['$id']>
 }
 
-interface ChatRoomModel extends Models.Document {
+export interface ChatRoomModel extends Models.Document {
   members: ChatMemberModel[]
   messages: MessageModel[]
 }
 
-interface UserSession extends Models.User<Models.Preferences> {}
+export interface UserSession extends Models.User<Models.Preferences> {}
 
-export type UserStats = Array<{ name: string, value: number }>
+export type UserStats = Array<{ name: string; value: number }>
 export type EmptyObject = Record<keyof object, never>
 export type ObjectWithKeys = Record<keyof object, unknown>
 export interface AccountContextType {
