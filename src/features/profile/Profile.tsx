@@ -28,7 +28,7 @@ const ProfileTriggers = [
 ]
 
 const Profile = () => {
-  const { id } = useParams()
+  const { id: userId } = useParams()
   return (
     <div className='profile-container'>
       <ProfileDetails />
@@ -55,7 +55,7 @@ const Profile = () => {
             <TC
               key={trigger}
               trigger={trigger}
-              Content={<Content userId={id ?? ''} />}
+              Content={<Content userId={userId ?? ''} />}
             />
           ))}
         </Tabs>

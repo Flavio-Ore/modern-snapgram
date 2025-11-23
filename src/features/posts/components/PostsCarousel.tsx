@@ -32,31 +32,54 @@ const PostsCarousel = ({
       setCurrent(emblaApi.selectedScrollSnap() + 1)
     })
   }, [emblaApi, files])
+
   return (
     <Carousel setApi={setEmblaApi} className={cn('group', className)}>
       <CarouselContent>
-        {files?.map(({ $id, url, mimeType }) =>
-          mimeType.includes('image')
-            ? (
-            <CarouselItem key={$id}>
-              <div className='p-1'>
-                <img
-                  src={url ?? '/assets/icons/profile-placeholder.svg'}
-                  alt='Post image'
-                  loading='lazy'
-                  className='post_details-img'
-                />
-              </div>
-            </CarouselItem>
-              )
-            : (
-            <CarouselItem key={$id}>
-              <div className='p-1'>
-                <video src={url} className='post_details-img' controls loop/>
-              </div>
-            </CarouselItem>
-              )
+        {files.length === 0 && (
+          <CarouselItem>
+            <div className='p-1'>
+              <img
+                src={'/assets/icons/file-upload.svg'}
+                alt='Post image'
+                loading='lazy'
+                className='post_details-img'
+              />
+            </div>
+          </CarouselItem>
         )}
+        {files.length > 0 &&
+          files.map(({ $id, url, mimeType }) => {
+            if (mimeType.includes('image')) {
+              return (
+                <CarouselItem key={$id}>
+                  <div className='p-1'>
+                    <img
+                      src={url ?? '/assets/icons/file-upload.svg'}
+                      alt='Post image'
+                      loading='lazy'
+                      className='post_details-img'
+                    />
+                  </div>
+                </CarouselItem>
+              )
+            }
+
+            if (mimeType.includes('video/mp4')) {
+              return (
+                <CarouselItem key={$id}>
+                  <div className='p-1'>
+                    <video
+                      src={url}
+                      className='post_details-img'
+                      controls
+                      loop
+                    />
+                  </div>
+                </CarouselItem>
+              )
+            }
+          })}
       </CarouselContent>
       <CarouselPrevious className='opacity-0 transition-opacity group-hover:opacity-100 hover:text-primary-500' />
       <CarouselNext className='opacity-0 transition-opacity group-hover:opacity-100 hover:text-primary-500' />
