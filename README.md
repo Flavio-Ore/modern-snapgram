@@ -1,7 +1,19 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/ec28b252-d471-420e-a4e8-d297982f0571" alt="snapgram-logo" />
-  <p>My version of the original Snapgram project by <a href="https://github.com/adrianhajdin">Adrian Hajdin</a></p>
+  <p>My own version of the original <a href="https://github.com/adrianhajdin/social_media_app">Snapgram</a> project by <a href="https://github.com/adrianhajdin">Adrian Hajdin</a></p>
+
 </div>
+
+##  Todo: New key Features developed by me
+- [x] Integrated chat
+- [x] Upload up to 10 multimedia contents per post
+- [x] Improved UI with new layouts, components, interactions and animations
+- [x] Online/offline status updated only at login/logout
+- [x] Follow/unfollow users functionality
+- [x] New Software Architecture
+- [ ] Testing: Unit, Integration, End-to-End, Performance
+- [ ] Dockerize the project for easier deployment
+- [ ] Better Appwrite Authentication, email verification
 
 ## Table of Contents 📋
 
@@ -10,10 +22,9 @@
 2. [Database Design](#database-design)
 3. [The design](#the-design)
 4. [The tools](#the-tools)
-5. [Features](#features)
-6. [Local Setup](#local-setup)
-7. [Contacts](#contact)
-8. [Links](#links)
+5. [Local Setup](#local-setup)
+6. [Contacts](#contact)
+7. [Links](#links)
 
 ## <a name="preview">Preview 👀</a>
 
@@ -73,20 +84,6 @@ Originally, the project was built using the following technologies:
 ### Backend
 
 This project uses Backend as a Service (BaaS) for the backend. The BaaS provider used is [Appwrite](https://appwrite.io/).
-
-## <a name="features">New Features ⭐</a>
-
-The [original features](https://github.com/adrianhajdin/social_media_app?tab=readme-ov-file#-features) were implemented in the project, but I also added some new features, such as:
-
-🤜 **Integrated chat**: You can now chat with other users, create, delete and edit messages, as well as view the number of unread messages.
-
-🤜**Many more post and ...videos?**: You can now upload videos or images in formats validated in the forms. **You can upload up to 10 multimedia contents :^)**.
-
-🤜 **Improved UI**: New button layouts, new ShadCN components, new interactions and animations. Updated UI considering small, medium or large screen devices.
-
-🤜 **Are you online**: Online or offline status is updated **only** at login or logout.
-
-🤜 **Followers**: You can now follow users and be followed by others.
 
 ## <a name="local-setup">Local Setup 👩‍💻</a>
 
