@@ -3,17 +3,31 @@ import {
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
 } from '@/services/appwrite/util'
-import { type Message, type MessageAttributes } from '@/types'
+import { type Message, type MessageAttributes, type UserModel } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
 
 export async function findInfiniteMessages ({
   lastId = '',
-  queries = []
+  senderId,
+  receiversId
 }: {
   lastId: string
-  queries: string[]
+  senderId: UserModel['$id']
+  receiversId: Array<UserModel['$id']>
 }) {
-  const query = [...queries, Query.limit(20)]
+  const query = [
+    Query.or([
+      Query.and([
+        Query.contains('sender', [senderId]),
+        Query.contains('receivers', receiversId)
+      ]),
+      Query.and([
+        Query.contains('sender', receiversId),
+        Query.contains('receivers', [senderId])
+      ])
+    ]),
+    Query.limit(20)
+  ]
   if (lastId.trim().length !== 0) {
     query.push(Query.cursorAfter(lastId.toString()))
   }
@@ -28,7 +42,7 @@ export async function findInfiniteMessages ({
       data: messagesDocumentList.documents,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error({ e })
@@ -65,7 +79,7 @@ export async function createMessage ({
       data: createdMessage,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error({ e })
@@ -93,7 +107,7 @@ export async function deleteMessage ({ messageId }: { messageId: string }) {
       data: null,
       code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
       message: APPWRITE_RESPONSE_CODES.NO_CONTENT.message,
-      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.status
     })
   } catch (e) {
     console.error({ e })

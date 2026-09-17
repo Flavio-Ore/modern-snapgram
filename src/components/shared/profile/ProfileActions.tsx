@@ -1,0 +1,109 @@
+import EditIcon from '@/components/icons/EditIcon'
+import { Button } from '@/components/ui/button'
+import { useFollow, useUnfollow } from '@/lib/queries/mutations'
+import { type UserModel } from '@/types'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import Loader from '../app/Loader'
+
+interface ProfileButtonProps {
+  className?: string
+  currentUser: UserModel
+  profileUser: UserModel
+}
+const ProfileActions = ({
+  currentUser,
+  profileUser,
+  className
+}: ProfileButtonProps) => {
+  console.log('currentUser :>> ', currentUser)
+  console.log('profileUser :>> ', profileUser)
+  const [isFollowing, setIsFollowing] = useState(() => {
+    return currentUser.followings.some(
+      record => record.followed.$id === profileUser.$id
+    )
+  })
+  const { mutateAsync: follow, isPending: isPendindFollow } = useFollow()
+  const { mutateAsync: unfollow, isPending: isPendindUnfollow } = useUnfollow()
+  const followRecordId = useMemo(
+    () =>
+      currentUser.followings.find(
+        record => record.followed.$id === profileUser.$id
+      )?.$id ?? '',
+    [currentUser, profileUser]
+  )
+
+  console.log({ followRecordId })
+
+  const isCurrentUser = useMemo(
+    () => currentUser.accountId === profileUser.accountId,
+    [currentUser, profileUser]
+  )
+
+  const handleFollow = async () => {
+    if (isCurrentUser) return
+    try {
+      await follow({
+        followerUserId: currentUser.$id,
+        followedUserId: profileUser.$id
+      })
+      setIsFollowing(true)
+    } catch (e) {
+      console.error({ e })
+    }
+  }
+  const handleUnfollow = async () => {
+    if (isCurrentUser) return
+    try {
+      await unfollow({ followRecordId })
+      setIsFollowing(false)
+    } catch (e) {
+      console.error({ e })
+    }
+  }
+  return (
+    <div className={className}>
+      {isCurrentUser && (
+        <Link
+          to='/update-profile'
+          className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
+        >
+          <EditIcon className='size-5 fill-secondary-500' />
+          Edit Profile
+        </Link>
+      )}
+      {!isCurrentUser && (
+        <>
+          {!isFollowing && (
+            <Button
+              className='shad-button_primary px-5 py-2.5 hover:bg-secondary-500 hover:text-dark-1 small-medium'
+              disabled={isPendindFollow || isPendindUnfollow}
+              onClick={handleFollow}
+            >
+              {isPendindFollow || isPendindUnfollow ? <Loader /> : 'Follow'}
+            </Button>
+          )}
+          {isFollowing && (
+            <Button
+              className='shad-button_primary bg-dark-4 px-5 py-2.5 hover:bg-red-600 small-medium'
+              disabled={isPendindFollow || isPendindUnfollow}
+              onClick={handleUnfollow}
+            >
+              {isPendindFollow || isPendindUnfollow ? <Loader /> : 'Unfollow'}
+            </Button>
+          )}
+          <Button
+            className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-primary-600 small-semibold'
+            asChild
+          >
+            <Link key='message' to={`/chats/${profileUser.$id}`}>
+              Message
+            </Link>
+          </Button>
+        </>
+      )}
+    </div>
+  )
+}
+
+export default ProfileActions

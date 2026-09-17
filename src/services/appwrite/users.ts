@@ -57,7 +57,7 @@ export async function findInfiniteUsers ({
       data: users.documents,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
@@ -87,7 +87,7 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
       data: users.documents,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
@@ -115,7 +115,7 @@ export async function findUserById ({ userId }: { userId: string }) {
       data: user,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
@@ -175,7 +175,7 @@ export async function updateUser ({ user }: { user: UserUpdateData }) {
       data: updatedUser,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'Account updated successfully.',
-      status: APPWRITE_RESPONSE_CODES.OK.text
+      status: APPWRITE_RESPONSE_CODES.OK.status
     })
   } catch (e) {
     console.error(e)
