@@ -1,24 +1,19 @@
 import ExploreDefaultPosts from '@/components/shared/ExplorePosts'
+import Loader from '@/components/shared/Loader'
 import SearchResults from '@/components/shared/SearchResults'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useState } from 'react'
 
 const Explore = () => {
-  const [isSearchLoading, setIsSearchLoading] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const debouncedValue = useDebounce(searchValue, 500)
-
-  console.log('isSearchLoading :>> ', isSearchLoading)
-
   const isTyping = searchValue !== ''
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
-    setIsSearchLoading(true)
     setSearchValue(value)
   }
-
   return (
     <div className='explore-container'>
       <div className='explore-inner_container'>
@@ -52,12 +47,8 @@ const Explore = () => {
         </div>
       </div>
       <div className='flex flex-wrap gap-9 w-full max-w-5xl'>
-        {isTyping && (
-          <SearchResults
-            searchValue={debouncedValue}
-            isSearching={isSearchLoading}
-          />
-        )}
+        {isTyping && debouncedValue === '' && <Loader />}
+        {isTyping && <SearchResults debouncedValue={debouncedValue} />}
         {!isTyping && <ExploreDefaultPosts />}
       </div>
     </div>

@@ -1,34 +1,14 @@
-import { useGetPosts } from '@/lib/queries/queries'
+import { useGetInfinitePosts } from '@/lib/queries/infiniteQueries'
 import { OPERATIONS } from '@/values'
-import { useEffect, useState } from 'react'
 import GridPostList from './GridPostList'
 import InfinitePosts from './InfiniteScroll'
-import Loader from './Loader'
 
 const ExploreDefaultPosts = () => {
-  // Add a loading state
-  const [loading, setLoading] = useState(true)
   const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
-    useGetPosts()
-  const lastPosts = data?.pages.reverse()[0] ?? []
-  const noMoreDefaultResults = lastPosts.length === 0
-  console.log('EXPLORE DEFAULT POSTS :>> ', {
-    data,
-    isFetching,
-    isError,
-    isLoading,
-    hasNextPage,
-    noMoreDefaultResults
-  })
+    useGetInfinitePosts()
+  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
 
-  // Update loading state when hasNextPage changes
-  useEffect(() => {
-    setLoading(false)
-  }, [hasNextPage])
-
-  return loading ? (
-    <Loader />
-  ) : (
+  return (
     <InfinitePosts
       data={data}
       isFetching={isFetching}
@@ -36,7 +16,7 @@ const ExploreDefaultPosts = () => {
       isError={isError}
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
-      isDataEmpty={noMoreDefaultResults}
+      isDataEmpty={posts.length === 0}
     >
       {data?.pages.map((postsPage, i) => (
         <GridPostList

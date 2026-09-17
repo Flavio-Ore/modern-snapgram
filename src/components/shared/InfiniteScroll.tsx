@@ -1,4 +1,8 @@
-import { InfiniteData } from '@tanstack/react-query'
+import {
+  FetchNextPageOptions,
+  InfiniteData,
+  InfiniteQueryObserverResult
+} from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import Loader from './Loader'
@@ -7,7 +11,11 @@ type InfinitePostsProps = {
   children: React.ReactNode
   isDataEmpty: boolean
   data: InfiniteData<unknown> | undefined
-  fetchNextPage: () => void
+  fetchNextPage: (
+    options?: FetchNextPageOptions | undefined
+  ) => Promise<
+    InfiniteQueryObserverResult<InfiniteData<unknown, unknown>, Error>
+  >
   isFetching: boolean
   isLoading: boolean
   isError: boolean
@@ -18,23 +26,27 @@ type InfinitePostsProps = {
  * `InfinitePosts` is a React component that handles infinite scrolling for posts.
  *
  * @component
- * @param children - The elements to be rendered for each post.-
- * @param infinityHookResponse - The response from the `useInfiniteQuery` hook.
- * @param dependencyList - Array of dependencies to trigger the `fetchNextPage` function only when inView is `true` and the dependencies have changed
- * @param triggerLoader  - If `true`, the component will show a loading spinner, regardless of the state of the data fetching.
- * @param triggerFetchNextPage - If `true`, the component will fetch the next page when it comes into view.
- * @param triggerNextPage - If `true`, the component will show a loading spinner at the end of the page when there are more pages to load.
+ * @param children - The children elements to be rendered.
+ * @param data - The data to be displayed.
+ * @param isDataEmpty - A boolean value that indicates if the data is empty.
+ * @param hasNextPage - A boolean value that indicates if there is a next page of data.
+ * @param fetchNextPage - A function that fetches the next page of data.
+ * @param isFetching - A boolean value that indicates if the data is being fetched.
+ * @param isLoading - A boolean value that indicates if the data is loading.
+ * @param isError - A boolean value that indicates if an error occurred while fetching the data.
+ * @returns {React.FC<InfinitePostsProps>}
  *
  * @example
  * <InfinitePosts
- *   infinityHookResponse={useGetInfiniteData()}
- *   notEmptyData={true}
- *   dependencyList={[dependency1, dependency2]}
- *   triggerLoader={isLoading}
- *   triggerFetchNextPage={shouldFetchNextPage}
- *   triggerNextPage={hasMorePages}
- * >
- *   {/* children elements here * /}
+ *   isDataEmpty={isDataEmpty}
+ *   data={data}
+ *   hasNextPage={hasNextPage}
+ *   fetchNextPage={fetchNextPage}
+ *   isFetching={isFetching}
+ *   isLoading={isLoading}
+ *   isError={isError}
+ *  >
+ *    {children}
  * </InfinitePosts>
  */
 const InfinitePosts: React.FC<InfinitePostsProps> = ({
@@ -51,21 +63,9 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
     threshold: 0
   })
 
-  console.log('infinityHookResponse :>> ', {
-    children,
-    data,
-    isDataEmpty,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isLoading,
-    isError
-  })
-
   useEffect(() => {
-    if (inView && !isFetching && hasNextPage) fetchNextPage()
+    if (inView && !isFetching && hasNextPage === true) fetchNextPage()
   }, [inView])
-
   return (
     <>
       {isLoading && <Loader />}
@@ -74,13 +74,11 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
           An error occurred while fetching the data 👮‍♂️👮‍♀️
         </p>
       )}
-      {/* If there is no data and the loading spinner is not showing, show a message */}
       {!isLoading && !isError && isDataEmpty && (
         <p className='text-light-4 mt-10 text-center w-full'>
           No posts found 🗑
         </p>
       )}
-      {/* If there is data, show the children elements and the loading spinner at the end of the page if there are more pages to load */}
       {!isLoading && !isError && data && (
         <>
           {children}
@@ -96,8 +94,6 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
           )}
         </>
       )}
-
-      {/* If there is no more data to show, show a message */}
     </>
   )
 }

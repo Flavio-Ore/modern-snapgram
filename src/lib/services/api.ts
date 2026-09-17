@@ -402,9 +402,7 @@ export async function getInfinitePosts ({
       appwriteConfig.postsCollectionId,
       query
     )
-    console.log('posts :>> ', postsDocumentList)
     if (!postsDocumentList) throw Error
-
     return postsDocumentList.documents || []
   } catch (error) {
     console.error(error)

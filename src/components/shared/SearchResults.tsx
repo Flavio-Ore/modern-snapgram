@@ -1,32 +1,27 @@
-import { useInfiniteSearchPosts } from '@/lib/queries/queries'
+import { useInfiniteSearchPosts } from '@/lib/queries/infiniteQueries'
 import { OPERATIONS } from '@/values'
 import GridPostList from './GridPostList'
 import InfinitePosts from './InfiniteScroll'
 
 interface SearchResultsModel {
-  isSearching: boolean
-  searchValue: string
+  debouncedValue: string
 }
 type SearchResultsProps = SearchResultsModel
 
-const SearchResults: React.FC<SearchResultsProps> = ({
-  isSearching,
-  searchValue
-}) => {
+const SearchResults: React.FC<SearchResultsProps> = ({ debouncedValue }) => {
   const { data, isLoading, isError, isFetching, hasNextPage, fetchNextPage } =
     useInfiniteSearchPosts({
-      searchTerm: searchValue
+      searchTerm: debouncedValue
     })
-
-  const isEmptyPosts = data?.pages.reverse()[0].length === 0
+  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
   return (
     <InfinitePosts
       data={data}
-      isDataEmpty={isEmptyPosts}
+      isDataEmpty={posts.length === 0}
       fetchNextPage={fetchNextPage}
-      hasNextPage={hasNextPage && !searchValue}
+      hasNextPage={hasNextPage}
       isFetching={isFetching}
-      isLoading={isLoading && isSearching}
+      isLoading={isLoading}
       isError={isError}
     >
       {data?.pages.map((postsPage, i) => (
