@@ -49,7 +49,9 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
   triggerFetchNextPage = true,
   triggerNextPage = true
 }) => {
-  const { ref, inView } = useInView()
+  const { ref, inView } = useInView({
+    threshold: 0
+  })
   const { data, fetchNextPage, isFetching, hasNextPage } = infinityHookResponse
 
   useEffect(() => {

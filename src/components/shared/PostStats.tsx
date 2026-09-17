@@ -76,6 +76,7 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
               : '/assets/icons/like.svg'
           }
           alt='Icon to be displayed when a post is liked'
+          loading='lazy'
           width={20}
           height={20}
           onClick={handleLikePost}
@@ -90,6 +91,7 @@ const PostStats: React.FC<PostStatsProps> = ({ post, userId }) => {
           <img
             src={isSaved ? '/assets/icons/saved.svg' : '/assets/icons/save.svg'}
             alt='Icon to be displayed when a post is save'
+            loading='lazy'
             width={20}
             height={20}
             onClick={handleSavePost}
