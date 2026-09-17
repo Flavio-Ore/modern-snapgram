@@ -16,6 +16,9 @@ export const QUERY_KEYS = {
   GET_USER_POSTS: 'getUserPosts',
   GET_FILE_PREVIEW: 'getFilePreview',
 
+  // FILE KEYS
+  GET_FILES_BY_IDS: 'getFilesByIds',
+
   //  SEARCH KEYS
   SEARCH_POSTS: 'getSearchPosts',
 

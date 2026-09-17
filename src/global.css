@@ -160,19 +160,21 @@
   }
 
   .post_details-card {
-    @apply bg-dark-2 w-full max-w-5xl rounded-[30px] flex-col flex xl:flex-row border border-dark-4 xl:rounded-l-[24px];
+    @apply flex flex-col xl:flex-row w-full max-w-5xl lg:max-w-7xl bg-dark-2 border border-dark-4 rounded-[30px] xl:rounded-l-[24px];
   }
-
+  .post_details-carrousel {
+    @apply basis-1/2 ;
+  }
   .post_details-img {
-    @apply h-80 lg:h-[480px] xl:w-[48%] rounded-t-[30px] xl:rounded-l-[24px] xl:rounded-tr-none object-contain p-5 bg-dark-1;
+    @apply h-[480px] lg:h-[680px] w-full rounded-t-[30px] xl:rounded-[24px] p-5 object-contain;
   }
 
   .post_details-info {
-    @apply bg-dark-2 flex flex-col gap-5 lg:gap-7 flex-1 items-start p-8 rounded-[30px];
+    @apply flex items-start flex-col flex-1 gap-5 lg:gap-7 bg-dark-1 p-8 rounded-[30px] border border-dark-4;
   }
 
   .post_details-delete_btn {
-    @apply p-0 flex gap-3;
+    @apply flex gap-3 p-0;
   }
 
   /*! Profile */
@@ -200,7 +202,7 @@
 
   /*! File uploader */
   .file_uploader-img {
-    @apply h-80 lg:h-[480px] w-full rounded-[24px] object-cover object-top;
+    @apply size-full rounded-[24px] max-h-dvh object-contain object-center;
   }
 
   .file_uploader-label {
@@ -239,7 +241,7 @@
   }
 
   .post-card_img {
-    @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[24px] object-cover mb-5;
+    @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[24px] object-contain mb-5;
   }
 
   /*! Topbar */

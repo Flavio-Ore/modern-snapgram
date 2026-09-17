@@ -2,6 +2,7 @@ import BackIcon from '@/components/icons/BackIcon'
 import DeleteIcon from '@/components/icons/DeleteIcon'
 import EditIcon from '@/components/icons/EditIcon'
 import GridPostList from '@/components/shared/posts/GridPostList'
+import PostsSlider from '@/components/shared/posts/PostsCarousel'
 import PostStats from '@/components/shared/posts/PostStats'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
 import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkeleton'
@@ -24,7 +25,7 @@ const PostDetails = () => {
     isError
   } = useGetPostById({ postId: id ?? '' })
   const {
-    data: userPosts,
+    data: userPostsResponse,
     isLoading: isRelatedLoading,
     isError: isRelatedError
   } = useGetUserPosts({
@@ -37,18 +38,24 @@ const PostDetails = () => {
     [user, post]
   )
   const userId = useMemo(() => user?.$id ?? '', [user])
-
-  console.log('user :>> ', user)
-  console.log('post creator :>> ', post?.creator)
-  console.log('user.id === post?.creator?.$id :>> ', isCreator)
+  const userPosts = useMemo(
+    () => userPostsResponse?.data ?? [],
+    [userPostsResponse]
+  )
+  // console.log('user :>> ', user)
+  // console.log('post creator :>> ', post?.creator)
+  // console.log('user.id === post?.creator?.$id :>> ', isCreator)
   const relatedPosts = useMemo(
     () => userPosts?.filter(userPost => userPost.$id !== id) ?? null,
-    [userPosts]
+    [userPostsResponse]
   )
 
   const handleDeletePost = () => {
     if (!isCreator) return
-    deletePost({ postId: id ?? '', imageId: post?.imageId ?? '' })
+    deletePost({
+      postId: id ?? '',
+      filesId: post?.files.map(file => file?.$id ?? '') ?? ['']
+    })
     toast({
       title: 'Post deleted',
       description: 'Your post has been deleted successfully'
@@ -58,7 +65,7 @@ const PostDetails = () => {
 
   return (
     <div className='post_details-container'>
-      <div className='hidden md:flex max-w-5xl w-full'>
+      <div className='hidden md:flex max-w-7xl w-full'>
         <Button
           onClick={() => {
             navigate(-1)
@@ -82,12 +89,7 @@ const PostDetails = () => {
       )}
       {!isError && !isLoading && post != null && (
         <div className='post_details-card'>
-          <img
-            src={post.imageUrl}
-            alt='Creator main post'
-            className='post_details-img'
-          />
-
+          <PostsSlider files={post.files} className='post_details-carrousel' />
           <div className='post_details-info'>
             <div className='flex-between w-full'>
               <Link
@@ -159,7 +161,7 @@ const PostDetails = () => {
         </div>
       )}
 
-      <div className='w-full max-w-5xl'>
+      <div className='w-full max-w-7xl'>
         <hr className='border w-full border-dark-4/80' />
 
         <h3 className='body-bold md:h3-bold w-full my-10'>

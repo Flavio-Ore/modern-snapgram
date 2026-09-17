@@ -7,13 +7,13 @@ import {
   useSavePost
 } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { type Post } from '@/types'
+import { type Post, type UserModel } from '@/types'
 import { BookmarkIcon, HeartIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 interface PostStatsProps {
   post: Post
-  userId: string
+  userId: UserModel['$id']
 }
 const PostStats = ({ post, userId }: PostStatsProps) => {
   const [likes, setLikes] = useState(() => {

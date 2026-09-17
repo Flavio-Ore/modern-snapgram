@@ -1,20 +1,48 @@
 import { isObjectEmpty } from '@/lib/utils'
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import { type EmptyObject, type ObjectWithKeys, type Post } from '@/types'
+import {
+  type EmptyObject,
+  type ObjectWithKeys,
+  type Post,
+  type PostModel
+} from '@/types'
 import { AppwriteException, Query, type Models } from 'appwrite'
+import { getFilesWithUrlsByIds } from './file'
 
 export async function findUserPosts ({ userId }: { userId?: string }) {
   if (userId == null || userId.trim().length === 0) return null
   try {
-    const post = await databases.listDocuments<Post>(
+    const postsDocumentList = await databases.listDocuments<PostModel>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
     )
-    parseModel({ model: post, errorMsg: 'No posts found' })
-    return post.documents
-  } catch (error) {
-    console.error(error)
+
+    const data: Post[] = await Promise.all(
+      postsDocumentList.documents.map(
+        async ({ filesId, ...postWithoutFilesId }) => ({
+          ...postWithoutFilesId,
+          files: await getFilesWithUrlsByIds(filesId)
+        })
+      )
+    )
+
+    return appwriteResponse({
+      data,
+      message: APPWRITE_RESPONSE_CODES.OK.message,
+      status: 'OK',
+      code: 200
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        status: e.type,
+        code: e.code
+      })
+    }
     return null
   }
 }
@@ -60,7 +88,8 @@ export const APPWRITE_ERROR_TYPES = {
   storage_file_type_unsupported: 'storage_file_type_unsupported',
   user_not_found: 'user_not_found',
   user_invalid_credentials: 'user_invalid_credentials',
-  storage_device_not_found: 'storage_device_not_found'
+  storage_device_not_found: 'storage_device_not_found',
+  document_invalid_structure: 'document_invalid_structure'
 }
 
 export const APPWRITE_RESPONSE_CODES: Record<
@@ -112,3 +141,6 @@ export const parseModel = ({
 }): never | void => {
   if (isObjectEmpty(model)) throw Error(errorMsg)
 }
+
+export const tagsToArray = (tagsString: string) =>
+  tagsString?.trim()?.replace(/ /g, '').split(',') ?? []
