@@ -1,5 +1,5 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
-import { enabledId } from '@/states/utils/enabledId'
+import { enabledId } from '@/states/enabledId'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { findPostById } from '@posts/services/findPostById'
 import { useQuery } from '@tanstack/react-query'
 

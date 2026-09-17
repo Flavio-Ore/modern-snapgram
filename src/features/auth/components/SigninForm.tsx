@@ -15,14 +15,12 @@ import {
 import { Input } from '@shadcn/input'
 import { useToast } from '@shadcn/use-toast'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { type z } from 'zod'
 
 const SigninForm = () => {
   const { toast } = useToast()
-  const navigate = useNavigate()
   const { mutateAsync: signInAccount, isPending } = useSignIn()
-
   const signinForm = useForm<z.infer<typeof SigninValidationSchema>>({
     resolver: zodResolver(SigninValidationSchema),
     defaultValues: {
@@ -43,9 +41,6 @@ const SigninForm = () => {
           description: sessionResponse?.message ?? 'Please try again later.',
           variant: 'destructive'
         })
-        navigate('/sign-in')
-      } else {
-        navigate('/home')
       }
     } catch (error) {
       console.error(error)

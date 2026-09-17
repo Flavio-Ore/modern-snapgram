@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import { deleteSave } from '@saved/services/deleteSave'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 

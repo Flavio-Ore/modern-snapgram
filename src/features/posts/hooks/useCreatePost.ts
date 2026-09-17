@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/states/keys/queryKeys'
+import { QUERY_KEYS } from '@/states/queryKeys'
 import {
   type NewPostData
 } from '@/types'

@@ -1,16 +1,24 @@
+import LoaderIcon from '@/components/icons/LoaderIcon'
+import { Skeleton } from '@/components/ui/skeleton'
+import { PUBLIC_ROUTES } from '@/routes/public'
 import { useAuth } from '@auth/hooks/useAuth'
-import { useEffect } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 
 const AuthGuard = () => {
-  const navigate = useNavigate()
-  const { data: isAuth } = useAuth()
-  useEffect(() => {
-    if (isAuth?.data == null) return
-    if (isAuth.data) navigate('/home')
-    else navigate('/sign-in')
-  }, [isAuth])
-  return <Outlet />
+  const { data: isAuthenticated, isLoading } = useAuth()
+  return (
+    <>
+      {isLoading && (
+        <Skeleton className='common-container animate-pulse-fade-in flex-center backdrop-blur-sm size-full bg-primary-600/5 '>
+          <LoaderIcon className='stroke-secondary-500' />
+        </Skeleton>
+      )}
+      {!isLoading && isAuthenticated != null && !isAuthenticated && (
+        <Navigate to={PUBLIC_ROUTES.SIGN_IN} replace />
+      )}
+      {!isLoading && isAuthenticated != null && isAuthenticated && <Outlet />}
+    </>
+  )
 }
 
 export default AuthGuard
