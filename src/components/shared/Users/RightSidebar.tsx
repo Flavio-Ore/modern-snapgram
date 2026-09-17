@@ -9,16 +9,20 @@ const TopCreators = () => {
     <ul className='home-creators_grid'>
       {isLoading &&
         Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className='user-card'>
+          <div key={i} className='user-card min-w-[190px] min-h-[190px]'>
             <Skeleton className='min-h-14 min-w-14 rounded-full' />
             <div className='flex-center flex-col gap-1 w-full'>
-              <Skeleton className='h-4 w-4/6' />
-              <Skeleton className='h-2 w-9/12' />
+              <Skeleton className='min-h-4 w-4/6' />
+              <Skeleton className='min-h-2 w-9/12' />
             </div>
-            <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
+            <Skeleton className='min-h-6 w-5/12 rounded-lg bg-primary-500' />
           </div>
         ))}
-      {isError && <p>Error 🚔</p>}
+      {isError && (
+        <h4 className='flex-center h3-bold animate-pulse text-secondary-500 h-full  text-center'>
+          Oops... Error loading creators!
+        </h4>
+      )}
       {!isLoading &&
         !isError &&
         topCreators?.map(user => (

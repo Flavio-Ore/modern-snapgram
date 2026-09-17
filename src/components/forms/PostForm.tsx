@@ -53,33 +53,42 @@ const PostForm: FC<PostFormProps> = ({ post, action }) => {
   // 2. Define a submit handler.
   // Handler
   const onSubmit = async (value: z.infer<typeof PostValidationSchema>) => {
-    if (post != null && action === 'UPDATE') {
-      const updatedPost = await updatePost({
-        ...value,
-        postId: post.$id,
-        imageId: post?.imageId,
-        imageUrl: post?.imageUrl
-      })
+    console.log({ value })
+    console.log({ post })
+    try {
+      if (post != null && action === 'UPDATE') {
+        const updatedPost = await updatePost({
+          ...value,
+          postId: post.$id,
+          imageId: post?.imageId,
+          imageUrl: post?.imageUrl
+        })
 
-      if (isObjectEmpty(updatedPost)) {
-        toast({ title: 'Post update error', description: 'Please try again' })
-        navigate(`/posts/${post.$id}`)
+        if (isObjectEmpty(updatedPost)) {
+          toast({ title: 'Post update error', description: 'Please try again' })
+          navigate(`/posts/${post.$id}`)
+          return
+        }
+        navigate('/')
         return
       }
-      navigate('/')
-      return
-    }
-    const newPost = await createPost({
-      ...value,
-      userId: user.id
-    })
 
-    if (isObjectEmpty(newPost)) {
-      toast({
-        title: 'Creation post failed. Please try again.'
-      })
+      if (post == null && action === 'CREATE') {
+        const newPost = await createPost({
+          ...value,
+          userId: user.id
+        })
+
+        if (isObjectEmpty(newPost)) {
+          toast({
+            title: 'Post is empty.'
+          })
+        }
+        navigate('/')
+      }
+    } catch (error) {
+      console.error(error)
     }
-    navigate('/')
   }
   return (
     <Form {...form}>

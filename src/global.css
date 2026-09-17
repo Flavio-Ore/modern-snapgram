@@ -33,7 +33,13 @@
   .h3-bold {
     @apply text-[24px] font-bold leading-[140%] tracking-tighter;
   }
+  .body-bold {
+    @apply text-[18px] font-bold leading-[140%];
+  }
 
+  .body-medium {
+    @apply text-[18px] font-medium leading-[140%];
+  }
   .base-semibold {
     @apply text-[16px] font-semibold leading-[140%] tracking-tighter;
   }
@@ -44,14 +50,6 @@
 
   .base-regular {
     @apply text-[16px] font-normal leading-[140%];
-  }
-
-  .body-bold {
-    @apply text-[18px] font-bold leading-[140%];
-  }
-
-  .body-medium {
-    @apply text-[18px] font-medium leading-[140%];
   }
 
   .small-semibold {
@@ -174,7 +172,7 @@
   }
 
   .post_details-delete_btn {
-    @apply p-0 flex gap-3 hover:bg-transparent hover:text-light-1  text-light-1 small-medium lg:base-medium;
+    @apply p-0 flex gap-3;
   }
 
   /*! Profile */

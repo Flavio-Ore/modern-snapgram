@@ -1,4 +1,5 @@
-import Loader from '@/components/shared/app/Loader'
+import LoaderIcon from '@/components/icons/LoaderIcon'
+import { cn } from '@/lib/utils'
 import {
   type FetchNextPageOptions,
   type InfiniteData,
@@ -13,7 +14,9 @@ interface InfiniteScrollProps {
   data: InfiniteData<unknown> | undefined
   fetchNextPage: (
     options?: FetchNextPageOptions | undefined
-  ) => Promise<InfiniteQueryObserverResult<InfiniteData<unknown, unknown>, Error>>
+  ) => Promise<
+  InfiniteQueryObserverResult<InfiniteData<unknown, unknown>, Error>
+  >
   isFetching: boolean
   isLoading: boolean
   isError: boolean
@@ -67,32 +70,34 @@ const InfiniteScroll: FC<InfiniteScrollProps> = ({
   }, [inView])
   return (
     <>
-      {isLoading && (
-        <div className='flex-center size-full'>
-          {skeleton}
-        </div>
-      )}
+      {isLoading && <div className='flex-center size-full'>{skeleton}</div>}
       {isError && (
-        <p className='text-light-4 mt-10 text-center w-full'>
-          An error occurred while fetching the data 👮‍♂️👮‍♀️
+        <p className='text-light-4 mt-10 text-center h3-bold w-full animate-pulse'>
+          An error occurred...
         </p>
       )}
       {!isLoading && !isError && data != null && isDataEmpty && (
-        <p className='text-light-4 mt-10 text-center w-full'>
-          No posts found 🗑
+        <p className='text-light-4 mt-10 text-center body-bold w-full animate-pulse'>
+          No more found!
         </p>
       )}
-      {!isLoading && !isError && data != null && (
+      {!isLoading && !isError && data != null && !isDataEmpty && (
         <>
           {children}
           {hasNextPage && (
-            <div ref={ref} className='flex mt-10 flex-center w-full'>
-              <Loader />
+            <div
+              ref={ref}
+              className={cn('flex mt-10 flex-center w-full', {
+                'animate-fade-out-down animate-duration-1000 animate-delay-1000':
+                  inView
+              })}
+            >
+              <LoaderIcon className='stroke-secondary-500' />
             </div>
           )}
           {!isLoading && !isError && !hasNextPage && (
-            <p className='text-light-4 mt-10 text-center w-full'>
-              There is nothing more to show! 💤
+            <p className='text-light-4 mt-10 text-center w-full animate-pulse'>
+              There is nothing more to show!
             </p>
           )}
         </>
