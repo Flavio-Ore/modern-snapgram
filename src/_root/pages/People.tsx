@@ -1,4 +1,5 @@
 import UserCard from '@/components/shared/UserCard'
+import { E_USERS } from '@/values'
 
 const People = () => {
   return (
@@ -25,7 +26,7 @@ const People = () => {
                   name={name}
                   mainFollower={`@${mainFollower}`}
                   profileLink={profileLink}
-                  role='ALL_USERS'
+                  role={E_USERS.ALL_USERS}
                 />
               </li>
             )
