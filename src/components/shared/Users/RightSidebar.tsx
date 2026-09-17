@@ -15,7 +15,7 @@ const TopCreators = () => {
               <Skeleton className='h-4 w-4/6' />
               <Skeleton className='h-2 w-9/12' />
             </div>
-            <Skeleton className='h-4 w-1/4 rounded-lg bg-primary-500' />
+            <Skeleton className='h-6 w-5/12 rounded-lg bg-primary-500' />
           </div>
         ))}
       {isError && <p>Error 🚔</p>}

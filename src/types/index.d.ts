@@ -1,4 +1,5 @@
 import { type Models } from 'appwrite'
+import { type ReactNode } from 'react'
 
 export type EmptyObject = Record<keyof object, never>
 export type ObjectWithKeys = Record<keyof object, unknown>
@@ -66,7 +67,7 @@ export interface INewUser {
 export interface TabsTriggers {
   trigger: string
   icon: string
-  Element: FC
+  Element: ReactNode
 }
 
 
@@ -92,4 +93,9 @@ interface Post extends Models.Document {
   likes: User[]
   save: User[]
   creator: User
+}
+
+interface Save extends Models.Document {
+  post: Post[]
+  user: User[]
 }

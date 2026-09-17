@@ -58,10 +58,6 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
     setIsSaved(true)
   }
 
-  // const containerStyles = location.pathname.startsWith('/profile')
-  //   ? 'w-full'
-  //   : ''
-
   return (
     <div className='flex justify-between item-center z-20'>
       <div className='flex gap-2 mr-5'>

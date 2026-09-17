@@ -1,43 +1,54 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
-import Loader from '@/components/shared/app/Loader'
 import GridPostList from '@/components/shared/posts/GridPostList'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
-import { type FC, useMemo } from 'react'
+import { useMemo } from 'react'
 
-const SavedPosts: FC = () => {
-  const { user } = useUserContext()
-  const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } = useGetInfiniteSavedPosts({ userId: user.id })
+const SavedPostsSkeleton = () => (
+  <div className='grid-container'>
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
+  </div>
+)
+
+const SavedPosts = () => {
+  const { user, isLoading: isUserLoading } = useUserContext()
+  const {
+    data,
+    isError,
+    isLoading: isSavesLoading,
+    isFetching,
+    hasNextPage,
+    fetchNextPage
+  } = useGetInfiniteSavedPosts({ userId: user.id })
 
   const posts = useMemo(
     () =>
       data?.pages.flatMap(savesPage =>
-        savesPage?.flatMap(saved => saved.post)
+        savesPage?.flatMap(saves => saves.post)
       ) ?? [],
     [data]
   )
-  if (user == null) {
-    return (
-      <div className='flex-center w-full h-full'>
-        <Loader />
-      </div>
-    )
-  }
   return (
     <InfiniteScroll
       data={data}
-      isLoading={isLoading}
+      skeleton={<SavedPostsSkeleton />}
+      isLoading={isUserLoading || isSavesLoading}
       isError={isError}
       isDataEmpty={posts.length === 0}
       fetchNextPage={fetchNextPage}
       hasNextPage={hasNextPage}
       isFetching={isFetching}
     >
-      <GridPostList
-        posts={posts}
-        showStats={false}
-        showUser={false}
-      />
+      <GridPostList posts={posts} showStats={false} showUser={false} />
     </InfiniteScroll>
   )
 }

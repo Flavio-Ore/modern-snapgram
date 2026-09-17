@@ -4,11 +4,11 @@ import {
   type InfiniteData,
   type InfiniteQueryObserverResult
 } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { type FC, type ReactNode, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-
 interface InfiniteScrollProps {
-  children: React.ReactNode
+  children: ReactNode
+  skeleton?: ReactNode
   isDataEmpty: boolean
   data: InfiniteData<unknown> | undefined
   fetchNextPage: (
@@ -25,6 +25,7 @@ interface InfiniteScrollProps {
  *
  * @component
  * @param children - The children elements to be rendered.
+ * @param skeleton - The skeleton element to be rendered while loading first time.
  * @param data - The data to be displayed.
  * @param isDataEmpty - A boolean value that indicates if the data is empty.
  * @param hasNextPage - A boolean value that indicates if there is a next page of data.
@@ -47,8 +48,9 @@ interface InfiniteScrollProps {
  *    {children}
  * </InfinitePosts>
  */
-const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
+const InfiniteScroll: FC<InfiniteScrollProps> = ({
   children,
+  skeleton,
   isDataEmpty,
   data,
   fetchNextPage,
@@ -66,8 +68,8 @@ const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   return (
     <>
       {isLoading && (
-        <div className='flex-center w-full h-full'>
-          <Loader />
+        <div className='flex-center size-full'>
+          {skeleton}
         </div>
       )}
       {isError && (

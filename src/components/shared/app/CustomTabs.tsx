@@ -46,12 +46,9 @@ const CustomTabs: React.FC<CustomTabsProps> = ({ tabsOperations }) => (
     <TabsList className='grid grid-flow-row xxs:flex-center w-full max-w-lg gap-1 xs:gap-0'>
       <TabTriggers
         triggersAndIcons={tabsOperations}
-        className={cn(
-          'flex-center w-full small-medium px-6 py-2 border gap-2',
-          'lg:body-medium',
-          'border-dark-4 group transition hover:bg-dark-4',
-          'data-[state=active]:bg-dark-4'
-        )}
+        className={
+          'flex-center w-full small-medium px-6 py-2 border gap-2 lg:body-medium border-dark-4 group transition hover:bg-dark-4 data-[state=active]:bg-dark-4'
+        }
       />
     </TabsList>
     <TabsContents triggers={tabsOperations} />

@@ -9,7 +9,7 @@ import { useUserContext } from '@/context/useUserContext'
 import { useDeletePost } from '@/lib/queries/mutations'
 
 import { useGetPostById, useGetUserPosts } from '@/lib/queries/queries'
-import { multiFormatDateString } from '@/lib/utils'
+import { cn, multiFormatDateString } from '@/lib/utils'
 import { useMemo } from 'react'
 
 const PostDetails = () => {
@@ -110,7 +110,7 @@ const PostDetails = () => {
               <div className='flex-center gap-4'>
                 <Link
                   to={`/update-post/${post.$id}`}
-                  className={`${user.id !== post.creator.$id && 'hidden'}`}
+                  className={cn({ hidden: user.id !== post.creator.$id })}
                 >
                   <img
                     src={'/assets/icons/edit.svg'}
@@ -123,9 +123,7 @@ const PostDetails = () => {
                 <Button
                   onClick={handleDeletePost}
                   variant='ghost'
-                  className={`ost_details-delete_btn ${
-                    user.id !== post.creator.$id && 'hidden'
-                  }`}
+                  className={cn('post_details-delete_btn', user.id !== post.creator.$id && 'hidden')}
                 >
                   <img
                     src={'/assets/icons/delete.svg'}
