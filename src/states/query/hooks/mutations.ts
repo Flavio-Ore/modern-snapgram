@@ -26,14 +26,24 @@ export const useCreateAccount = () => {
 }
 
 export const useSignIn = () => {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: auth.signInAccount
+    mutationFn: auth.signInAccount,
+    onSuccess: () => {
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+      })
+    }
   })
 }
 
 export const useSignOut = () => {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: auth.signOutAccount
+    mutationFn: auth.signOutAccount,
+    onSuccess: () => {
+      void queryClient.resetQueries()
+    }
   })
 }
 
