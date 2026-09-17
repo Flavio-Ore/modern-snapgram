@@ -6,6 +6,10 @@ import { useEffect } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 
+const truncateRoute = (route: string) => {
+  return route.split('/').slice(0, 2).join('/')
+}
+
 const LeftSidebar = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -39,9 +43,9 @@ const LeftSidebar = () => {
           </div>
         </Link>
 
-        <ul className='flex flex-col gap-6'>
+        <ul className='flex flex-col gap-4'>
           {sidebarLinks.map(({ imgURL, label, route }: INavLink) => {
-            const isActive = pathname === route
+            const isActive = truncateRoute(pathname) === route
             return (
               <li
                 key={label}
@@ -51,7 +55,7 @@ const LeftSidebar = () => {
               >
                 <NavLink to={route} className='flex gap-4 items-center p-4'>
                   <img
-                    className={`group-hover:invert-white ${
+                    className={`h-[21.5px] w-[21.5px] aspect-square group-hover:invert-white ${
                       isActive && 'invert-white'
                     }`}
                     src={imgURL}
@@ -64,18 +68,23 @@ const LeftSidebar = () => {
           })}
         </ul>
       </div>
-
-      <Button
-        variant='ghost'
-        className='shad-button_ghost'
-        onClick={() => {
-          signOut()
-          navigate('/sign-in')
-        }}
-      >
-        <img src='/assets/icons/logout.svg' alt='logout' />
-        <p className='small-medium lg:base-medium'>Logout</p>
-      </Button>
+      <div className='flex-start flex-col'>
+        <Button variant='ghost' className='shad-button_ghost'>
+          <img src='/assets/icons/settings.svg' alt='settings' />
+          <p className='small-medium lg:base-medium'>Settings</p>
+        </Button>
+        <Button
+          variant='ghost'
+          className='shad-button_ghost'
+          onClick={() => {
+            signOut()
+            navigate('/sign-in')
+          }}
+        >
+          <img src='/assets/icons/logout.svg' alt='logout' />
+          <p className='small-medium lg:base-medium'>Logout</p>
+        </Button>
+      </div>
     </nav>
   )
 }
