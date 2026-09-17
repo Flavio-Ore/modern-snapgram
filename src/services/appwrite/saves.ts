@@ -1,5 +1,8 @@
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import { type AppwriteResponse, APPWRITE_RESPONSE_CODES, parseModel } from '@/services/appwrite/util'
+import {
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from '@/services/appwrite/util'
 import { type Save } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
 interface SavesId {
@@ -13,23 +16,21 @@ export async function findSaveRecordById ({ savedRecordId }: SavesId) {
       appwriteConfig.savesCollectionId,
       savedRecordId
     )
-    const res: AppwriteResponse<Save> = {
+    return appwriteResponse({
       data: saveRecord,
       message: 'Saved post fetched successfully.',
       status: APPWRITE_RESPONSE_CODES.OK.text,
       code: APPWRITE_RESPONSE_CODES.OK.code
-    }
-    return res
+    })
   } catch (e) {
     console.error(e)
     if (e instanceof AppwriteException) {
-      const res: AppwriteResponse<null> = {
+      return appwriteResponse({
         data: null,
         message: e.message,
         code: e.code,
         status: e.name
-      }
-      return res
+      })
     }
     return null
   }
@@ -53,32 +54,51 @@ export async function updateSave ({
       }
     )
     console.log('saveRecord :>> ', saveRecord)
-    parseModel({ model: saveRecord, errorMsg: 'An error occurred' })
-    return saveRecord
-  } catch (error) {
-    console.error(error)
+    return appwriteResponse({
+      data: saveRecord,
+      message: 'Post saved successfully.',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text,
+      code: APPWRITE_RESPONSE_CODES.CREATED.code
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.name
+      })
+    }
+    return null
   }
 }
 
 // ============================== DELETE SAVED POST
-export async function deleteSave ({
-  savedRecordId
-}: SavesId): Promise<{ status: string }> {
+export async function deleteSave ({ savedRecordId }: SavesId) {
   try {
-    const statusCode = await databases.deleteDocument(
+    await databases.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
       savedRecordId
     )
-    if (statusCode == null) throw Error('An error occurred')
-    return {
-      status: 'success'
+    return appwriteResponse({
+      data: null,
+      message: 'Saved post removed successfully.',
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text,
+      code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        message: e.message,
+        code: e.code,
+        status: e.name
+      })
     }
-  } catch (error) {
-    console.error(error)
-    return {
-      status: 'error'
-    }
+    return null
   }
 }
 
@@ -103,23 +123,21 @@ export async function findInfiniteSaves ({
       query
     )
     console.log('savedPosts: ', saves)
-    const res: AppwriteResponse<Save[]> = {
+    return appwriteResponse({
       data: saves.documents,
-      message: 'Saved posts fetched successfully.',
+      message: APPWRITE_RESPONSE_CODES.OK.message,
       status: APPWRITE_RESPONSE_CODES.OK.text,
       code: APPWRITE_RESPONSE_CODES.OK.code
-    }
-    return res
+    })
   } catch (e) {
     console.error(e)
     if (e instanceof AppwriteException) {
-      const res: AppwriteResponse<[]> = {
+      return appwriteResponse({
         data: [],
         message: e.message,
         code: e.code,
         status: e.name
-      }
-      return res
+      })
     }
     return null
   }

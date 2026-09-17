@@ -7,7 +7,7 @@ import {
   useSavePost
 } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { checkIsLiked, isObjectEmpty } from '@/lib/utils'
+import { checkIsLiked } from '@/lib/utils'
 import { type Post } from '@/types'
 import { BookmarkIcon, HeartIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -18,7 +18,7 @@ interface PostStatsProps {
 }
 const PostStats = ({ post, userId }: PostStatsProps) => {
   const [likes, setLikes] = useState(() => {
-    if (post?.likes == null || isObjectEmpty(post)) return []
+    if (post?.likes == null || post == null) return []
     return post.likes.map(user => user.$id)
   })
   const [isSaved, setIsSaved] = useState(false)
@@ -27,19 +27,17 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { mutate: deleteSave, isPending: isDeletingSave } = useDeleteSavedPost()
   const { data: currentUser, isLoading, isRefetching } = useUser()
   const { $id: postId } = post
-  const saveRecordId = useMemo(
-    () => {
-      if (currentUser?.data?.saves == null) return ''
-      const saveRecord = currentUser.data.saves.find(
-        record => record.postId === postId
-      )
-      return saveRecord?.$id ?? ''
-    },
+  console.log('currentUser.saves :>> ', currentUser)
+  console.log('post :>> ', post)
+  const savedRecordId = useMemo(
+    () =>
+      currentUser?.save?.find(record => record.post.$id === postId)?.$id ?? '',
     [currentUser]
   )
+  console.log('savedRecordId :>> ', savedRecordId)
   useEffect(() => {
-    setIsSaved(saveRecordId !== '')
-  }, [saveRecordId])
+    setIsSaved(savedRecordId !== '')
+  }, [savedRecordId])
 
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -57,9 +55,9 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation()
-    if (saveRecordId !== '') {
+    if (savedRecordId !== '') {
       setIsSaved(false)
-      deleteSave({ savedRecordId: saveRecordId })
+      deleteSave({ savedRecordId })
       return
     }
     setIsSaved(true)

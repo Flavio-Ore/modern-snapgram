@@ -69,13 +69,13 @@ const ProfileDetails = () => {
     isFetched
   } = useGetUserById({ userId: id ?? '' })
 
-  const isCurrentUser = useMemo(() => id === account?.data?.$id, [id, account])
+  const isCurrentUser = useMemo(() => id === account?.$id, [id, account])
 
   const profileStats = useMemo(
     () => ({
-      posts: user?.data?.posts?.length ?? 0,
-      followers: user?.data?.followers?.length ?? 0,
-      following: user?.data?.following?.length ?? 0
+      posts: user?.posts?.length ?? 0,
+      followers: user?.followers?.length ?? 0,
+      following: user?.following?.length ?? 0
     }),
     [user]
   )
@@ -97,12 +97,12 @@ const ProfileDetails = () => {
       {!isLoading && !isError && (
         <img
           src={
-            user?.data?.imageUrl ?? '/assets/icons/profile-placeholder.svg'
+            user?.imageUrl ?? '/assets/icons/profile-placeholder.svg'
           }
-          alt={user?.data?.name ?? 'Profile Avatar'}
-          height={150}
-          width={150}
-          className='rounded-full'
+          alt={user?.name ?? 'Profile Avatar'}
+          height={144}
+          width={144}
+          className='rounded-full aspect-square object-cover'
         />
       )}
       <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0 w-full overflow-ellipsis'>
@@ -115,9 +115,9 @@ const ProfileDetails = () => {
         {!isLoading && !isError && (
           <div className='flex-between flex-col md:flex-row gap-2 xl:gap-0 w-full min-w-0 overflow-ellipsis'>
             <h2 className='body-medium text-center md:text-justify xs:h3-bold w-full lg:h1-semibold overflow-ellipsis'>
-              {user?.data?.name}
+              {user?.name}
             </h2>
-            {isFetched && user?.data != null
+            {isFetched && user != null
               ? (
               <ProfileButtons idMatch={isCurrentUser} className='flex gap-1' />
                 )
@@ -136,7 +136,7 @@ const ProfileDetails = () => {
         )}
         {!isError && !isLoading && (
           <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3'>
-            @{user?.data?.username ?? 'Not Found'}
+            @{user?.username ?? 'Not Found'}
           </h3>
         )}
 
@@ -152,9 +152,9 @@ const ProfileDetails = () => {
             Error loading bio...
           </p>
         )}
-        {!isError && !isLoading && user?.data != null && (
+        {!isError && !isLoading && (
           <p className='base-regular text-light-2 max-w-xl text-pretty'>
-            {user.data?.bio ?? ''}
+            {user?.bio ?? ''}
           </p>
         )}
       </div>
