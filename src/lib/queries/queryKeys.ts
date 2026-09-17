@@ -32,20 +32,11 @@ export const QUERY_KEYS = {
   GET_SAVED_COLLECTIONS: 'getSavedCollections',
 
   // MESSAGE KEYS
-  GET_INFINITE_MESSAGES: 'findInfiniteMessages',
-  GET_INFINITE_MESSAGES_BY_AUTHORS_AND_RECEIVERS:
-    'findInfiniteMessagesByAuthorsAndReceivers',
   GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID: 'findInfiniteMessagesByChatRoomId',
-  GET_MESSAGES_NOTIFICATIONS: 'useMessagesNotifications',
 
   // CHAT ROOM KEYS
-  GET_ALL_CHATS_BY_USER_ID: 'findAllChatRoomsByUserId',
-  GET_ALL_CHATS_BY_MEMBER_ID: 'findAllChatRoomsByMemberId',
-  GET_CHAT_ROOM_BY_ID: 'findChatRoomById',
-  GET_CHAT_ROOMS_BY_IDS: 'findChatRoomsByIds',
+  GET_ALL_CHAT_ROOMS_BY_USER_ID: 'findAllChatRoomsByUserId',
 
   // MEMBER KEYS
-  GET_ALL_MEMBER_CHATS_BY_USER_ID: 'findAllMemberChatsByUserId',
-  GET_ALL_CHATS_MEMBER: 'findAllChats',
-  GET_INFINITE_CHATS_MEMBER: 'findInfiniteChats'
+  GET_ALL_MEMBER_CHATS_BY_USER_ID: 'findAllMemberChatsByUserId'
 }

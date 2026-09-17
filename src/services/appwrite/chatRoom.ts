@@ -39,59 +39,24 @@ export async function findAllChatRoomsByMemberId ({
   }
 }
 
-export async function findChatRoomById ({
-  chatRoomId
+export async function findAllChatRoomsByUserId ({
+  chatRoomsIds
 }: {
-  chatRoomId: ChatRoomModel['$id']
+  chatRoomsIds: Array<ChatRoomModel['$id']>
 }) {
   try {
-    const chatRoom = await databases.getDocument<ChatRoomModel>(
-      appwriteConfig.databaseId,
-      appwriteConfig.chatRoomCollectionId,
-      chatRoomId
-    )
-    console.log({ chatRoom })
-    return appwriteResponse({
-      data: chatRoom,
-      message: 'Chat room found successfully.',
-      status: APPWRITE_RESPONSE_CODES.OK.status,
-      code: APPWRITE_RESPONSE_CODES.OK.code
-    })
-  } catch (e) {
-    if (e instanceof AppwriteException) {
+    if (chatRoomsIds.length <= 0) {
       return appwriteResponse({
-        data: null,
-        message: e.message,
-        code: e.code,
-        status: e.type
+        data: [],
+        message: 'Chat rooms found successfully.',
+        status: APPWRITE_RESPONSE_CODES.OK.status,
+        code: APPWRITE_RESPONSE_CODES.OK.code
       })
     }
-    return null
-  }
-}
-
-export async function findAllChatRoomsByUserId ({
-  userId
-}: {
-  userId: UserModel['$id']
-}) {
-  try {
-    const members = await databases.listDocuments<ChatMemberModel>(
-      appwriteConfig.databaseId,
-      appwriteConfig.chatMemberCollectionId,
-      [Query.equal('member', userId)]
-    )
-    console.log({ members })
-
     const chatRooms = await databases.listDocuments<ChatRoomModel>(
       appwriteConfig.databaseId,
       appwriteConfig.chatRoomCollectionId,
-      [
-        Query.equal(
-          '$id',
-          members.documents.map(member => member.chat_room.$id)
-        )
-      ]
+      [Query.equal('$id', chatRoomsIds)]
     )
     console.log({ chatRooms })
     return appwriteResponse({
@@ -146,48 +111,12 @@ export async function findChatRoomsByIds ({
   }
 }
 
-// export async function createChatRoom ({
-//   members: chatStatusIds
-// }: {
-//   members: Array<ChatMemberModel['$id']>
-// }) {
-//   try {
-//     const chatRoom = await databases.createDocument<ChatRoomModel>(
-//       appwriteConfig.databaseId,
-//       appwriteConfig.chatRoomCollectionId,
-//       ID.unique(),
-//       {
-//         members: chatStatusIds
-//       }
-//     )
-
-//     return appwriteResponse({
-//       data: chatRoom,
-//       message: 'Chat room created successfully.',
-//       status: APPWRITE_RESPONSE_CODES.CREATED.status,
-//       code: APPWRITE_RESPONSE_CODES.CREATED.code
-//     })
-//   } catch (e) {
-//     console.error(e)
-//     if (e instanceof AppwriteException) {
-//       return appwriteResponse({
-//         data: null,
-//         message: e.message,
-//         code: e.code,
-//         status: e.type
-//       })
-//     }
-//     return null
-//   }
-// }
-
 export async function createChatRoomFromUsers ({
   users
 }: {
   users: UserModel[]
 }) {
   try {
-    console.log({ chatRoom_users: users })
     if (users.length < 2) return null
     const chatRoomExists = users.some(user =>
       users.some(
@@ -200,7 +129,6 @@ export async function createChatRoomFromUsers ({
           )
       )
     )
-
 
     if (chatRoomExists) {
       return appwriteResponse({
@@ -243,25 +171,19 @@ export async function createChatRoomFromUsers ({
     const chatRoomIds = users.flatMap(user =>
       user.chats.map(chat => chat.chat_room.$id)
     )
-    console.log({
-      chatRooms_ids: chatRoomIds
-    })
+
     const chatRooms = await databases.listDocuments<ChatRoomModel>(
       appwriteConfig.databaseId,
       appwriteConfig.chatRoomCollectionId,
       [Query.equal('$id', chatRoomIds)]
     )
-    console.log({ chatRooms_chatRooms: chatRooms })
-    // if there is a chat room with the same $id as the one we want to create
-    // we return that chat room
+
     const sharedUserChatRooms = chatRooms.documents.filter(chatRoom => {
       return chatRoom.members.every(chatMember =>
         users.some(user => user.$id === chatMember.member.$id)
       )
     })
-    console.log({
-      chatRoom_sharedUserChatRooms: sharedUserChatRooms
-    })
+
     if (sharedUserChatRooms.length === 1) {
       return appwriteResponse({
         data: sharedUserChatRooms[0],
@@ -284,10 +206,6 @@ export async function createChatRoomFromUsers ({
       )
     )
 
-    console.log({
-      chatRooms_chatMembers: chatMembers
-    })
-
     const newChatRoom = await databases.createDocument<ChatRoomModel>(
       appwriteConfig.databaseId,
       appwriteConfig.chatRoomCollectionId,
@@ -296,10 +214,6 @@ export async function createChatRoomFromUsers ({
         members: chatMembers.map(chatMember => chatMember.$id)
       }
     )
-
-    console.log({
-      chatRooms_newChatRoom: newChatRoom
-    })
 
     return appwriteResponse({
       data: newChatRoom,

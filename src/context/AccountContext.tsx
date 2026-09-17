@@ -36,41 +36,39 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    account
-      .getSession('current')
-      .then(session => {
-        console.log('session :>> ', session)
-        if (session == null) {
+    if (
+      window.localStorage.getItem('cookieFallback') === '[]' ||
+      window.localStorage.getItem('cookieFallback') == null
+    ) {
+      setIsAuthenticated(false)
+      navigate('/sign-in')
+    } else {
+      account
+        .getSession('current')
+        .then(session => {
+          console.log('session :>> ', session)
+          if (session == null) {
+            setIsAuthenticated(false)
+            navigate('/sign-in')
+            return
+          }
+          if (
+            window.localStorage.getItem('cookieFallback') === '[]' ||
+            window.localStorage.getItem('cookieFallback') == null
+          ) {
+            setIsAuthenticated(false)
+            navigate('/sign-in')
+            return
+          }
+          setIsAuthenticated(true)
+          navigate('/')
+        })
+        .catch(sessionError => {
+          console.error({ sessionError })
           setIsAuthenticated(false)
           navigate('/sign-in')
-          return
-        }
-        if (
-          window.localStorage.getItem('cookieFallback') === '[]' ||
-          window.localStorage.getItem('cookieFallback') == null
-        ) {
-          setIsAuthenticated(false)
-          navigate('/sign-in')
-          return
-        }
-        setIsAuthenticated(true)
-        navigate('/')
-      })
-      .catch(sessionError => {
-        console.error({ sessionError })
-        setIsAuthenticated(false)
-        navigate('/sign-in')
-      })
-    // if (
-    //   window.localStorage.getItem('cookieFallback') === '[]' ||
-    //   window.localStorage.getItem('cookieFallback') == null
-    // ) {
-    //   setIsAuthenticated(false)
-    //   navigate('/sign-in')
-    // } else {
-    //   setIsAuthenticated(true)
-    //   navigate('/')
-    // }
+        })
+    }
   }, [])
 
   const value = {

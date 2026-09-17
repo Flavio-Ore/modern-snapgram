@@ -3,9 +3,11 @@ import LeftSidebar from '@/components/shared/app/LeftSidebar'
 import Topbar from '@/components/shared/app/Topbar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAccount } from '@/context/useAccountContext'
+import { useSetChatMemberOnline } from '@/lib/queries/mutations'
 import { useGetAllChatRoomsByUserId, useUser } from '@/lib/queries/queries'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
-import { appwriteConfig, client, databases } from '@/services/appwrite/config'
+import { appwriteConfig, client } from '@/services/appwrite/config'
+import { type MessageModel } from '@/types'
 import { links } from '@/values'
 import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
@@ -21,62 +23,77 @@ const RootLayout = () => {
   const { pathname } = useLocation()
   const { isAuthenticated, isLoading } = useAccount()
   const { data: user } = useUser()
+  const { mutateAsync: updateStatus } = useSetChatMemberOnline()
+  const chatRoomsIds = useMemo(
+    () => user?.chats.map(chat => chat.chat_room.$id) ?? [],
+    [user]
+  )
   const { data: allChatRooms, refetch: refetchChats } =
     useGetAllChatRoomsByUserId({
-      userId: user?.$id ?? ''
+      chatRoomsIds
     })
 
-  console.log({
-    allChatRooms: allChatRooms ?? 'All chat Rooms null'
-  })
-  const totalMessagesToRead = useMemo(() => {
-    const allMemberChats = allChatRooms?.flatMap(chatRoom =>
-      chatRoom.members.filter(chat => chat.member.$id === user?.$id)
-    ) ?? []
-
-    return allMemberChats.reduce(
-      (acc, chat) => acc + chat.messages_to_read,
-      0
-    )
-  }, [allChatRooms])
-
-  const ownChatMembersIds = useMemo(
+  const ownChats = useMemo(
     () =>
       allChatRooms?.flatMap(chatRoom =>
-        chatRoom.members.filter(chat => chat.member.$id !== user?.$id)
-      ) ?? [],
-    [allChatRooms]
+        chatRoom.members.filter(chat => chat.member.$id === user?.$id)
+      ) ?? null,
+    [allChatRooms, user]
+  )
+
+  const totalMessagesToRead = useMemo(
+    () => ownChats?.reduce((acc, chat) => acc + chat.messages_to_read, 0) ?? 0,
+    [ownChats]
+  )
+
+  const ownChatMembersIds = useMemo(
+    () => user?.chats.map(chat => chat.$id) ?? [],
+    [user]
   )
 
   useEffect(() => {
-    ownChatMembersIds.forEach(async chatMemberId => {
-      await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.chatMemberCollectionId,
-        chatMemberId.$id,
-        {
-          online: true
-        }
-      )
-    })
-    const unsubscribeMessagesToRead = client.subscribe(
+    if (isAuthenticated) {
+      updateStatus({
+        chatIds: ownChatMembersIds,
+        online: true
+      })
+    }
+  }, [isAuthenticated, ownChatMembersIds])
+
+  useEffect(() => {
+    if (ownChatMembersIds.length <= 0) return
+    const unsubscribeMessagesToRead = client.subscribe<MessageModel>(
       [
         `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
       ],
-      response => {
-        console.log({ realTimeResponse: response })
+      ({ events, channels, payload: newMessage }) => {
+        console.log({
+          realTimeResponse: {
+            events,
+            channels,
+            newMessage
+          }
+        })
         if (
-          response.events.includes(
-            'databases.*.collections.*.documents.*.create'
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
           ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.update'
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.update`
           ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.delete'
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.delete`
           )
         ) {
-          refetchChats()
+          if (
+            ownChatMembersIds.some(id => id === newMessage.author_chat_id) ||
+            newMessage.receivers_chat_id.some(id =>
+              ownChatMembersIds.some(ownId => ownId === id)
+            )
+          ) {
+            console.log('Refetching all chat rooms')
+            refetchChats()
+          }
         }
       }
     )
@@ -84,7 +101,7 @@ const RootLayout = () => {
     return () => {
       unsubscribeMessagesToRead()
     }
-  }, [])
+  }, [ownChatMembersIds])
 
   return isAuthenticated || !isLoading
     ? (

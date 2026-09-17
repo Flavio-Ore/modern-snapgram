@@ -77,7 +77,6 @@ const ChatBubble = ({
     setIsDeleting(false)
   }
   const handleDeleteMessage = (messageId: string) => async () => {
-    console.log('messageId :>> ', messageId)
     try {
       await deleteMessage({
         messageId
@@ -102,11 +101,10 @@ const ChatBubble = ({
     values: z.infer<typeof EditionMessageValidationSchema>
   ) {
     try {
-      const messageRes = await editMessage({
+      await editMessage({
         messageId: values.messageId,
         newBody: values.body
       })
-      console.log('EDITED MESSAGE RESPONSE', messageRes)
       setIsEditing(false)
       setIsDeleting(false)
       editMessageForm.reset()
