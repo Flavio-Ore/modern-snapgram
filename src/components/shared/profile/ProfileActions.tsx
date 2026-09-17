@@ -5,7 +5,7 @@ import {
   useCreateChatRoomFromUsers,
   useFollow,
   useUnfollow
-} from '@/lib/queries/mutations'
+} from '@/states/query/hooks/mutations'
 import { type UserModel } from '@/types'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

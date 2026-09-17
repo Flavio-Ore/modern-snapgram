@@ -1,4 +1,4 @@
-import { QUERY_KEYS } from '@/lib/queries/queryKeys'
+import { QUERY_KEYS } from '@/states/query/keys/queryKeys'
 
 import {
   auth,

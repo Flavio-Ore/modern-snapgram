@@ -4,10 +4,10 @@ import Chat from '@/components/shared/chats/Chat'
 import ChatItem from '@/components/shared/chats/ChatItem'
 import ChatSkeleton from '@/components/shared/skeletons/ChatSkeleton'
 import ChatsSkeleton from '@/components/shared/skeletons/UsersToChatSkeleton'
-import { useCreateChatRoomFromUsers } from '@/lib/queries/mutations'
-import { useGetAllChatRoomsByUserId, useUser } from '@/lib/queries/queries'
 import { cn } from '@/lib/utils'
 import { appwriteConfig, client } from '@/services/appwrite/config'
+import { useCreateChatRoomFromUsers } from '@/states/query/hooks/mutations'
+import { useGetAllChatRoomsByUserId, useUser } from '@/states/query/hooks/queries'
 import { type ChatMemberModel } from '@/types'
 import {
   FlameKindlingIcon,

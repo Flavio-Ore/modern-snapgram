@@ -1,13 +1,9 @@
-import { INITIAL_ACCOUNT_STATE } from '@/context/accountState'
 import { account } from '@/services/appwrite/config'
-import { type AccountContextType } from '@/types'
+import { AccountContext } from '@/states/account/contexts/AccountContext'
 import { AppwriteException } from 'appwrite'
-import { createContext, type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export const AccountContext = createContext<AccountContextType>(
-  INITIAL_ACCOUNT_STATE
-)
 const AccountProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)

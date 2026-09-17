@@ -1,7 +1,7 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
-import { useGetInfiniteSearchedPosts } from '@/lib/queries/infiniteQueries'
+import { useGetInfiniteSearchedPosts } from '@/states/query/hooks/infiniteQueries'
 import { useMemo } from 'react'
 
 interface SearchResultsProps {
