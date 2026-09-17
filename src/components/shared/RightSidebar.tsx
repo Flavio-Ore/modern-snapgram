@@ -2,7 +2,7 @@ import UserCard from './UserCard'
 
 const TopCreators = () => {
   return (
-    <ul className='rightsidebar-top_creators'>
+    <ul className='home-creators_grid'>
       {Array.from({ length: 8 }, (_, i) => i + 1).map(i => {
         const imgUrl = '/assets/icons/profile-placeholder.svg'
         const name = 'The Midudev'

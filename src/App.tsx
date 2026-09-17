@@ -14,8 +14,40 @@ import {
   Saved,
   UpdateProfile
 } from './_root/pages'
+import GridPostList from './components/shared/GridPostList'
+import InfinitePosts from './components/shared/InfinitePosts'
 import { Toaster } from './components/ui/toaster'
 import './global.css'
+import { useGetInfinitePosts } from './lib/queries/infiniteQueries'
+import { OPERATIONS } from './values'
+const SavedPosts = () => <h1>Saved Posts</h1>
+const SavedReels = () => <h1>Saved Reels</h1>
+const SavedCollections = () => {
+  const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
+    useGetInfinitePosts()
+  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
+
+  return (
+    <InfinitePosts
+      data={data}
+      isFetching={isFetching}
+      isLoading={isLoading}
+      isError={isError}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isDataEmpty={posts.length === 0}
+    >
+      {data?.pages.map((postsPage, i) => (
+        <GridPostList
+          key={`${postsPage[i]}-${OPERATIONS}-${i}`}
+          posts={postsPage}
+          showStats={false}
+          showUser={false}
+        />
+      ))}
+    </InfinitePosts>
+  )
+}
 const App = () => {
   return (
     <main className='flex h-dvh'>
@@ -30,16 +62,20 @@ const App = () => {
         <Route element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path='/explore' element={<Explore />} />
-          <Route path='/saved' element={<Saved />} />
+          <Route path='/saved' element={<Saved />}>
+            <Route index element={<SavedPosts />} />
+            <Route path='reels' element={<SavedReels />} />
+            <Route path='collections' element={<SavedCollections />} />
+          </Route>
           <Route path='/all-users' element={<People />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/update-post/:id' element={<EditPost />} />
           <Route path='/posts/:id' element={<PostDetails />} />
           <Route path='/profile/:id/*' element={<Profile />} />
           <Route path='/update-profile/:id' element={<UpdateProfile />} />
+          <Route path='*' element={<h1>Not Found</h1>} />
         </Route>
       </Routes>
-
       <Toaster />
     </main>
   )

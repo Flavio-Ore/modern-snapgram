@@ -32,6 +32,7 @@ export default {
         'light-4': '#5C5C7B'
       },
       screens: {
+        xxs: '380px',
         xs: '480px'
       },
       width: {
