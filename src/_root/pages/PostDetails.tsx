@@ -10,7 +10,6 @@ import { useToast } from '@/components/ui/use-toast'
 import { useDeletePost } from '@/lib/queries/mutations'
 import { useGetPostById, useGetUserPosts, useUser } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
-import { AppwriteException } from 'appwrite'
 import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -32,19 +31,12 @@ const PostDetails = () => {
     userId: post?.creator?.$id ?? ''
   })
   const { mutate: deletePost } = useDeletePost()
-  const isCreator = useMemo(() => {
-    if (
-      user?.data == null ||
-      post == null ||
-      user instanceof AppwriteException ||
-      post instanceof AppwriteException
-    ) return false
-    return user.data.$id === post.creator.$id
-  }, [user, post])
-  const userId = useMemo(() => {
-    if (user?.data == null || user instanceof AppwriteException) return ''
-    return user.data.$id
-  }, [user])
+  const isCreator = useMemo(
+    () =>
+      user == null || post == null ? false : user.$id === post.creator.$id,
+    [user, post]
+  )
+  const userId = useMemo(() => user?.$id ?? '', [user])
 
   console.log('user :>> ', user)
   console.log('post creator :>> ', post?.creator)
@@ -72,9 +64,9 @@ const PostDetails = () => {
             navigate(-1)
           }}
           variant='ghost'
-          className='shad-button_ghost'
+          className='shad-button_ghost group'
         >
-          <BackIcon className='size-6' />
+          <BackIcon className='size-6 group-hover:fill-primary-500/50' />
           <p className='small-medium lg:base-medium'>Back</p>
         </Button>
       </div>
@@ -107,7 +99,7 @@ const PostDetails = () => {
                   alt='Creator profile picture'
                   height={48}
                   width={48}
-                  className='rounded-full'
+                  className='rounded-full aspect-square object-cover'
                 />
                 <div className='flex gap-1 flex-col'>
                   <p className='base-medium lg:body-bold text-light-1'>
@@ -139,7 +131,7 @@ const PostDetails = () => {
                   variant='ghost'
                   className='post_details-delete_btn'
                 >
-                  <DeleteIcon className='size-6 hover:fill-red/50' />
+                  <DeleteIcon className='size-6 hover:fill-red-500/50' />
                 </Button>
               </div>
             </div>

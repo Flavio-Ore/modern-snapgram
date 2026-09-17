@@ -7,18 +7,23 @@ import { useParams } from 'react-router-dom'
 
 const EditPost = () => {
   const { id } = useParams()
-  const { data: post, isPending } = useGetPostById({ postId: id ?? '' })
-
-  if (isPending) return <Loader />
-
+  const {
+    data: post,
+    isLoading,
+    isError
+  } = useGetPostById({ postId: id ?? '' })
   return (
     <div className='flex flex-1'>
       <div className='common-container'>
         <div className='max-w-5xl flex-start gap-3 justify-start w-full'>
-          <CreatePostIcon className='size-9 fill-secondary-500'/>
+          <CreatePostIcon className='size-9 fill-secondary-500' />
           <h2 className='h3-bold md:h2-bold text-left w-full'>Edit Post</h2>
         </div>
-        <PostForm action={E_FORM_ACTIONS.UPDATE} post={post} />
+        {isLoading && <Loader />}
+        {isError && <h3 className='body-medium text-center text-red-800 animate-pulsing'>Error getting the post</h3>}
+        {!isLoading && !isError && post != null && (
+          <PostForm action={E_FORM_ACTIONS.UPDATE} post={post} />
+        )}
       </div>
     </div>
   )

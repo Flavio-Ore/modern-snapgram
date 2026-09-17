@@ -40,10 +40,19 @@ export const useUpdatePost = () => {
   return useMutation({
     mutationFn: async (updatedPost: IUpdatePost) =>
       await posts.updatePost(updatedPost),
-    onSuccess: data => {
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
-      })
+    onSuccess: success => {
+      if (success?.data != null) {
+        const { data: updatedPost } = success
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_POST_BY_ID, updatedPost.$id]
+        })
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_USER_POSTS, updatedPost.creator.$id]
+        })
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+        })
+      }
     }
   })
 }
@@ -105,13 +114,16 @@ export const useSavePost = () => {
       postId: string
       userId: string
     }) => await saves.updateSave({ postId, userId }),
-    onSuccess: data => {
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
-      })
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-      })
+    onSuccess: success => {
+      if (success?.data != null) {
+        const { data: savedRecord } = success
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_POST_BY_ID, savedRecord?.$id]
+        })
+        void queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+        })
+      }
       // queryClient.invalidateQueries({
       //   queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       // })
@@ -129,7 +141,7 @@ export const useDeleteSavedPost = () => {
   return useMutation({
     mutationFn: async ({ savedRecordId }: DeleteSavedPost) =>
       await saves.deleteSave({ savedRecordId }),
-    onSuccess: (data) => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID]
       })
@@ -146,21 +158,22 @@ export const useDeleteSavedPost = () => {
   })
 }
 
-
 export const useUpdateUser = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (updatedUser: IUpdateUser) =>
       await users.updateUser({ user: updatedUser }),
-    onSuccess: data => {
+    onSuccess: success => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USERS]
       })
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
       })
+      if (success?.data == null) return
+      const { data: updatedUser } = success
       void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id]
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, updatedUser.$id]
       })
     }
   })

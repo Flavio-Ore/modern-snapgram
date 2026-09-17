@@ -1,2 +1,1 @@
-export * as appwriteService from './appwrite';
-
+export * as appwriteService from '@/services/appwrite'

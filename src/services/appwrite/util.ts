@@ -19,7 +19,35 @@ export async function findUserPosts ({ userId }: { userId?: string }) {
   }
 }
 
-export interface AppwriteResponse<Data = Models.Document[] | Models.Document> {
+export class AppwriteError extends AppwriteException {
+  constructor ({
+    message,
+    code,
+    type,
+    response
+  }: {
+    message: string
+    code: number
+    type: string
+    response: string
+    status: string
+  }) {
+    super(message, code, type, response)
+  }
+}
+
+export const appwriteResponse = <Data>({
+  data,
+  message,
+  status,
+  code
+}: AppwriteResponse<Data>): AppwriteResponse<Data> => ({
+    data,
+    message,
+    status,
+    code
+  })
+export interface AppwriteResponse<Data> {
   data: Data
   message: string
   status: string
@@ -28,15 +56,20 @@ export interface AppwriteResponse<Data = Models.Document[] | Models.Document> {
 
 type AppwriteStatus = 'OK' | 'CREATED' | 'ACCEPTED' | 'NO_CONTENT'
 type AppwriteCode = 200 | 201 | 202 | 204
-interface AppwriteResponseCodes {
-  text: AppwriteStatus
-  code: AppwriteCode
-  message: string
+export const APPWRITE_ERROR_TYPES = {
+  storage_file_type_unsupported: 'storage_file_type_unsupported',
+  user_not_found: 'user_not_found',
+  user_invalid_credentials: 'user_invalid_credentials',
+  storage_device_not_found: 'storage_device_not_found'
 }
 
 export const APPWRITE_RESPONSE_CODES: Record<
 AppwriteStatus,
-AppwriteResponseCodes
+{
+  text: AppwriteStatus
+  code: AppwriteCode
+  message: string
+}
 > = {
   OK: {
     text: 'OK',

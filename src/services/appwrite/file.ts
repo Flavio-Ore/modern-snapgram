@@ -1,17 +1,42 @@
 import { appwriteConfig, storage } from '@/services/appwrite/config'
-import { ID } from 'appwrite'
+import {
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse
+} from '@/services/appwrite/util'
+import { AppwriteException, ID } from 'appwrite'
 
-export async function createFile (
-  file: File
-) {
+export async function createFile (file: File) {
   try {
-    return await storage.createFile(
+    const createdFile = await storage.createFile(
       appwriteConfig.storageId,
       ID.unique(),
       file
     )
-  } catch (error) {
-    console.error(error)
+    return appwriteResponse({
+      data: createdFile,
+      code: APPWRITE_RESPONSE_CODES.CREATED.code,
+      message: 'File created',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      if (e.type === 'storage_file_type_unsupported') {
+        return appwriteResponse({
+          data: null,
+          code: e.code,
+          message: e.message,
+          status: e.name
+        })
+      }
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
+    }
+    return null
   }
 }
 
@@ -27,11 +52,24 @@ export async function getFilePreview (fileId: string) {
       10
     )
     console.log(fileUrl)
-    if (fileUrl?.href?.trim()?.length === 0) throw Error('File not found')
-    return fileUrl.toString()
-  } catch (error) {
-    console.error(error)
-    return ''
+
+    return appwriteResponse({
+      data: fileUrl.toString(),
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      message: 'File found',
+      status: APPWRITE_RESPONSE_CODES.OK.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
+    }
+    return null
   }
 }
 
@@ -39,13 +77,22 @@ export async function getFilePreview (fileId: string) {
 export async function deleteFile (fileId: string) {
   try {
     await storage.deleteFile(appwriteConfig.storageId, fileId)
-    return {
-      status: 'success'
+    return appwriteResponse({
+      data: null,
+      code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
+      message: 'File deleted.',
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
     }
-  } catch (error) {
-    console.error(error)
-    return {
-      status: 'error'
-    }
+    return null
   }
 }

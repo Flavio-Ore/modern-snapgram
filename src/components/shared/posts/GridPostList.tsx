@@ -28,7 +28,7 @@ const GridPostList = ({
               loading='lazy'
               height={100}
               width={100}
-              className='size-full object-cover aspect-auto'
+              className='size-full aspect-square object-cover'
             />
           </Link>
           <div className='grid-post_user'>
@@ -42,12 +42,12 @@ const GridPostList = ({
                   alt='Creator post profile'
                   height={32}
                   width={32}
-                  className='rounded-full'
+                  className='rounded-full aspect-square object-cover'
                 />
                 <p className='lime-clamp-1'>{post?.creator?.name}</p>
               </div>
             )}
-            {showStats && <PostStats post={post} userId={user?.data?.$id ?? ''} />}
+            {showStats && <PostStats post={post} userId={user?.$id ?? ''} />}
           </div>
         </li>
       ))}

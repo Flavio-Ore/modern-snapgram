@@ -1,13 +1,13 @@
 import { Account, Avatars, Client, Databases, Storage } from 'appwrite'
 
 interface AppwriteConfig {
-  projectId: string
-  endpoint: string
-  databaseId: string
-  storageId: string
-  savesCollectionId: string
-  usersCollectionId: string
-  postsCollectionId: string
+  readonly projectId: string
+  readonly endpoint: string
+  readonly databaseId: string
+  readonly storageId: string
+  readonly savesCollectionId: string
+  readonly usersCollectionId: string
+  readonly postsCollectionId: string
 }
 export const appwriteConfig: AppwriteConfig = {
   projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
@@ -17,7 +17,7 @@ export const appwriteConfig: AppwriteConfig = {
   savesCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID,
   usersCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID,
   postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID
-} as const
+}
 
 export const client = new Client()
 client.setProject(appwriteConfig.projectId)

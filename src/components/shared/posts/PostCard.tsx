@@ -2,8 +2,7 @@ import EditIcon from '@/components/icons/EditIcon'
 import PostStats from '@/components/shared/posts//PostStats'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '@/lib/queries/queries'
-import { cn, isObjectEmpty, multiFormatDateString } from '@/lib/utils'
-import { checkValidData } from '@/services/appwrite/util'
+import { cn, multiFormatDateString } from '@/lib/utils'
 import { type Post } from '@/types'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,16 +12,8 @@ interface PostCardProps {
 }
 const PostCard = ({ post }: PostCardProps) => {
   const { data: user } = useUser()
-  const userId = useMemo(
-    () => checkValidData(user?.data, user?.data?.$id) ?? '',
-    [user]
-  )
-  if (
-    post == null ||
-    isObjectEmpty(post?.creator) ||
-    post.creator?.name == null ||
-    post.tags == null
-  ) {
+  const userId = useMemo(() => user?.$id ?? '', [user])
+  if (post == null) {
     return (
       <div className='flex flex-col space-y-3'>
         <Skeleton className='h-[125px] w-[250px] rounded-xl' />
@@ -44,7 +35,9 @@ const PostCard = ({ post }: PostCardProps) => {
                 '/assets/icons/profile-placeholder.svg'
               }
               alt='profile of the owner of the post'
-              className='rounded-full min-w-12 max-w-12 lg:h-12'
+              height={48}
+              width={48}
+              className='rounded-full size-12 object-cover'
             />
           </Link>
           <div className='flex flex-col'>

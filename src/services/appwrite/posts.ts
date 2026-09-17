@@ -1,14 +1,17 @@
 import { type INewPost, type IUpdatePost, type Post } from '@/types'
-import { ID, Query } from 'appwrite'
+import { AppwriteException, ID, Query } from 'appwrite'
 
 import { isObjectEmpty } from '@/lib/utils'
-import { appwriteConfig, databases } from '@/services/appwrite/config'
+import { appwriteConfig, databases, storage } from '@/services/appwrite/config'
 import {
-  createFile,
-  deleteFile,
-  getFilePreview
+  deleteFile
 } from '@/services/appwrite/file'
-import { parseModel } from '@/services/appwrite/util'
+import {
+  APPWRITE_ERROR_TYPES,
+  APPWRITE_RESPONSE_CODES,
+  appwriteResponse,
+  parseModel
+} from '@/services/appwrite/util'
 
 // ============================================================
 // POSTS
@@ -39,21 +42,38 @@ export async function findInfinitePosts ({
 }
 // ============================== CREATE POST
 export async function createPost (post: INewPost) {
+  let tags
+  let newImage = {
+    url: '',
+    id: ''
+  }
+  const hasFile = post.file.length > 0 && post.file[0]
   try {
-    let tags
-    const file = await createFile(post.file[0])
+    if (hasFile !== false) {
+      const file = await storage.createFile(
+        appwriteConfig.storageId,
+        ID.unique(),
+        hasFile
+      )
 
-    if (file?.$id == null) throw Error('File not stored')
+      const fileUrl = storage.getFileView(
+        appwriteConfig.storageId,
+        file.$id
+      )
+      console.log('fileUrl :>> ', fileUrl)
 
-    const fileUrl = await getFilePreview(file.$id)
-    console.log('fileUrl :>> ', fileUrl)
-    if (fileUrl === '') {
-      await deleteFile(file.$id)
-      throw Error('File URL not found')
+      if (fileUrl == null) {
+        await storage.deleteFile(appwriteConfig.storageId, file.$id)
+      } else {
+        if (post?.tags == null) tags = []
+        tags = post.tags?.replace(/ /g, '').split(',')
+        newImage = {
+          ...newImage,
+          url: new URL(fileUrl).toString(),
+          id: file.$id
+        }
+      }
     }
-    if (post?.tags == null) tags = []
-    tags = post.tags?.replace(/ /g, '').split(',')
-
     const newPost = await databases.createDocument<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
@@ -62,18 +82,43 @@ export async function createPost (post: INewPost) {
         creator: post.userId,
         caption: post.caption,
         location: post.location,
-        imageUrl: fileUrl,
-        imageId: file.$id,
+        imageUrl: newImage.url,
+        imageId: newImage.id,
         tags
       }
     )
-    if (isObjectEmpty(newPost)) {
-      await deleteFile(file.$id)
-      throw Error('Post not created, try again')
+    return appwriteResponse({
+      data: newPost,
+      code: APPWRITE_RESPONSE_CODES.CREATED.code,
+      message: 'Post created successfully',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      if (e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported) {
+        return appwriteResponse({
+          data: null,
+          code: e.code,
+          message: e.message,
+          status: e.name
+        })
+      }
+      if (e.type === APPWRITE_ERROR_TYPES.storage_device_not_found) {
+        return appwriteResponse({
+          data: null,
+          code: e.code,
+          message: e.message,
+          status: e.name
+        })
+      }
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
     }
-    return newPost
-  } catch (error) {
-    console.error(error)
     return null
   }
 }
@@ -85,48 +130,63 @@ export async function findPostById (postId: string) {
       appwriteConfig.postsCollectionId,
       postId
     )
-    parseModel({ model: postDocument, errorMsg: 'Post not found' })
-    return postDocument
-  } catch (error) {
-    console.error(error)
+
+    return appwriteResponse({
+      data: postDocument,
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      message: 'Post found',
+      status: APPWRITE_RESPONSE_CODES.OK.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
+    }
+    return null
   }
 }
 
 // ============================== UPDATE POST
 export async function updatePost (post: IUpdatePost) {
-  const hasFileToUpdate = post.file.length > 0
+  const hastFile = post.file.length > 0 && post.file[0]
 
   try {
     let tags
-    let image = {
-      imageUrl: post.imageUrl,
-      imageId: post.imageId
+    let newImage = {
+      url: post.imageUrl,
+      id: post.imageId
     }
 
-    if (hasFileToUpdate) {
+    if (hastFile !== false) {
       // Upload new file to appwrite storage
-      const uploadedFile = await createFile(post.file[0])
-
-      if (uploadedFile?.$id == null && uploadedFile == null) {
-        throw Error('File not uploaded')
-      }
-
+      const uploadedFile = await storage.createFile(
+        appwriteConfig.storageId,
+        ID.unique(),
+        hastFile
+      )
       // Get new file url
-      const fileUrl = await getFilePreview(uploadedFile.$id)
-      if (fileUrl == null || fileUrl.toString().trim().length === 0) {
+      const fileUrl = storage.getFileView(
+        appwriteConfig.storageId,
+        uploadedFile.$id
+      )
+      if (fileUrl == null) {
         await deleteFile(uploadedFile.$id)
-        throw Error('File not found')
-      }
-
-      image = {
-        ...image,
-        imageUrl: new URL(fileUrl),
-        imageId: uploadedFile.$id
+      } else {
+        newImage = {
+          ...newImage,
+          url: new URL(fileUrl),
+          id: uploadedFile.$id
+        }
       }
     }
 
     // Convert tags into array
-    if (post.tags == null) tags = []
+    if (post?.tags == null) tags = []
     tags = post.tags?.replace(/ /g, '').split(',')
 
     //  Update post
@@ -136,8 +196,8 @@ export async function updatePost (post: IUpdatePost) {
       post.postId,
       {
         caption: post.caption,
-        imageUrl: image.imageUrl,
-        imageId: image.imageId,
+        imageUrl: newImage.url,
+        imageId: newImage.id,
         location: post.location,
         tags
       }
@@ -146,17 +206,31 @@ export async function updatePost (post: IUpdatePost) {
     // Failed to update
     if (isObjectEmpty(updatedPost)) {
       // Delete new file that has been recently uploaded
-      if (hasFileToUpdate) await deleteFile(image.imageId)
+      if (hastFile !== false) await storage.deleteFile(appwriteConfig.storageId, newImage.id)
       // If no new file uploaded, just throw error
       throw Error('Post not updated, try again')
     }
 
     // Safely delete old file after successful update
-    if (hasFileToUpdate) await deleteFile(post.imageId)
+    if (hastFile !== false) await storage.deleteFile(appwriteConfig.storageId, post.imageId)
 
-    return updatedPost
-  } catch (error) {
-    console.error(error)
+    return appwriteResponse({
+      data: updatedPost,
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      message: 'Post updated successfully',
+      status: APPWRITE_RESPONSE_CODES.OK.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
+    }
+    return null
   }
 }
 
@@ -175,10 +249,23 @@ export async function deletePost ({
       postId
     )
     console.log('statusCode :>> ', statusCode)
-    await deleteFile(imageId)
-    return { status: 'success' }
-  } catch (error) {
-    console.error(error)
-    return { status: 'error' }
+    await storage.deleteFile(appwriteConfig.storageId, imageId)
+    return appwriteResponse({
+      data: null,
+      code: APPWRITE_RESPONSE_CODES.NO_CONTENT.code,
+      message: 'Post deleted successfully',
+      status: APPWRITE_RESPONSE_CODES.NO_CONTENT.text
+    })
+  } catch (e) {
+    console.error(e)
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
+    }
+    return null
   }
 }
