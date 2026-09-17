@@ -62,7 +62,6 @@ const InfiniteScroll: React.FC<InfinitePostsProps> = ({
   const { ref, inView } = useInView({
     threshold: 0
   })
-
   useEffect(() => {
     if (inView && !isFetching && hasNextPage === true) fetchNextPage()
   }, [inView])

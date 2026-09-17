@@ -35,8 +35,11 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) =>
       </Button>
     </div>
   )
+
+type ProfileStats = { name: string; value: number }[]
+
 interface ProfileStatsProps {
-  stats: { name: string; value: number }[]
+  stats: ProfileStats
 }
 const ProfileStats: React.FC<ProfileStatsProps> = ({ stats }) => (
   <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
@@ -76,13 +79,13 @@ const ProfileInnerContainer = () => {
     () => ({
       posts: realUser?.posts?.length || 0,
       liked: realUser?.liked?.length || 0,
-      following: realUser?.followers?.length || 0
+      following: realUser?.save?.length || 0
     }),
     [realUser]
   )
-  const stats = Object.keys(profileStats).map(key => ({
+  const stats: ProfileStats = Object.keys(profileStats).map(key => ({
     name: key.charAt(0).toUpperCase() + key.slice(1),
-    value: profileStats[key]
+    value: profileStats[key as keyof typeof profileStats]
   }))
   return (
     <div className='profile-inner_container'>
@@ -101,7 +104,7 @@ const ProfileInnerContainer = () => {
           className='rounded-full'
         />
       )}
-      <div className='flex-between flex-col h-full gap-2 xl:gap-0'>
+      <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0'>
         {isLoading && <Loader />}
         {isError && <h2>An unexpected error happened.</h2>}
         {!isLoading && !isError && realUser && (
@@ -124,8 +127,14 @@ const ProfileInnerContainer = () => {
             ? 'Error loading username'
             : realUser?.username || 'Error loading username'}
         </h3>
-
         <ProfileStats stats={stats} />
+        <p className='base-regular text-light-2 text-pretty'>
+          {isLoading
+            ? 'Loading bio...'
+            : isError
+            ? 'Error loading bio'
+            : realUser?.bio || 'Error loading bio'}
+        </p>
       </div>
     </div>
   )
