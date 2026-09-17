@@ -4,13 +4,13 @@ import {
   avatars,
   databases
 } from '@/services/appwrite/config'
-import type { INewUser, User } from '@/types'
-import { AppwriteException, ID, Query } from 'appwrite'
 import {
   APPWRITE_ERROR_TYPES,
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
-} from './util'
+} from '@/services/appwrite/util'
+import type { INewUser, User } from '@/types'
+import { AppwriteException, ID, Query } from 'appwrite'
 
 // ============================================================
 // AUTH
@@ -69,7 +69,7 @@ export async function createUserAccount (user: INewUser) {
 export async function signInAccount (user: { email: string, password: string }) {
   try {
     return appwriteResponse({
-      data: await account.createEmailSession(user.email, user.password),
+      data: await account.createEmailPasswordSession(user.email, user.password),
       message: 'Account signed in successfully',
       status: APPWRITE_RESPONSE_CODES.OK.text,
       code: APPWRITE_RESPONSE_CODES.OK.code
@@ -131,15 +131,16 @@ export async function getAccount () {
 export async function getUser () {
   try {
     const sessionAccount = await account.get()
-    console.log('currentAccount :>> ', sessionAccount)
-    if (sessionAccount == null) return null
+    console.log('currentAccount :>> ', sessionAccount ?? '')
     const user = await databases.listDocuments<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
-      [Query.equal('accountId', sessionAccount.$id)]
+      [
+        Query.equal('accountId', [sessionAccount.$id])
+      ]
     )
 
-    console.log('currentUserAccountData :>> ', user.documents[0])
+    console.log('currentUserAccountData :>> ', user.documents[0] ?? 'NO USER DATA')
 
     return appwriteResponse({
       code: APPWRITE_RESPONSE_CODES.OK.code,
@@ -151,14 +152,6 @@ export async function getUser () {
     console.error({ e })
     if (e instanceof AppwriteException) {
       if (e.code === 401 && e.type === APPWRITE_ERROR_TYPES.user_not_found) {
-        return appwriteResponse({
-          code: e.code,
-          data: null,
-          message: e.message,
-          status: e.name
-        })
-      }
-      if (e.code === 404) {
         return appwriteResponse({
           code: e.code,
           data: null,

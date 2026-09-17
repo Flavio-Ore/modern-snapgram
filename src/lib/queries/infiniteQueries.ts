@@ -3,10 +3,11 @@ import { appwriteService } from '@/services'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models, Query } from 'appwrite'
 
-const { posts, saves, users } = appwriteService
+const { posts, saves, users, messages } = appwriteService
 
 const initialPageParam = ''
-const enabledId = (id: string) => id != null && id.trim().length !== 0 && id !== ''
+const enabledId = (id: string) =>
+  id != null && id.trim().length !== 0 && id !== ''
 const INFINITY_QUERIES = {
   RECENT_POSTS: [Query.orderDesc('$createdAt')],
   UPDATED_POSTS: [Query.orderDesc('$updatedAt')],
@@ -80,9 +81,11 @@ export const useGetInfiniteUsers = () => {
         queries: INFINITY_QUERIES.USERS
       }),
 
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: lastPage => {
       if (lastPage?.data == null) return null
-      return lastPage.data.length === 0 ? null : lastPage.data[lastPage.data.length - 1].$id
+      return lastPage.data.length === 0
+        ? null
+        : lastPage.data[lastPage.data.length - 1].$id
     },
     initialPageParam
   })
@@ -101,9 +104,36 @@ export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
         queries: [Query.equal('user', userId)]
       }),
     enabled: enabledId(userId),
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: lastPage => {
       if (lastPage?.data == null) return null
-      return lastPage.data.length === 0 ? null : lastPage.data[lastPage.data.length - 1].$id
+      return lastPage.data.length === 0
+        ? null
+        : lastPage.data[lastPage.data.length - 1].$id
+    },
+    initialPageParam
+  })
+}
+
+export const useInfiniteMessages = ({
+  senderId,
+  receiversId
+}: {
+  senderId: string
+  receiversId: string[]
+}) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES, senderId, receiversId],
+    queryFn: async ({ pageParam }) =>
+      await messages.findInfiniteMessages({
+        lastId: pageParam,
+        queries: [Query.contains('sender', [senderId, ...receiversId])]
+      }),
+    enabled: enabledId(senderId),
+    getNextPageParam: lastPage => {
+      if (lastPage?.data == null) return null
+      return lastPage.data.length === 0
+        ? null
+        : lastPage.data[lastPage.data.length - 1].$id
     },
     initialPageParam
   })

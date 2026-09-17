@@ -55,6 +55,7 @@ const App = () => {
           <Route path={PRIVATE_ROUTES.SAVED} element={<Saved />} />
           <Route path={PRIVATE_ROUTES.REELS} element={<Reels />} />
           <Route path={PRIVATE_ROUTES.CHATS} element={<Chats />} />
+          <Route path={PRIVATE_ROUTES.CHATS_ROOM} element={<Chats />} />
           <Route path={PRIVATE_ROUTES.CREATE_POST} element={<CreatePost />} />
           <Route path={PRIVATE_ROUTES.UPDATE_POST} element={<EditPost />} />
           <Route path={PRIVATE_ROUTES.POST_DETAILS} element={<PostDetails />} />
