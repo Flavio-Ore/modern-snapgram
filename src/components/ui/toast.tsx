@@ -94,7 +94,7 @@ React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn('body-medium', className)}
+    className={cn('base-regular', className)}
     {...props}
   />
 ))
@@ -106,7 +106,7 @@ React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Description
     ref={ref}
-    className={cn('base-semibold opacity-90', className)}
+    className={cn('small-regular opacity-90', className)}
     {...props}
   />
 ))

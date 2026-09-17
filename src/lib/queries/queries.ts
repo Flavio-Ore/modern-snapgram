@@ -1,7 +1,6 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { appwriteService } from '@/services'
+import { auth, posts, saves, users } from '@/services/appwrite'
 import { useQuery } from '@tanstack/react-query'
-const { auth, posts, users, saves } = appwriteService
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
@@ -31,6 +30,14 @@ export const useUser = () => {
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
     queryFn: auth.getUser,
     select: response => response?.data ?? null
+  })
+}
+
+export const useGetAliveChats = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_CHAT_USERS],
+    queryFn: users.findChatUsers,
+    select: response => response?.data
   })
 }
 

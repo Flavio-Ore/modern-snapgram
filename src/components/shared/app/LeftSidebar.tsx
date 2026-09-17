@@ -1,4 +1,5 @@
 import Logo from '@/components/icons/Logo'
+import LogoSmall from '@/components/icons/LogoSmall'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSignOut, useUpdateUser } from '@/lib/queries/mutations'
@@ -40,10 +41,13 @@ const LeftSidebar = () => {
   }, [isSuccess])
 
   return (
-    <nav className='leftsidebar w-[600px]'>
-      <div className='flex flex-col gap-11'>
-        <Link to='/' className='flex gap-3 items-center'>
+    <nav className='leftsidebar min-w-20 xl:min-w-56 '>
+      <div className='flex flex-col gap-8'>
+        <Link to='/' className='gap-3 items-center hidden xl:flex'>
           <Logo className='w-full' />
+        </Link>
+        <Link to='/' className='gap-3 items-center flex xl:hidden'>
+          <LogoSmall className='w-full' />
         </Link>
         {isLoading && (
           <div className='flex items-center space-x-4'>
@@ -57,8 +61,8 @@ const LeftSidebar = () => {
         {!isLoading && !isError && user != null && (
           <Link
             to={`/profile/${user.$id}`}
-            className={cn('relative flex gap-3 items-center', {
-              'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative':
+            className={cn('flex gap-3 items-center', {
+              'relative before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full':
                 profileId === user.$id || pathname === '/update-profile'
             })}
           >
@@ -69,7 +73,7 @@ const LeftSidebar = () => {
               width={56}
               className='rounded-full aspect-square object-cover'
             />
-            <div className='flex flex-col max-w-40'>
+            <div className='flex-col max-w-40 hidden xl:flex'>
               <p className='body-bold overflow-ellipsis'>{user.name}</p>
               <p className='small-regular text-light-3 overflow-ellipsis'>
                 @{user.username}
@@ -77,17 +81,24 @@ const LeftSidebar = () => {
             </div>
           </Link>
         )}
-        <ul className='flex flex-col gap-4'>
+        <ul className='flex flex-col gap-2'>
           {links.sidebar.map(({ Icon, route, label }) => (
             <li
               key={label}
-              className={cn('leftsidebar-link group', {
-                'bg-dark-4':
+              className={cn('leftsidebar-link group base-regular', {
+                'bg-dark-4 relative before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full':
                   extractFirstRoutePart(pathname) ===
                   extractFirstRoutePart(route)
               })}
             >
-              <NavLink to={route} className='flex gap-4 items-center p-4'>
+              <NavLink
+                to={route}
+                className={cn('flex gap-4 justify-center xl:justify-start items-center py-4 xl:p-4', {
+                  'body-bold':
+                    extractFirstRoutePart(pathname) ===
+                    extractFirstRoutePart(route)
+                })}
+              >
                 <Icon
                   className={cn('size-6 group-hover:fill-secondary-500', {
                     'fill-secondary-500':
@@ -95,33 +106,34 @@ const LeftSidebar = () => {
                       extractFirstRoutePart(route)
                   })}
                 />
-                {label}
+                <span className='hidden xl:inline'>{label}</span>
               </NavLink>
             </li>
           ))}
         </ul>
       </div>
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 mt-12'>
         <Button
           variant='ghost'
-          className='shad-button_ghost small-medium lg:base-medium flex-start w-full h-12 group hover:bg-red-600'
+          className='flex gap-x-3 w-full justify-center xl:justify-start items-center p-0 xl:px-4 hover:bg-red-600'
           onClick={handleLogOut}
         >
           <LucideLogOut
             size={24}
             className='stroke-red-500 group-hover:stroke-white'
           />
-          Logout
+          <span className='hidden xl:inline group-hover:text-light-2 small-regular'>Logout</span>
         </Button>
         <Button
           variant='ghost'
-          className='shad-button_ghost base-medium flex-start w-full group hover:bg-primary-600  h-12'
+          className='flex gap-x-3 w-full justify-center xl:justify-start items-center p-0 xl:px-4 hover:bg-primary-600'
         >
           <SettingsIcon
             size={24}
+            strokeWidth={1.5}
             className='stroke-primary-500 group-hover:stroke-secondary-500'
           />
-          Settings
+          <span className='hidden xl:inline group-hover:text-secondary-500 small-regular'>Settings</span>
         </Button>
       </div>
     </nav>

@@ -63,14 +63,9 @@ interface Save extends Models.Document {
   user: UserModel
 }
 
-interface Message extends Models.Document {
+interface MessageModel extends Models.Document {
   body: string
-  sender: UserModel['accountId']
-  receivers: Array<UserModel['accountId']>
-}
-
-interface MessageAttributes {
-  body: string
+  isEdited: boolean
   sender: UserModel['accountId']
   receivers: Array<UserModel['accountId']>
 }

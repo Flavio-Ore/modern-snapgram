@@ -11,7 +11,7 @@ import {
   appwriteResponse
 } from '@/services/appwrite/util'
 import { type UserModel, type UserUpdateData } from '@/types'
-import { AppwriteException, ID, Query } from 'appwrite'
+import { AppwriteException, ID, type Models, Query } from 'appwrite'
 
 export async function findInfiniteUsers ({
   lastId = '',
@@ -78,6 +78,77 @@ export async function findInfiniteRecentUsers ({ lastId = '' }) {
       Query.orderAsc('$createdAt')
     ]
   })
+}
+
+interface UsersChatsIds extends Models.Document {
+  sender: string
+  receivers: string[]
+}
+export async function findChatUsers () {
+  const userAccount = await account.get()
+
+  try {
+    const chatUsersIds = await databases.listDocuments<UsersChatsIds>(
+      appwriteConfig.databaseId,
+      appwriteConfig.messageCollectionId,
+      [
+        Query.or([
+          Query.equal('sender', userAccount.$id),
+          Query.contains('receivers', [userAccount.$id])
+        ]),
+        Query.select(['sender', 'receivers'])
+      ]
+    )
+
+    const setOfUniqueUsersIds = new Set<string>()
+    chatUsersIds.documents.forEach(({ sender, receivers }) => {
+      setOfUniqueUsersIds.add(sender)
+      receivers.forEach(receiver => setOfUniqueUsersIds.add(receiver))
+    })
+    setOfUniqueUsersIds.delete(userAccount.$id)
+
+    console.log('chatUsersIds :>> ', chatUsersIds)
+    console.log(
+      'Array.from(setOfUniqueUsersIds) :>> ',
+      Array.from(setOfUniqueUsersIds)
+    )
+
+    if (setOfUniqueUsersIds.size === 0) {
+      return appwriteResponse({
+        data: [],
+        code: APPWRITE_RESPONSE_CODES.OK.code,
+        message: APPWRITE_RESPONSE_CODES.OK.message,
+        status: APPWRITE_RESPONSE_CODES.OK.status
+      })
+    }
+    const { documents: usersDocuments } =
+      await databases.listDocuments<UserModel>(
+        appwriteConfig.databaseId,
+        appwriteConfig.usersCollectionId,
+        [
+          Query.contains('accountId', Array.from(setOfUniqueUsersIds)),
+          Query.limit(100)
+        ]
+      )
+
+    return appwriteResponse({
+      data: usersDocuments,
+      code: APPWRITE_RESPONSE_CODES.OK.code,
+      message: APPWRITE_RESPONSE_CODES.OK.message,
+      status: APPWRITE_RESPONSE_CODES.OK.status
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      return appwriteResponse({
+        data: [],
+        message: e.message,
+        code: e.code,
+        status: e.type
+      })
+    }
+    return null
+  }
 }
 
 export async function findTopUsers ({ limit }: { limit?: number }) {

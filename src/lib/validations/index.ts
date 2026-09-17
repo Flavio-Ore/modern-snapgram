@@ -59,3 +59,8 @@ export const ProfileValidationSchema = z.object({
 export const MessageValidationSchema = z.object({
   body: z.string().min(1).max(2200)
 })
+
+export const EditionMessageValidationSchema = z.object({
+  body: z.string().min(1).max(2200),
+  messageId: z.string()
+})
