@@ -1,13 +1,13 @@
 import SaveIcon from '@/components/icons/SaveIcon'
 import CustomTabs from '@/components/shared/app/CustomTabs'
-import { SAVES_TRIGGERS } from '@/values/TabsTriggers'
+import { SAVES_TRIGGERS } from '@/values/tabsTriggers'
 
 const Saved = () => {
   return (
     <div className='saved-container'>
       <div className='common-inner_container'>
         <div className='flex flex-start w-full gap-3'>
-          <SaveIcon className='size-9 fill-light-1'/>
+          <SaveIcon className='size-9 fill-secondary-500'/>
           <h2 className='h3-bold md:h1-bold'>Saved Posts</h2>
         </div>
         <div className='flex flex-1 w-full'>

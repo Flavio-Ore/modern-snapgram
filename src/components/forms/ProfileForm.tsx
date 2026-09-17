@@ -11,8 +11,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useUserContext'
+import { useUpdateUser } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
+import { isObjectEmpty } from '@/lib/utils'
 import { ProfileValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useState } from 'react'
@@ -71,8 +72,7 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
 }
 
 const ProfileForm = () => {
-  const { user: sessionUser, isLoading: isSessionUserLoading } =
-    useUserContext()
+  const { mutateAsync: updateUser, isPending } = useUpdateUser()
   const { data: user, isLoading } = useUser()
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -81,24 +81,49 @@ const ProfileForm = () => {
     resolver: zodResolver(ProfileValidationSchema),
     defaultValues: {
       file: [],
-      name: isSessionUserLoading ? 'Loading...' : sessionUser?.name,
-      username: isSessionUserLoading ? 'Loading...' : sessionUser?.username,
-      email: isSessionUserLoading ? 'Loading...' : sessionUser?.email,
-      bio: isSessionUserLoading ? 'Loading...' : sessionUser?.bio ?? ''
+      name: user?.name ?? '',
+      username: user?.username ?? '',
+      email: user?.email ?? '',
+      bio: user?.bio ?? ''
     }
   })
 
-  // if (action === 'UPDATE' && !post) return console.error('No post to update')
-
   // 2. Define a submit handler.
   // Handler
-  const onSubmit = async (value: z.infer<typeof ProfileValidationSchema>) => {}
+  const onSubmit = async (value: z.infer<typeof ProfileValidationSchema>) => {
+    if (user == null) return
+    // 3. Implement your form logic.
+    const updatedUser = await updateUser({
+      ...value,
+      userId: user.$id,
+      imageUrl: user?.imageUrl ?? '',
+      imageId: user?.imageId ?? ''
+    })
+
+    if (isObjectEmpty(updatedUser)) {
+      toast({
+        title: 'Profile update error',
+        description: 'Please try again',
+        variant: 'destructive'
+      })
+      navigate(`/profile/${user.$id}`)
+      return
+    }
+
+    toast({
+      title: 'Profile Updated',
+      description: 'Your profile has been updated successfully'
+    })
+    navigate(`/profile/${user.$id}`)
+  }
 
   if (isLoading) return <Loader />
   if (user == null) return <p>Something went wrong</p>
   return (
     <Form {...form}>
-      <form className='flex flex-col gap-9 w-full max-w-5xl'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='flex flex-col gap-9 w-full max-w-5xl'>
         <FormField
           control={form.control}
           name='file'

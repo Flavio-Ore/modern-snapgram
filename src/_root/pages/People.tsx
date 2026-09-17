@@ -57,7 +57,7 @@ const People = () => (
   <div className='common-container'>
     <div className='user-container'>
       <div className='flex-start w-full max-w-5xl gap-6'>
-        <PeopleIcon className='size-9 fill-light-1'/>
+        <PeopleIcon className='size-9 fill-secondary-500'/>
         <h2 className='md:h1-bold h3-bold'>All Users</h2>
       </div>
       <AllUsers />

@@ -83,3 +83,11 @@ export async function getUser () {
     return null
   }
 }
+
+export async function updateAccount ({ name, email }: { name?: string, email?: string }) {
+  try {
+    if (name != null) await account.updateName(name)
+  } catch (error) {
+    console.error(error)
+  }
+}

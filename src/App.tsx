@@ -27,6 +27,7 @@ const NotFound = lazy(async () => await import('@/_root/pages/NotFound'))
 const App = () => {
   return (
     <main className='flex h-dvh'>
+      <Toaster />
       <Routes>
         {/* public routes */}
         <Route
@@ -65,7 +66,6 @@ const App = () => {
           <Route path={PRIVATE_ROUTES.NOT_FOUND} element={<NotFound />} />
         </Route>
       </Routes>
-      <Toaster />
     </main>
   )
 }

@@ -2,6 +2,8 @@ import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
 import { parseModel } from '@/lib/services/appwrite/util'
 import { type IUpdateUser, type User } from '@/types'
 import { ID, Query } from 'appwrite'
+import { updateAccount } from './auth'
+import { createFile, deleteFile, getFilePreview } from './file'
 
 export async function createUser (user: {
   accountId: string
@@ -87,6 +89,33 @@ export async function findUserById ({ userId }: { userId: string }) {
 // ============================== UPDATE USER
 export async function updateUser ({ user }: { user: IUpdateUser }) {
   try {
+    let image = {
+      imageUrl: user.imageUrl,
+      imageId: user.imageId
+    }
+    const hasFile = user.file.length > 0 && user.file[0]
+    console.log({ hasFile })
+    if (hasFile !== false) {
+      const ava = await createFile(hasFile)
+
+      if (ava?.$id == null && ava == null) {
+        throw Error('File not uploaded')
+      }
+
+      const avaUrl = await getFilePreview(ava.$id)
+
+      if (avaUrl == null || avaUrl.toString().trim().length === 0) {
+        await deleteFile(ava.$id)
+        throw Error('File not found')
+      }
+
+      image = {
+        ...image,
+        imageUrl: new URL(avaUrl),
+        imageId: ava.$id
+      }
+    }
+
     const updatedUser = await databases.updateDocument<User>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
@@ -94,11 +123,13 @@ export async function updateUser ({ user }: { user: IUpdateUser }) {
       {
         name: user.name,
         bio: user.bio,
-        file: user.file,
-        imageUrl: user.imageUrl
+        imageUrl: image.imageUrl,
+        imageId: image.imageId
       }
     )
     parseModel({ model: updatedUser, errorMsg: 'User not updated' })
+
+    await updateAccount({ name: user.name })
     return updatedUser
   } catch (error) {
     console.error(error)
