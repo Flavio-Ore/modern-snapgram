@@ -2,6 +2,10 @@ export enum E_FORM_ACTIONS {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE'
 }
+export const OPERATIONS = {
+  SEARCH_POSTS: 'SEARCH_POSTS',
+  EXPLORE_POSTS: 'EXPLORE_POSTS'
+}
 export const sidebarLinks = [
   {
     imgURL: '/assets/icons/home.svg',

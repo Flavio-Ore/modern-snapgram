@@ -14,22 +14,23 @@ const Explore = () => {
   const { data: infinitePosts, isFetching: isInfinitePostsFetching } =
     useGetPosts()
   const debouncedValue = useDebounce(searchValue, 500)
-  const {
-    data: infiniteSearchedPosts,
-    isFetching: isInfiniteSearchedFetching
-  } = useInfiniteSearchPosts({
-    searchTerm: debouncedValue
-  })
+  const { data: infiniteSearched, isFetching: isInfiniteSearchedFetching } =
+    useInfiniteSearchPosts({
+      searchTerm: debouncedValue
+    })
 
   useEffect(() => {
     if (!isInfiniteSearchedFetching || !isInfinitePostsFetching)
       setIsSearchLoading(false)
   }, [isInfiniteSearchedFetching, isInfinitePostsFetching])
 
-  const shouldShowSearchResults = searchValue !== ''
-  const shouldShowPosts =
-    infiniteSearchedPosts?.pages.every(item => item.documents.length === 0) &&
-    infinitePosts?.pages.every(item => item.documents.length === 0)
+  const isTyping = searchValue !== ''
+  const noMoreSearchedResults =
+    infiniteSearched?.pages[infiniteSearched.pages.length - 1]?.documents
+      .length === 0
+  const noMoreDefaultResults =
+    infinitePosts?.pages[infinitePosts.pages.length - 1]?.documents.length === 0
+  const noMoreDefaultPosts = !isTyping && noMoreDefaultResults
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
@@ -70,28 +71,21 @@ const Explore = () => {
         </div>
       </div>
       <div className='flex flex-wrap gap-9 w-full max-w-5xl'>
-        {shouldShowSearchResults && (
+        {isTyping && (
           <SearchResults
             searchValue={debouncedValue}
             isSearching={isSearchLoading}
+            isNothingMoreToShow={noMoreSearchedResults}
           />
         )}
-        {!shouldShowSearchResults && (
+        {!isTyping && (
           <ExploreDefaultPosts
             searchValue={debouncedValue}
             isSearching={isSearchLoading}
+            isNothingMoreToShow={noMoreDefaultPosts}
           />
         )}
-        {shouldShowPosts && (
-          <p className='text-light-4 mt-10 text-center w-full'>End of posts</p>
-        )}
       </div>
-      {/* 
-      {hasNextPagePosts && !searchValue && (
-        <div ref={ref} className='mt-10'>
-          <Loader />
-        </div>
-      )} */}
     </div>
   )
 }

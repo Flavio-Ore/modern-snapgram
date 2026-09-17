@@ -1,16 +1,19 @@
 import { useInfiniteSearchPosts } from '@/lib/queries/queriesAndMutations'
+import { OPERATIONS } from '@/values'
 import GridPostList from './GridPostList'
-import InfiniteData from './InfiniteScroll'
+import InfinitePosts from './InfiniteScroll'
 
 interface SearchResultsModel {
   isSearching: boolean
   searchValue: string
+  isNothingMoreToShow: boolean
 }
 type SearchResultsProps = SearchResultsModel
 
 const SearchResults: React.FC<SearchResultsProps> = ({
   isSearching,
-  searchValue
+  searchValue,
+  isNothingMoreToShow
 }) => {
   const infiniteSearch = useInfiniteSearchPosts({
     searchTerm: searchValue
@@ -18,19 +21,20 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const { data } = infiniteSearch
 
   return (
-    <InfiniteData
+    <InfinitePosts
       infinityHookResponse={infiniteSearch}
+      isNothingMoreToShow={isNothingMoreToShow}
       dependencyList={[searchValue]}
-      conditionIfNoData={isSearching}
-      conditionIfinView={searchValue && !isSearching ? true : false}
+      triggerLoader={isSearching}
+      triggerFetchNextPage={searchValue && !isSearching ? true : false}
     >
       {data?.pages.map((currentPosts, i) => (
         <GridPostList
-          key={`${currentPosts.documents[i].$id}-searched-posts-${i}`}
+          key={`${currentPosts}-${OPERATIONS.SEARCH_POSTS}-${i}`}
           posts={currentPosts.documents}
         />
       ))}
-    </InfiniteData>
+    </InfinitePosts>
   )
 }
 
