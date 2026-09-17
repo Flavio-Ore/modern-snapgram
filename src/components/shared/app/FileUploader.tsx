@@ -1,68 +1,100 @@
+import DeleteIcon from '@/components/icons/DeleteIcon'
 import FileUploadIcon from '@/components/icons/FileUploadIcon'
 import { Button } from '@/components/ui/button'
-import { useCallback, useState } from 'react'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+import { useCallback, useEffect, useState } from 'react'
 import { type FileWithPath, useDropzone } from 'react-dropzone'
 
 interface FileUploaderProps {
   fieldChange: (files: File[]) => void
-  mediaUrl: string
+  mediaUrls?: string[]
 }
-const FileUploader: React.FC<FileUploaderProps> = ({
+const FileUploader = ({
   fieldChange,
-  mediaUrl
-}) => {
-  const [file, setFile] = useState<File[]>([])
-  const [fileUrl, setfileUrl] = useState(mediaUrl)
+  mediaUrls: mediaUrl
+}: FileUploaderProps) => {
+  const [files, setFiles] = useState<File[]>([])
+  console.log('files .>>', files)
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      setFile(acceptedFiles)
-      fieldChange(acceptedFiles)
-      setfileUrl(URL.createObjectURL(acceptedFiles[0]))
+      console.log('acceptedFiles .>>', acceptedFiles)
+      setFiles(prevFiles => [...prevFiles, ...acceptedFiles])
     },
-    [file]
+    [files]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.svg']
-    }
+      'image/*': ['.png', '.jpg', '.svg'],
+      'video/*': ['.mp4']
+    },
+    maxFiles: 10,
+    maxSize: 52_428_800
   })
+  const handleRemoveFile =
+    ({ fileName }: { fileName: string }) =>
+      () => {
+        setFiles(prevFiles => {
+          const newFiles = prevFiles.filter(file => file.name !== fileName)
+          return newFiles
+        })
+      }
+
+  useEffect(() => {
+    fieldChange(files)
+  }, [files])
   return (
     <div
-      {...getRootProps()}
-      className='flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer'
+      className={cn(
+        'flex flex-center flex-col bg-dark-3 rounded-xl border-dotted',
+        {
+          'border-spacing-4 border-primary-500': isDragActive
+        }
+      )}
     >
-      <input {...getInputProps()} className='cursor-pointer' />
-      {fileUrl != null && fileUrl.trim().length > 0
-        ? (
-        <>
-          <div className='flex flex-1 justify-center w-full p-5 lg:p-10'>
-            <img
-              src={fileUrl}
-              alt='Image to post'
-              className='file_uploader-img'
-            />
+      <Input {...getInputProps()} className='cursor-pointer' />
+      <div className='file_uploader-box' {...getRootProps()}>
+        <FileUploadIcon />
+        <h3 className='base-medium text-light-2 mb-2 mt-6'>Drag photo here</h3>
+        <p className='text-light-4 small-regular mb-6'>
+          SVG, PNG, JPG, GIF or MP4 &#40;max. 52MB&#41;
+        </p>
+        <Button type='button' className='shad-button_dark_4 hover:bg-dark-2'>
+          Select from computer
+        </Button>
+      </div>
+      {files.map(file => {
+        return (
+          <div key={file.name} className='relative mb-8'>
+            {['image/png', 'image/jpeg', 'image/svg+xml'].includes(
+              file.type
+            ) && (
+              <img
+                src={URL.createObjectURL(file)}
+                alt='Image to post'
+                className='file_uploader-img'
+              />
+            )}
+            {file.type === 'video/mp4' && (
+              <video
+                src={URL.createObjectURL(file)}
+                controls
+                loop
+                className='file_uploader-img cursor-pointer'
+              />
+            )}
+            <Button
+              className='absolute flex gap-3 top-5 right-5 z-50 bg-dark-1 rounded-full p-2 group hover:bg-dark-4/80'
+              onClick={handleRemoveFile({ fileName: file.name })}
+            >
+              <DeleteIcon className='size-6' />
+            </Button>
           </div>
-          <p className='file_uploader-label'>Click or drag photo to replace</p>
-        </>
-          )
-        : (
-        <div className='file_uploader-box'>
-          <FileUploadIcon />
-          <h3 className='base-medium text-light-2 mb-2 mt-6'>
-            Drag photo here
-          </h3>
-          <p className='text-light-4 small-regular mb-6'>
-            SVG, PNG, JPG or GIF &#40;max. 800x400px&#41;
-          </p>
-
-          <Button type='button' className='shad-button_dark_4'>
-            Select from computer
-          </Button>
-        </div>
-          )}
+        )
+      })}
     </div>
   )
 }

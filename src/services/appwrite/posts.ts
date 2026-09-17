@@ -1,11 +1,19 @@
-import { type INewPost, type IUpdatePost, type Post } from '@/types'
+import {
+  type INewPost,
+  type IUpdatePost,
+  type Post,
+  type PostTest
+} from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
 
 import { isObjectEmpty } from '@/lib/utils'
-import { appwriteConfig, databases, storage } from '@/services/appwrite/config'
 import {
-  deleteFile
-} from '@/services/appwrite/file'
+  appwriteConfig,
+  betaAppwriteConfig,
+  databases,
+  storage
+} from '@/services/appwrite/config'
+import { deleteFile } from '@/services/appwrite/file'
 import {
   APPWRITE_ERROR_TYPES,
   APPWRITE_RESPONSE_CODES,
@@ -54,10 +62,7 @@ export async function createPost (post: INewPost) {
         hasFile
       )
 
-      const fileUrl = storage.getFileView(
-        appwriteConfig.storageId,
-        file.$id
-      )
+      const fileUrl = storage.getFileView(appwriteConfig.storageId, file.$id)
       console.log('fileUrl :>> ', fileUrl)
 
       if (fileUrl == null) {
@@ -98,7 +103,7 @@ export async function createPost (post: INewPost) {
         return appwriteResponse({
           data: null,
           code: e.code,
-          message: e.message,
+          message: 'File type not supported.',
           status: e.name
         })
       }
@@ -106,7 +111,7 @@ export async function createPost (post: INewPost) {
         return appwriteResponse({
           data: null,
           code: e.code,
-          message: e.message,
+          message: 'Error uploading file, try again later.',
           status: e.name
         })
       }
@@ -204,13 +209,17 @@ export async function updatePost (post: IUpdatePost) {
     // Failed to update
     if (isObjectEmpty(updatedPost)) {
       // Delete new file that has been recently uploaded
-      if (hastFile !== false) await storage.deleteFile(appwriteConfig.storageId, newImage.id)
+      if (hastFile !== false) {
+        await storage.deleteFile(appwriteConfig.storageId, newImage.id)
+      }
       // If no new file uploaded, just throw error
       throw Error('Post not updated, try again')
     }
 
     // Safely delete old file after successful update
-    if (hastFile !== false) await storage.deleteFile(appwriteConfig.storageId, post.imageId)
+    if (hastFile !== false) {
+      await storage.deleteFile(appwriteConfig.storageId, post.imageId)
+    }
 
     return appwriteResponse({
       data: updatedPost,
@@ -265,5 +274,143 @@ export async function deletePost ({
       })
     }
     return null
+  }
+}
+
+// ============================================================
+// BETAS
+// ============================================================
+
+export async function betaFindInfinitePosts () {
+  try {
+    const postsDocumentList = await databases.listDocuments<PostTest>(
+      appwriteConfig.databaseId,
+      betaAppwriteConfig.betaPostsCollectionId,
+      [Query.limit(2)]
+    )
+    return postsDocumentList.documents
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+export async function betaCreatePost (post: INewPost) {
+  let tags: string[]
+  const newFiles: Array<{ url: string, id: string }> = []
+  const hasFiles = post.file.length > 0 && post.file
+  console.log('hasFiles :>> ', hasFiles)
+  try {
+    if (hasFiles !== false) {
+      const files = await Promise.all(
+        hasFiles.map(async file => {
+          return await storage.createFile(
+            file.type === 'video/mp4' || file.type === 'image/gif'
+              ? betaAppwriteConfig.betaVideosStorageId
+              : betaAppwriteConfig.storageId,
+            ID.unique(),
+            file
+          )
+        })
+      )
+      const fileUrls = files.map(file => {
+        return storage.getFileView(
+          betaAppwriteConfig.betaVideosStorageId,
+          file.$id
+        )
+      })
+
+      console.log('fileUrls :>> ', fileUrls)
+
+      if (fileUrls.length === 0) {
+        await Promise.all(
+          files.map(
+            async file =>
+              await storage.deleteFile(appwriteConfig.storageId, file.$id)
+          )
+        )
+      } else {
+        newFiles.push(
+          ...files.map((file, index) => {
+            return {
+              url: new URL(fileUrls[index]).toString(),
+              id: file.$id
+            }
+          })
+        )
+      }
+    }
+
+    tags =
+      post?.tags == null || post.tags.trim().length <= 0
+        ? []
+        : post.tags?.replace(/ /g, '').split(',') ?? []
+    console.log(
+      'newFiles.map(file => file.id) :>> ',
+      newFiles.map(file => file.id)
+    )
+    console.log('tags :>> ', tags)
+    console.log('new post :>> ', post)
+    const { filesId, ...newPost } = await databases.createDocument<PostTest>(
+      appwriteConfig.databaseId,
+      betaAppwriteConfig.betaPostsCollectionId,
+      ID.unique(),
+      {
+        creator: ['6663ee2b000ffca55d5b'],
+        caption: post.caption,
+        location: post.location,
+        filesId: newFiles.map(file => file.id),
+        tags
+      }
+    )
+
+    return appwriteResponse({
+      data: {
+        ...newPost,
+        files: newFiles
+      },
+      code: APPWRITE_RESPONSE_CODES.CREATED.code,
+      message: 'Post created successfully',
+      status: APPWRITE_RESPONSE_CODES.CREATED.text
+    })
+  } catch (e) {
+    console.error({ e })
+    if (e instanceof AppwriteException) {
+      if (e.type === APPWRITE_ERROR_TYPES.storage_file_type_unsupported) {
+        return appwriteResponse({
+          data: null,
+          code: e.code,
+          message: 'File type not supported.',
+          status: e.name
+        })
+      }
+      if (e.type === APPWRITE_ERROR_TYPES.storage_device_not_found) {
+        return appwriteResponse({
+          data: null,
+          code: e.code,
+          message: 'Error uploading file, try again later.',
+          status: e.name
+        })
+      }
+      return appwriteResponse({
+        data: null,
+        code: e.code,
+        message: e.message,
+        status: e.name
+      })
+    }
+    return null
+  }
+}
+
+export async function betaFindFilesUrlsByPostId (post: PostTest) {
+  try {
+    return post.filesId.map(fileId => {
+      console.log('fileUrl :>> ', fileId)
+      return storage.getFileView(appwriteConfig.storageId, fileId)
+    })
+  } catch (error) {
+    console.error(error)
+    return []
   }
 }

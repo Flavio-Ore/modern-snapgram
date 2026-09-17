@@ -200,7 +200,7 @@
 
   /*! File uploader */
   .file_uploader-img {
-    @apply h-80 lg:h-[480px] w-full rounded-[24px] object-cover object-top;
+    @apply size-full rounded-[24px] max-h-dvh object-contain object-center;
   }
 
   .file_uploader-label {

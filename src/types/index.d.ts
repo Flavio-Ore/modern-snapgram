@@ -82,7 +82,17 @@ interface Post extends Models.Document {
   caption: string
   tags: string[]
   imageUrl: string
-  imageId: string
+  imageId: Models.document['$id']
+  location: string
+  likes: User[]
+  saved: Save[]
+  creator: User
+}
+
+interface PostTest extends Models.Document {
+  caption: string
+  tags: string[]
+  filesId: Array<Models.Document['$id']>
   location: string
   likes: User[]
   saved: Save[]

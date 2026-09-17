@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
+import { useBetaCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
 import { PostValidationSchema } from '@/lib/validations'
 import { type Post } from '@/types'
@@ -29,7 +29,7 @@ interface PostFormProps {
 }
 const PostForm = ({ post, action }: PostFormProps) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
-    useCreatePost()
+    useBetaCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
     useUpdatePost()
   const { data: user } = useUser()
@@ -64,7 +64,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
         if (updatedPostResponse?.data == null) {
           toast({ title: 'Post update error', description: 'Please try again' })
-          navigate(`/posts/${post.$id}`)
+          navigate(`/posts/${post.$id}.`)
           return
         }
         navigate('/')
@@ -76,14 +76,15 @@ const PostForm = ({ post, action }: PostFormProps) => {
           ...value,
           userId: user.$id
         })
-
+        console.log({ createPostResponse })
         if (createPostResponse?.data == null) {
           toast({
             title: 'Post is empty.',
-            description: createPostResponse?.message ?? 'Please try again'
+            description: createPostResponse?.message ?? 'Please try again.'
           })
+        } else {
+          navigate('/')
         }
-        navigate('/')
       }
     } catch (error) {
       console.error(error)
@@ -115,20 +116,23 @@ const PostForm = ({ post, action }: PostFormProps) => {
         <FormField
           control={form.control}
           name='file'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className='shad-form_label'>
-                Add Photos/Videos
-              </FormLabel>
-              <FormControl>
-                <FileUploader
-                  fieldChange={field.onChange}
-                  mediaUrl={post?.imageUrl ?? ''}
-                />
-              </FormControl>
-              <FormMessage className='shad-form_message' />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            console.log('file field value: ', form.getValues('file'))
+            return (
+              <FormItem>
+                <FormLabel className='shad-form_label'>
+                  Add Photos/Videos
+                </FormLabel>
+                <FormControl>
+                  <FileUploader
+                    fieldChange={field.onChange}
+                    mediaUrls={post?.imageUrl != null ? [post.imageUrl] : []}
+                  />
+                </FormControl>
+                <FormMessage className='shad-form_message' />
+              </FormItem>
+            )
+          }}
         />
         <FormField
           control={form.control}
