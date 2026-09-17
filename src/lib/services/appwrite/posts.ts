@@ -2,7 +2,11 @@ import { type INewPost, type IUpdatePost, type Post } from '@/types'
 import { ID, Query } from 'appwrite'
 
 import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
-import { createFile, deleteFile, getFilePreview } from '@/lib/services/appwrite/file'
+import {
+  createFile,
+  deleteFile,
+  getFilePreview
+} from '@/lib/services/appwrite/file'
 import { parseModel } from '@/lib/services/appwrite/util'
 import { isObjectEmpty } from '@/lib/utils'
 
@@ -21,13 +25,13 @@ export async function findInfinitePosts ({
     query.push(Query.cursorAfter(lastId.toString()))
   }
   try {
-    const postsDocumentList = await databases.listDocuments(
+    const postsDocumentList = await databases.listDocuments<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       query
     )
     parseModel({ model: postsDocumentList, errorMsg: 'No posts found' })
-    return postsDocumentList.documents as Post[]
+    return postsDocumentList.documents
   } catch (error) {
     console.error(error)
     return []
@@ -49,7 +53,7 @@ export async function createPost (post: INewPost) {
     if (post?.tags == null) tags = []
     tags = post.tags?.replace(/ /g, '').split(',')
 
-    const newPost = await databases.createDocument(
+    const newPost = await databases.createDocument<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       ID.unique(),
@@ -66,7 +70,7 @@ export async function createPost (post: INewPost) {
       await deleteFile(file.$id)
       throw Error('Post not created, try again')
     }
-    return newPost as Post
+    return newPost
   } catch (error) {
     console.error(error)
     return null
@@ -75,13 +79,13 @@ export async function createPost (post: INewPost) {
 // ============================== GET POST BY ID
 export async function findPostById (postId: string) {
   try {
-    const postDocument = await databases.getDocument(
+    const postDocument = await databases.getDocument<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       postId
     )
     parseModel({ model: postDocument, errorMsg: 'Post not found' })
-    return postDocument as Post
+    return postDocument
   } catch (error) {
     console.error(error)
   }
@@ -125,7 +129,7 @@ export async function updatePost (post: IUpdatePost) {
     tags = post.tags?.replace(/ /g, '').split(',')
 
     //  Update post
-    const updatedPost = await databases.updateDocument(
+    const updatedPost = await databases.updateDocument<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       post.postId,
@@ -149,7 +153,7 @@ export async function updatePost (post: IUpdatePost) {
     // Safely delete old file after successful update
     if (hasFileToUpdate) await deleteFile(post.imageId)
 
-    return updatedPost as Post
+    return updatedPost
   } catch (error) {
     console.error(error)
   }
@@ -177,4 +181,3 @@ export async function deletePost ({
     return { status: 'error' }
   }
 }
-

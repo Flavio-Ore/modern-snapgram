@@ -4,7 +4,7 @@ import SearchResults from '@/components/shared/posts/SearchResults'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useState } from 'react'
-
+// TODO - TRY useDeferredValue HOOK FROM REACT TO IMPROVE PERFORMANCE AND REPLACE useDebounce HOOK
 const Explore = () => {
   const [searchValue, setSearchValue] = useState('')
   const debouncedValue = useDebounce(searchValue, 500)

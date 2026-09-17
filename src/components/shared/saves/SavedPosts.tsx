@@ -1,23 +1,9 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
-import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
 import { useMemo } from 'react'
-
-const SavedPostsSkeleton = () => (
-  <div className='grid-container'>
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-    <Skeleton className='relative grid-post_link min-h-72 min-w-min-h-72' />
-  </div>
-)
+import GridPostSkeleton from '../skeletons/GridPostSkeleton'
 
 const SavedPosts = () => {
   const { user, isLoading: isUserLoading } = useUserContext()
@@ -40,7 +26,7 @@ const SavedPosts = () => {
   return (
     <InfiniteScroll
       data={data}
-      skeleton={<SavedPostsSkeleton />}
+      skeleton={<GridPostSkeleton />}
       isLoading={isUserLoading || isSavesLoading}
       isError={isError}
       isDataEmpty={posts.length === 0}

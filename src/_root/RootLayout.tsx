@@ -30,7 +30,7 @@ const RootLayout = () => {
           fallback={
             <Skeleton className='common-container flex-center backdrop-blur-sm size-full bg-primary-600/5 '>
               <h2 className='h1-bold animate-pulse-fade-in'>
-                {sidebarLinks.find(link => pathname.startsWith(link.route))?.label}
+                {sidebarLinks.find(link => pathname === link.route)?.label}
               </h2>
             </Skeleton>
           }

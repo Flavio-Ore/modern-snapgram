@@ -22,7 +22,7 @@ const appwriteService = {
     findInfinite: usersFunctions.findInfiniteUsers
   },
   account: {
-    findSession: auth.getCurrentSessionUser,
+    user: auth.getUser,
     create: auth.createUserAccount,
     get: auth.getAccount,
     signIn: auth.signInAccount,

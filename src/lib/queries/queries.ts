@@ -28,10 +28,10 @@ export const useGetUserPosts = ({ userId }: { userId: string }) => {
 // USER QUERIES
 // ============================================================
 
-export const useGetCurrentUser = () => {
+export const useUser = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
-    queryFn: account.get
+    queryFn: account.user
   })
 }
 
