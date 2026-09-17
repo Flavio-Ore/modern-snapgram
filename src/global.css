@@ -236,7 +236,7 @@
     @apply rounded-lg subtle-semibold bg-primary-500 h-[30px] w-[74px] p-2 text-center;
   }
   .rightsidebar-top_creators {
-    @apply grid grid-cols-2 h-full gap-4;
+    @apply grid grid-cols-1 2xl:grid-cols-2 h-full gap-4;
   }
   .rightsidebar-creators_container {
     @apply flex-center flex-col w-full 2xl:max-w-[190px] 2xl:max-h-[190px] border border-dark-4 rounded-3xl;
@@ -258,7 +258,7 @@
 
   /*! User card */
   .user-card {
-    @apply flex-center flex-col gap-4 border border-dark-4 rounded-[20px] px-5 py-8;
+    @apply flex-center text-center flex-col gap-4 border border-dark-4 rounded-[20px] px-5 py-8 w-full;
   }
 }
 

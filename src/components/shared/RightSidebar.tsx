@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import UserCard from './UserCard'
 
 const TopCreators = () => {
   return (
@@ -9,23 +9,14 @@ const TopCreators = () => {
         const mainFollower = 'Steban'
         const profileLink = `/profile/65e42bcc7cd2846e471b`
         return (
-          <li key={i} className='rightsidebar-creators_container'>
-            <div className='flex-center flex-col gap-3'>
-              <img
-                src={imgUrl}
-                alt={name}
-                className='h-[54px] w-[54px] rounded-full'
-              />
-              <div className='flex-center flex-col gap-0.5'>
-                <p className='small-semibold'>{name}</p>
-                <p className='tiny-medium text-light-3'>
-                  Followed by {mainFollower}
-                </p>
-              </div>
-              <Link to={profileLink} className='rightsidebar-link '>
-                Follow
-              </Link>
-            </div>
+          <li key={i}>
+            <UserCard
+              imgUrl={imgUrl}
+              name={name}
+              mainFollower={`Followed by ${mainFollower}`}
+              profileLink={profileLink}
+              role='TOP_CREATORS'
+            />
           </li>
         )
       })}
@@ -35,7 +26,7 @@ const TopCreators = () => {
 
 const RightSidebar = () => {
   return (
-    <div className='rightsidebar'>
+    <div className='home-creators bg-dark-2'>
       <h2 className='h3-bold'>Top Creators</h2>
       <TopCreators />
     </div>
