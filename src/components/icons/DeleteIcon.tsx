@@ -7,7 +7,7 @@ const DeleteIcon = ({ className }: SVGProps<SVGSVGElement>) => (
     height='20'
     viewBox='0 0 20 20'
     xmlns='http://www.w3.org/2000/svg'
-    className={cn('fill-red', className)}
+    className={cn('fill-red-500', className)}
   >
     <path
       fillRule='evenodd'

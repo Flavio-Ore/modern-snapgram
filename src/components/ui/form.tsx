@@ -156,7 +156,7 @@ HTMLAttributes<HTMLParagraphElement>
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('small-regular text-red animate-shake', className)}
+      className={cn('small-regular text-red-500 animate-shake', className)}
       {...props}
     >
       {body}

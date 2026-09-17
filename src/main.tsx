@@ -9,7 +9,7 @@ const BrowserRouter = lazy(
       default: module.BrowserRouter
     }))
 )
-const AuthProvider = lazy(async () => await import('@/context/AuthContext'))
+const AccountProvider = lazy(async () => await import('@/context/AccountContext'))
 const QueryProvider = lazy(
   async () => await import('@/lib/queries/QueryProvider')
 )
@@ -22,9 +22,9 @@ ReactDOM.createRoot(ROOT).render(
     <LazyPages>
       <BrowserRouter>
         <QueryProvider>
-          <AuthProvider>
+          <AccountProvider>
             <App />
-          </AuthProvider>
+          </AccountProvider>
           <ReactQueryDevtools />
         </QueryProvider>
       </BrowserRouter>

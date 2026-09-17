@@ -2,7 +2,7 @@ import EditIcon from '@/components/icons/EditIcon'
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { useGetUserById } from '@/lib/queries/queries'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -62,7 +62,7 @@ const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
 
 const ProfileDetails = () => {
   const { id } = useParams()
-  const { user: sessionUser, isLoading: isSessionLoading } = useUserContext()
+  const { user: sessionUser, isLoading: isSessionLoading } = useAccount()
   const {
     data: user,
     isLoading: isUserLoading,
@@ -94,7 +94,7 @@ const ProfileDetails = () => {
         <Skeleton className='min-h-[150px] min-w-[150px] rounded-full' />
       )}
       {isError && (
-        <p className='body-bold  text-red max-w-xl text-pretty'>
+        <p className='body-bold text-red-500 max-w-xl text-pretty'>
           Something went wrong...
         </p>
       )}
