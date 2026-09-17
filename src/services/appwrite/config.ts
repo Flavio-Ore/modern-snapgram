@@ -8,6 +8,7 @@ interface AppwriteConfig {
   readonly savesCollectionId: string
   readonly usersCollectionId: string
   readonly postsCollectionId: string
+  readonly messageCollectionId: string
 }
 export const appwriteConfig: AppwriteConfig = {
   projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
@@ -16,7 +17,8 @@ export const appwriteConfig: AppwriteConfig = {
   storageId: import.meta.env.VITE_APPWRITE_STORAGE,
   savesCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID,
   usersCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID,
-  postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID
+  postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID,
+  messageCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_MESSAGES_ID
 }
 
 export const client = new Client()

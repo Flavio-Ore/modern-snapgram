@@ -37,6 +37,7 @@ const ROUTES = {
     SAVED: '/saved',
     REELS: '/reels',
     CHATS: '/chats',
+    CHATS_ROOM: '/chats/:id',
     CREATE_POST: '/create-post',
     UPDATE_POST: '/update-post/:id',
     POST_DETAILS: '/posts/:id',

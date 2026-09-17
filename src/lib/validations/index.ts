@@ -53,3 +53,7 @@ export const ProfileValidationSchema = z.object({
   }),
   email: z.string().email()
 })
+
+export const MessageValidationSchema = z.object({
+  body: z.string().min(1).max(2200)
+})

@@ -7,7 +7,6 @@ import {
   useSavePost
 } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { checkIsLiked } from '@/lib/utils'
 import { type Post } from '@/types'
 import { BookmarkIcon, HeartIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -18,7 +17,7 @@ interface PostStatsProps {
 }
 const PostStats = ({ post, userId }: PostStatsProps) => {
   const [likes, setLikes] = useState(() => {
-    if (post?.likes == null || post == null) return []
+    if (post?.likes == null || post.likes.length === 0) return []
     return post.likes.map(user => user.$id)
   })
   const [isSaved, setIsSaved] = useState(false)
@@ -29,11 +28,13 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { $id: postId } = post
   console.log('currentUser.saves :>> ', currentUser)
   console.log('post :>> ', post)
+  console.log('likes :>> ', likes)
   const savedRecordId = useMemo(
     () =>
-      currentUser?.save?.find(record => record.post.$id === postId)?.$id ?? '',
+      currentUser?.saves?.find(record => record.post.$id === postId)?.$id ?? '',
     [currentUser]
   )
+  const likesCount = useMemo(() => likes.length, [likes])
   console.log('savedRecordId :>> ', savedRecordId)
   useEffect(() => {
     setIsSaved(savedRecordId !== '')
@@ -74,7 +75,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         )}
         {!isLoading && !isRefetching && !isLiking && (
           <div onClick={handleLikePost} className='flex-center cursor-pointer'>
-            {checkIsLiked(likes, userId)
+            {likes.includes(userId)
               ? (
               <HeartIcon
                 className='fill-red-500 stroke-red-500 hover:fill-red-500/50'
@@ -89,7 +90,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                 )}
           </div>
         )}
-        <p className='small-medium lg:base-medium'>{likes.length}</p>
+        <p className='small-medium lg:base-medium'>{likesCount}</p>
       </div>
       <div className='flex gap-2'>
         {(isLoading || isRefetching || isSaving || isDeletingSave) && (
