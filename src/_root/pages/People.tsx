@@ -12,7 +12,9 @@ const People = () => {
         <div className='flex-start w-full max-w-5xl gap-6'>
           <img
             src='/assets/icons/people.svg'
-            className='h-[36px] w-[36px] aspect-square invert-white'
+            height={36}
+            width={36}
+            className='invert-white'
             alt='people'
           />
           <h2 className='md:h1-bold h3-bold'>All Users</h2>

@@ -38,7 +38,9 @@ const GridPostList: React.FC<GridPostListProps> = ({
                   }
                   loading='lazy'
                   alt='Creator post profile'
-                  className='h-8 w-8 rounded-full'
+                  height={32}
+                  width={32}
+                  className='rounded-full'
                 />
                 <p className='lime-clamp-1'>{post.creator.name}</p>
               </div>
