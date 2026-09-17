@@ -3,7 +3,13 @@ import { useSignOutAccount } from '@/lib/queries/mutations'
 import { INavLink } from '@/types'
 import { sidebarLinks } from '@/values'
 import { useEffect } from 'react'
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import { Button } from '../ui/button'
 
 const truncateRoute = (route: string) => {
@@ -15,6 +21,7 @@ const LeftSidebar = () => {
   const navigate = useNavigate()
   const { user } = useUserContext()
   const { mutate: signOut, isSuccess } = useSignOutAccount()
+  const { id: profileId } = useParams()
 
   useEffect(() => {
     if (isSuccess) navigate(0)
@@ -31,7 +38,14 @@ const LeftSidebar = () => {
             height={36}
           />
         </Link>
-        <Link to={`/profile/${user.id}`} className='flex gap-3 items-center'>
+        <Link
+          to={`/profile/${user.id}`}
+          className={`relative flex gap-3 items-center ${
+            profileId === user.id
+              ? 'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative'
+              : ''
+          }`}
+        >
           <img
             src={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
             alt='profile'
@@ -42,7 +56,6 @@ const LeftSidebar = () => {
             <p className='small-regular text-light-3'>@{user.username}</p>
           </div>
         </Link>
-
         <ul className='flex flex-col gap-4'>
           {sidebarLinks.map(({ imgURL, label, route }: INavLink) => {
             const isActive = truncateRoute(pathname) === route
