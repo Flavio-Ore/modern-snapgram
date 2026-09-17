@@ -1,5 +1,5 @@
 import { cn, extractFirstRoutePart } from '@/lib/utils'
-import { links } from '@/values'
+import { links } from '@/values/links'
 import { Link, useLocation, useParams } from 'react-router-dom'
 
 const Bottombar = () => {

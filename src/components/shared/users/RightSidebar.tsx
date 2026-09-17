@@ -1,7 +1,7 @@
 import UserCard from '@/components/shared/users/UserCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useGetTopUsers } from '@/states/TanStack-query/hooks/queries/users/useGetTopUsers'
-import { E_USERS } from '@/values'
+import { E_USERS } from '@/values/enums'
 
 const TopCreators = () => {
   const { data: topCreators, isLoading, isError } = useGetTopUsers({ limit: 8 })

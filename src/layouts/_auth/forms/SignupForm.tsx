@@ -12,9 +12,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { SignupValidationSchema } from '@/lib/validations/schemas/signup.validation.schema'
-import { useAccount } from '@/states/account/hooks/useAccountContext'
 import { useCreateAccount } from '@/states/TanStack-query/hooks/mutations/session/useCreateAccount'
+import { useAuth } from '@/states/TanStack-query/hooks/queries/session/useAuth'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
@@ -22,7 +23,7 @@ import { type z } from 'zod'
 const SignupForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { isAuthenticated, isLoading: isSessionLoading } = useAccount()
+  const { data: auth, isLoading: isSessionLoading } = useAuth()
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateAccount()
 
@@ -35,7 +36,7 @@ const SignupForm = () => {
       password: ''
     }
   })
-
+  const isAuthenticated = useMemo(() => auth?.data ?? false, [auth])
   const handleSignup = async (user: z.infer<typeof SignupValidationSchema>) => {
     try {
       console.log({
@@ -159,11 +160,7 @@ const SignupForm = () => {
               </FormItem>
             )}
           />
-          <Button
-            type='submit'
-            variant='default'
-            disabled={!form.formState.isDirty || !form.formState.isValid}
-          >
+          <Button type='submit' variant='default'>
             {isCreatingAccount || isSessionLoading
               ? (
               <LoaderIcon />

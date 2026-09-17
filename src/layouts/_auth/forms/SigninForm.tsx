@@ -12,8 +12,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { SigninValidationSchema } from '@/lib/validations/schemas/signin.validation.schema'
-import { useAccount } from '@/states/account/hooks/useAccountContext'
 import { useSignIn } from '@/states/TanStack-query/hooks/mutations/session/useSignIn'
+import { useAuth } from '@/states/TanStack-query/hooks/queries/session/useAuth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -22,7 +22,7 @@ import { type z } from 'zod'
 const SigninForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { isLoading } = useAccount()
+  const { isLoading } = useAuth()
   const { mutateAsync: signInAccount, isPending } = useSignIn()
 
   const signinForm = useForm<z.infer<typeof SigninValidationSchema>>({
@@ -105,13 +105,7 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
-          <Button
-            type='submit'
-            variant='default'
-            disabled={
-              !signinForm.formState.isDirty || !signinForm.formState.isValid
-            }
-          >
+          <Button type='submit' variant='default'>
             {isLoading || isPending ? <LoaderIcon /> : 'Sign in'}
           </Button>
 

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { type E_USERS } from '@/values'
+import { type E_USERS } from '@/values/enums'
 import { RedoIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'

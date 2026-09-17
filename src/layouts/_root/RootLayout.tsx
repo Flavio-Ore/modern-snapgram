@@ -2,13 +2,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/components/ui/use-toast'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { appwriteConfig, client } from '@/services/appwrite/config'
-import { useAccount } from '@/states/account/hooks/useAccountContext'
 import { useSetChatMemberOnline } from '@/states/TanStack-query/hooks/mutations/chats/useSetChatMemberOnline'
 import { useSignOut } from '@/states/TanStack-query/hooks/mutations/session/useSignOut'
 import { useGetAllChatRoomsByUserId } from '@/states/TanStack-query/hooks/queries/chats/useGetAllChatRoomsByUserId'
+import { useAuth } from '@/states/TanStack-query/hooks/queries/session/useAuth'
 import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type MessageModel } from '@/types'
-import { links } from '@/values'
+import { links } from '@/values/links'
 import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -30,9 +30,16 @@ const RootLayout = () => {
   const { toast } = useToast()
   const { isPending: isSigninOut } = useSignOut()
   const { pathname } = useLocation()
-  const { isAuthenticated } = useAccount()
+  const { data: auth } = useAuth()
   const { data: user } = useSessionUser()
   const { mutateAsync: updateStatus } = useSetChatMemberOnline()
+  const authentication = useMemo(
+    () => ({
+      isAuthenticated: auth?.data ?? false,
+      errorCode: auth?.code ?? false
+    }),
+    [auth]
+  )
   const chatRoomsIds = useMemo(
     () => user?.chats.map(chat => chat.chat_room.$id) ?? [],
     [user]
@@ -41,7 +48,6 @@ const RootLayout = () => {
     useGetAllChatRoomsByUserId({
       chatRoomsIds
     })
-
   const ownChats = useMemo(
     () =>
       allChatRooms?.flatMap(chatRoom =>
@@ -61,13 +67,13 @@ const RootLayout = () => {
   )
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (authentication.isAuthenticated) {
       updateStatus({
         chatIds: ownChatMembersIds,
         online: true
       })
     }
-  }, [isAuthenticated, ownChatMembersIds])
+  }, [authentication, ownChatMembersIds])
 
   useEffect(() => {
     if (ownChatMembersIds.length <= 0) return

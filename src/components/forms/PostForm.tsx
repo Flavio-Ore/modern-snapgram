@@ -18,7 +18,7 @@ import { useCreatePost } from '@/states/TanStack-query/hooks/mutations/posts/use
 import { useUpdatePost } from '@/states/TanStack-query/hooks/mutations/posts/useUpdatePost'
 import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type FileModelWithUrl, type Post } from '@/types'
-import { type E_FORM_ACTIONS } from '@/values'
+import { type E_FORM_ACTIONS } from '@/values/enums'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
