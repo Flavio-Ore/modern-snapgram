@@ -174,7 +174,7 @@ const Chat = ({ chatRoom }: { chatRoom: ChatRoomModel }) => {
       [
         `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
       ],
-      ({ events, channels, payload: newMessage }) => {
+      ({ events, payload: newMessage }) => {
         if (
           events.includes(
             `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
