@@ -1,9 +1,9 @@
+import GridPostList from '@/components/shared/GridPostList'
+import InfinitePosts from '@/components/shared/InfinitePosts'
 import { useGetInfinitePosts } from '@/lib/queries/infiniteQueries'
 import { OPERATIONS } from '@/values'
-import GridPostList from './GridPostList'
-import InfinitePosts from './InfiniteScroll'
 
-const ExploreDefaultPosts = () => {
+const ExplorePosts = () => {
   const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
     useGetInfinitePosts()
   const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
@@ -28,4 +28,4 @@ const ExploreDefaultPosts = () => {
   )
 }
 
-export default ExploreDefaultPosts
+export default ExplorePosts
