@@ -1,6 +1,6 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import PostCard from '@/components/shared/posts/PostCard'
-import RightSidebar from '@/components/shared/Users/RightSidebar'
+import RightSidebar from '@/components/shared/users/RightSidebar'
 import { useGetInfiniteRecentPosts } from '@/lib/queries/infiniteQueries'
 import { useMemo } from 'react'
 

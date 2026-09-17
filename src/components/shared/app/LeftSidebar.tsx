@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { useUserContext } from '@/context/useUserContext'
 import { useSignOutAccount } from '@/lib/queries/mutations'
+import { truncateRoute } from '@/lib/utils'
 import { INavLink } from '@/types'
 import { sidebarLinks } from '@/values'
 import { useEffect } from 'react'
@@ -11,10 +12,6 @@ import {
   useNavigate,
   useParams
 } from 'react-router-dom'
-
-const truncateRoute = (route: string) => {
-  return route.split('/').slice(0, 2).join('/')
-}
 
 const LeftSidebar = () => {
   const { pathname } = useLocation()

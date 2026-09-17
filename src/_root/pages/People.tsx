@@ -1,6 +1,6 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import Loader from '@/components/shared/app/Loader'
-import UserCard from '@/components/shared/Users/UserCard'
+import UserCard from '@/components/shared/users/UserCard'
 import { useGetInfiniteUsers } from '@/lib/queries/infiniteQueries'
 import { E_USERS, OPERATIONS } from '@/values'
 import { useMemo } from 'react'

@@ -1,4 +1,8 @@
-import { SavedCollections, SavedPosts, SavedReels } from '@/_root/pages/Saved'
+import {
+  SavedCollections,
+  SavedPosts,
+  SavedReels
+} from '@/components/shared/saves'
 import { TabsTriggers } from '@/types'
 
 export enum E_USERS {

@@ -1,7 +1,7 @@
+import Loader from '@/components/shared//app/Loader'
+import UserCard from '@/components/shared/users/UserCard'
 import { useGetUsers } from '@/lib/queries/queries'
 import { E_USERS } from '@/values'
-import Loader from '../app/Loader'
-import UserCard from './UserCard'
 
 const TopCreators = () => {
   const { data: topCreators, isLoading, isError } = useGetUsers({ limit: 8 })

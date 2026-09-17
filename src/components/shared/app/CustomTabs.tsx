@@ -6,9 +6,9 @@ interface TabsContentsProps {
   triggers: Omit<TabsTriggers, 'icon'>[]
 }
 const TabsContents: React.FC<TabsContentsProps> = ({ triggers }) =>
-  triggers.map(trigger => (
-    <TabsContent key={trigger.trigger} value={trigger.trigger}>
-      {trigger.Element()}
+  triggers.map(({ trigger, Element }) => (
+    <TabsContent key={trigger} value={trigger}>
+      <Element />
     </TabsContent>
   ))
 
@@ -22,13 +22,13 @@ const TabTriggers: React.FC<TabsTriggersProps> = ({
 }) =>
   triggersAndIcons.map(({ trigger, icon }, index) => (
     <TabsTrigger
+      key={trigger + icon}
       value={trigger}
       className={cn(
         className,
         index === 0 && 'rounded-l-lg',
         index === triggersAndIcons.length - 1 && 'rounded-r-lg col-span-2'
       )}
-      key={trigger + icon}
     >
       <img src={icon} alt='Link selection' width={20} height={20} />
       <p className='text-ellipsis'>{trigger}</p>
@@ -38,7 +38,6 @@ const TabTriggers: React.FC<TabsTriggersProps> = ({
 interface CustomTabsProps {
   tabsOperations: TabsTriggers[]
 }
-
 const CustomTabs: React.FC<CustomTabsProps> = ({ tabsOperations }) => (
   <Tabs
     defaultValue={tabsOperations[0].trigger}

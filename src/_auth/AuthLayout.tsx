@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { Label } from '@radix-ui/react-label'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Navigate, Outlet } from 'react-router-dom'
 
@@ -20,8 +20,8 @@ const AuthLayout = () => {
   const [isEmailClicked, setIsEmailClicked] = useState(false)
   const [isPasswordClicked, setIsPasswordClicked] = useState(false)
   const { toast } = useToast()
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280)
   const isAuth = false
-
   const handleCLickEmail = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -51,6 +51,14 @@ const AuthLayout = () => {
     })
   }
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1280)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
     <>
       {isAuth ? (
@@ -59,90 +67,95 @@ const AuthLayout = () => {
         <section className='flex flex-1 items-center justify-center flex-col'>
           <Outlet />
           {/* TO TEST THE APP */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant='ghost' className='mt-2 border'>
-                <h3 className='h3-bold text-light-2 p-4 hover:text-light-3'>
+          {(import.meta.env.DEV || import.meta.env.PROD) && (
+            <Dialog>
+              <DialogTrigger
+                asChild
+                className='shad-button_ghost  border mt-2 p-2 cursor-pointer bg-dark-1 text-secondary-500 hover:text-light-1'
+              >
+                <h3 className='body-medium  text-pretty text-center'>
                   Try logging in without having to create an account!
                 </h3>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className='sm:max-w-md backdrop-blur-lg border-none'>
-              <DialogHeader>
-                <DialogTitle>Try out this free account!</DialogTitle>
-              </DialogHeader>
-              <div className='flex items-center space-x-2'>
-                <div className='grid flex-1 gap-2'>
-                  <Label htmlFor='email' className='sr-only'>
-                    email
-                  </Label>
-                  <Input
-                    id='email'
-                    className='shad-input'
-                    defaultValue='steban@gmail.com'
-                    readOnly
-                  />
-                </div>
-                <Button
-                  type='submit'
-                  size='sm'
-                  className='shad-button_primary px-3'
-                  onClick={handleCLickEmail}
-                >
-                  <span className='sr-only'>Copy</span>
-                  {isEmailClicked ? (
-                    <CopyCheckIcon className='h-4 w-4' />
-                  ) : (
-                    <CopyIcon className='h-4 w-4' />
-                  )}
-                </Button>
-              </div>
-              <div className='flex items-center space-x-2'>
-                <div className='grid flex-1 gap-2'>
-                  <Label htmlFor='password' className='sr-only'>
-                    password
-                  </Label>
-                  <Input
-                    id='password'
-                    className='shad-input '
-                    defaultValue='gongongon'
-                    readOnly
-                  />
-                </div>
-                <Button
-                  type='submit'
-                  size='sm'
-                  className='shad-button_primary px-3'
-                  onClick={handleClickPasswd}
-                >
-                  <span className='sr-only'>Copy</span>
-                  {isPasswordClicked ? (
-                    <CopyCheckIcon className='h-4 w-4' />
-                  ) : (
-                    <CopyIcon className='h-4 w-4' />
-                  )}
-                </Button>
-              </div>
-              <DialogFooter className='sm:justify-start'>
-                <DialogClose asChild>
+              </DialogTrigger>
+              <DialogContent className='sm:max-w-md backdrop-blur-lg border-none'>
+                <DialogHeader>
+                  <DialogTitle>Try out this free account!</DialogTitle>
+                </DialogHeader>
+                <div className='flex items-center space-x-2'>
+                  <div className='grid flex-1 gap-2'>
+                    <Label htmlFor='email' className='sr-only'>
+                      email
+                    </Label>
+                    <Input
+                      id='email'
+                      className='shad-input'
+                      defaultValue='steban@gmail.com'
+                      readOnly
+                    />
+                  </div>
                   <Button
-                    type='button'
-                    variant='ghost'
-                    className='shad-button_primary'
+                    type='submit'
+                    size='sm'
+                    className='shad-button_primary px-3'
+                    onClick={handleCLickEmail}
                   >
-                    Close
+                    <span className='sr-only'>Copy</span>
+                    {isEmailClicked ? (
+                      <CopyCheckIcon className='h-4 w-4' />
+                    ) : (
+                      <CopyIcon className='h-4 w-4' />
+                    )}
                   </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                </div>
+                <div className='flex items-center space-x-2'>
+                  <div className='grid flex-1 gap-2'>
+                    <Label htmlFor='password' className='sr-only'>
+                      password
+                    </Label>
+                    <Input
+                      id='password'
+                      className='shad-input '
+                      defaultValue='gongongon'
+                      readOnly
+                    />
+                  </div>
+                  <Button
+                    type='submit'
+                    size='sm'
+                    className='shad-button_primary px-3'
+                    onClick={handleClickPasswd}
+                  >
+                    <span className='sr-only'>Copy</span>
+                    {isPasswordClicked ? (
+                      <CopyCheckIcon className='h-4 w-4' />
+                    ) : (
+                      <CopyIcon className='h-4 w-4' />
+                    )}
+                  </Button>
+                </div>
+                <DialogFooter className='sm:justify-start'>
+                  <DialogClose asChild>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      className='shad-button_primary'
+                    >
+                      Close
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </section>
       )}
-      <img
-        src='/assets/images/side-img.svg'
-        alt='galery of photos'
-        className='hidden xl:block h-dvh w-1/2 object-cover bg-no-repeat aspect-auto'
-      />
+      {isLargeScreen && (
+        <img
+          src='/assets/images/side-img.svg'
+          alt='Galery of photos conceptual'
+          className='hidden xl:block h-dvh w-1/2 object-cover bg-no-repeat aspect-auto'
+        />
+      )}
     </>
   )
 }
