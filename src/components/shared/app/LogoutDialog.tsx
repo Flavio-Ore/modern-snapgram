@@ -11,13 +11,25 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { useSignOut } from '@/lib/queries/mutations'
+import { useGetAllMemberChats, useUser } from '@/lib/queries/queries'
+import { appwriteConfig, databases } from '@/services/appwrite/config'
 import { LucideLogOut } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const LogoutDialog = () => {
+  const { data: user } = useUser()
+  const { data: ownMembers } =
+    useGetAllMemberChats({
+      userId: user?.$id ?? ''
+    })
   const { mutate: signOut, isSuccess } = useSignOut()
   const navigate = useNavigate()
+
+  const chatMembersIds = useMemo(
+    () => ownMembers?.map(chatMember => chatMember.$id) ?? [],
+    [ownMembers]
+  )
 
   useEffect(() => {
     if (isSuccess) navigate(0)
@@ -45,7 +57,17 @@ const LogoutDialog = () => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => {
+            onClick={async () => {
+              chatMembersIds.forEach(async chatMemberId => {
+                await databases.updateDocument(
+                  appwriteConfig.databaseId,
+                  appwriteConfig.chatMemberCollectionId,
+                  chatMemberId,
+                  {
+                    online: false
+                  }
+                )
+              })
               signOut()
             }}
           >

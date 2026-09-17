@@ -3,9 +3,11 @@ import LeftSidebar from '@/components/shared/app/LeftSidebar'
 import Topbar from '@/components/shared/app/Topbar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAccount } from '@/context/useAccountContext'
+import { useGetAllChatRoomsByUserId, useUser } from '@/lib/queries/queries'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
+import { appwriteConfig, client, databases } from '@/services/appwrite/config'
 import { links } from '@/values'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
 const Outlet = lazy(
@@ -17,13 +19,78 @@ const Outlet = lazy(
 
 const RootLayout = () => {
   const { pathname } = useLocation()
-  const { isAuthenticated } = useAccount()
+  const { isAuthenticated, isLoading } = useAccount()
+  const { data: user } = useUser()
+  const { data: allChatRooms, refetch: refetchChats } =
+    useGetAllChatRoomsByUserId({
+      userId: user?.$id ?? ''
+    })
 
-  return isAuthenticated
+  console.log({
+    allChatRooms: allChatRooms ?? 'All chat Rooms null'
+  })
+  const totalMessagesToRead = useMemo(() => {
+    const allMemberChats = allChatRooms?.flatMap(chatRoom =>
+      chatRoom.members.filter(chat => chat.member.$id === user?.$id)
+    ) ?? []
+
+    return allMemberChats.reduce(
+      (acc, chat) => acc + chat.messages_to_read,
+      0
+    )
+  }, [allChatRooms])
+
+  const ownChatMembersIds = useMemo(
+    () =>
+      allChatRooms?.flatMap(chatRoom =>
+        chatRoom.members.filter(chat => chat.member.$id !== user?.$id)
+      ) ?? [],
+    [allChatRooms]
+  )
+
+  useEffect(() => {
+    ownChatMembersIds.forEach(async chatMemberId => {
+      await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.chatMemberCollectionId,
+        chatMemberId.$id,
+        {
+          online: true
+        }
+      )
+    })
+    const unsubscribeMessagesToRead = client.subscribe(
+      [
+        `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
+      ],
+      response => {
+        console.log({ realTimeResponse: response })
+        if (
+          response.events.includes(
+            'databases.*.collections.*.documents.*.create'
+          ) ||
+          response.events.includes(
+            'databases.*.collections.*.documents.*.update'
+          ) ||
+          response.events.includes(
+            'databases.*.collections.*.documents.*.delete'
+          )
+        ) {
+          refetchChats()
+        }
+      }
+    )
+
+    return () => {
+      unsubscribeMessagesToRead()
+    }
+  }, [])
+
+  return isAuthenticated || !isLoading
     ? (
     <div className='w-full md:flex'>
-      <Topbar />
-      <LeftSidebar />
+      <Topbar totalMessagesToRead={totalMessagesToRead} />
+      <LeftSidebar totalMessagesToRead={totalMessagesToRead} />
       <section
         className={cn('flex flex-1 size-full', {
           'overflow-ellipsis': pathname.startsWith('/profile')

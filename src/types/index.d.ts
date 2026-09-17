@@ -15,11 +15,12 @@ interface UserModel extends Models.Document {
   saves: SaveModel[]
   followings: Following[]
   followers: Followers[]
+  chats: ChatMemberModel[]
 }
 
 interface FollowingFollowersModel extends Models.Document {
-  following: UserModel
-  followed: UserModel
+  following: UserMoodel
+  followed: UserMdel
 }
 
 interface Following extends Models.Document {
@@ -63,11 +64,26 @@ interface Save extends Models.Document {
   user: UserModel
 }
 
+interface ChatMemberModel extends Models.Document {
+  member: UserModel
+  own_messages: MessageModel[]
+  received_messages: MessageModel[]
+  messages_to_read: number
+  chat_room: ChatRoomModel
+  online: boolean
+}
+
 interface MessageModel extends Models.Document {
   body: string
-  isEdited: boolean
-  sender: UserModel['accountId']
-  receivers: Array<UserModel['accountId']>
+  is_edited: boolean
+  author_chat: ChatMemberModel
+  receivers_chat: ChatMemberModel[]
+  related_chat: ChatRoomModel
+}
+
+interface ChatRoomModel extends Models.Document {
+  members: ChatMemberModel[]
+  messages: MessageModel[]
 }
 
 interface UserSession extends Models.User<Models.Preferences> {}

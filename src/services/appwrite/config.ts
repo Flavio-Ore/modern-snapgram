@@ -11,6 +11,8 @@ interface AppwriteConfig {
   readonly followersCollectionId: string
   readonly postsCollectionId: string
   readonly messageCollectionId: string
+  readonly chatMemberCollectionId: string
+  readonly chatRoomCollectionId: string
 }
 export const appwriteConfig: AppwriteConfig = {
   projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
@@ -24,12 +26,16 @@ export const appwriteConfig: AppwriteConfig = {
     .VITE_APPWRITE_DATABASE_COLLECTION_FOLLOWERS_ID,
   postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID,
   messageCollectionId: import.meta.env
-    .VITE_APPWRITE_DATABASE_COLLECTION_MESSAGES_ID
+    .VITE_APPWRITE_DATABASE_COLLECTION_MESSAGE_ID,
+  chatMemberCollectionId: import.meta.env
+    .VITE_APPWRITE_DATABASE_COLLECTION_CHAT_MEMBER_ID,
+  chatRoomCollectionId: import.meta.env
+    .VITE_APPWRITE_DATABASE_COLLECTION_CHAT_ROOM_ID
 }
 
 export const client = new Client()
-client.setProject(appwriteConfig.projectId)
-client.setEndpoint(appwriteConfig.endpoint)
+  .setProject(appwriteConfig.projectId)
+  .setEndpoint(appwriteConfig.endpoint)
 
 export const account = new Account(client)
 export const databases = new Databases(client)
