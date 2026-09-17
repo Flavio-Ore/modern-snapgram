@@ -4,13 +4,16 @@ import SignInForm from './_auth/forms/SigninForm'
 import SignupForm from './_auth/forms/SignupForm'
 import RootLayout from './_root/RootLayout'
 import {
+  Chats,
   CreatePost,
   EditPost,
   Explore,
   Home,
+  NotFound,
   People,
   PostDetails,
   Profile,
+  Reels,
   Saved,
   UpdateProfile
 } from './_root/pages'
@@ -62,18 +65,16 @@ const App = () => {
         <Route element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path='/explore' element={<Explore />} />
-          <Route path='/saved' element={<Saved />}>
-            <Route index element={<SavedPosts />} />
-            <Route path='reels' element={<SavedReels />} />
-            <Route path='collections' element={<SavedCollections />} />
-          </Route>
           <Route path='/all-users' element={<People />} />
+          <Route path='/saved' element={<Saved />} />
+          <Route path='/reels' element={<Reels />} />
+          <Route path='/chats' element={<Chats />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/update-post/:id' element={<EditPost />} />
           <Route path='/posts/:id' element={<PostDetails />} />
           <Route path='/profile/:id/*' element={<Profile />} />
           <Route path='/update-profile/:id' element={<UpdateProfile />} />
-          <Route path='*' element={<h1>Not Found</h1>} />
+          <Route path='*' element={<NotFound />} />
         </Route>
       </Routes>
       <Toaster />

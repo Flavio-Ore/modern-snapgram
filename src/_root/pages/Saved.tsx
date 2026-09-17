@@ -8,11 +8,11 @@ const savedCollections = [
   },
   {
     filter: 'Reels',
-    icon: '/assets/icons/posts.svg'
+    icon: '/assets/icons/reels.svg'
   },
   {
     filter: 'Collections',
-    icon: '/assets/icons/posts.svg'
+    icon: '/assets/icons/collections.svg'
   }
 ]
 
