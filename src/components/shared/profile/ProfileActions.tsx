@@ -1,11 +1,9 @@
 import EditIcon from '@/components/icons/EditIcon'
 import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
-import {
-  useCreateChatRoomFromUsers,
-  useFollow,
-  useUnfollow
-} from '@/states/query/hooks/mutations'
+import { useCreateChatRoomFromUsers } from '@/states/TanStack-query/hooks/mutations/chats/useCreateChatRoomFromUsers'
+import { useFollow } from '@/states/TanStack-query/hooks/mutations/followers/useFollow'
+import { useUnfollow } from '@/states/TanStack-query/hooks/mutations/followers/useUnfollow'
 import { type UserModel } from '@/types'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

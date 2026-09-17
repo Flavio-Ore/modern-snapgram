@@ -14,8 +14,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { PostValidationSchema } from '@/lib/validations/schemas/post.validation.schema'
-import { useCreatePost, useUpdatePost } from '@/states/query/hooks/mutations'
-import { useUser } from '@/states/query/hooks/queries'
+import { useCreatePost } from '@/states/TanStack-query/hooks/mutations/posts/useCreatePost'
+import { useUpdatePost } from '@/states/TanStack-query/hooks/mutations/posts/useUpdatePost'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type FileModelWithUrl, type Post } from '@/types'
 import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,7 +36,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
     useUpdatePost()
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   const { toast } = useToast()
   const navigate = useNavigate()
 

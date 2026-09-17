@@ -1,14 +1,10 @@
 import UserCard from '@/components/shared/users/UserCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useGetTopUsers } from '@/states/query/hooks/queries'
+import { useGetTopUsers } from '@/states/TanStack-query/hooks/queries/users/useGetTopUsers'
 import { E_USERS } from '@/values'
 
 const TopCreators = () => {
-  const {
-    data: topCreators,
-    isLoading,
-    isError
-  } = useGetTopUsers({ limit: 8 })
+  const { data: topCreators, isLoading, isError } = useGetTopUsers({ limit: 8 })
 
   return (
     <ul className='home-creators_grid'>

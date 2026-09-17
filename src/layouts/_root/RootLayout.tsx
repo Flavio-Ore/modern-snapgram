@@ -3,14 +3,10 @@ import { useToast } from '@/components/ui/use-toast'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { appwriteConfig, client } from '@/services/appwrite/config'
 import { useAccount } from '@/states/account/hooks/useAccountContext'
-import {
-  useSetChatMemberOnline,
-  useSignOut
-} from '@/states/query/hooks/mutations'
-import {
-  useGetAllChatRoomsByUserId,
-  useUser
-} from '@/states/query/hooks/queries'
+import { useSetChatMemberOnline } from '@/states/TanStack-query/hooks/mutations/chats/useSetChatMemberOnline'
+import { useSignOut } from '@/states/TanStack-query/hooks/mutations/session/useSignOut'
+import { useGetAllChatRoomsByUserId } from '@/states/TanStack-query/hooks/queries/chats/useGetAllChatRoomsByUserId'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { type MessageModel } from '@/types'
 import { links } from '@/values'
 import { lazy, Suspense, useEffect, useMemo } from 'react'
@@ -35,7 +31,7 @@ const RootLayout = () => {
   const { isPending: isSigninOut } = useSignOut()
   const { pathname } = useLocation()
   const { isAuthenticated } = useAccount()
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   const { mutateAsync: updateStatus } = useSetChatMemberOnline()
   const chatRoomsIds = useMemo(
     () => user?.chats.map(chat => chat.chat_room.$id) ?? [],

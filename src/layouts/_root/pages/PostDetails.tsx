@@ -8,15 +8,16 @@ import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkelet
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { cn, multiFormatDateString } from '@/lib/utils'
-import { useDeletePost } from '@/states/query/hooks/mutations'
-import { useGetPostById, useUser } from '@/states/query/hooks/queries'
+import { useDeletePost } from '@/states/TanStack-query/hooks/mutations/posts/useDeletePost'
+import { useGetPostById } from '@/states/TanStack-query/hooks/queries/posts/useGetPostById'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 const PostDetails = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const { data: user } = useUser()
+  const { data: user } = useSessionUser()
   const { toast } = useToast()
   const {
     data: post,

@@ -3,14 +3,14 @@ import Logo from '@/components/icons/Logo'
 import LogoutDialog from '@/components/shared/app/LogoutDialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
-import { useUser } from '@/states/query/hooks/queries'
+import { useSessionUser } from '@/states/TanStack-query/hooks/queries/session/useSessionUser'
 import { Link, useLocation, useParams } from 'react-router-dom'
 const Topbar = ({
   totalMessagesToRead = 0
 }: {
   totalMessagesToRead?: number
 }) => {
-  const { data: user, isLoading, isError } = useUser()
+  const { data: user, isLoading, isError } = useSessionUser()
   const { id: userIdToChat } = useParams()
   const { pathname } = useLocation()
 

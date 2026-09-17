@@ -1,6 +1,5 @@
 import LoaderIcon from '@/components/icons/LoaderIcon'
 import Logo from '@/components/icons/Logo'
-
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { SignupValidationSchema } from '@/lib/validations/schemas/signup.validation.schema'
 import { useAccount } from '@/states/account/hooks/useAccountContext'
-import { useCreateAccount } from '@/states/query/hooks/mutations'
+import { useCreateAccount } from '@/states/TanStack-query/hooks/mutations/session/useCreateAccount'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'

@@ -1,7 +1,7 @@
 import PostForm from '@/components/forms/PostForm'
 import CreatePostIcon from '@/components/icons/CreatePostIcon'
 import Loader from '@/components/shared/app/Loader'
-import { useGetPostById } from '@/states/query/hooks/queries'
+import { useGetPostById } from '@/states/TanStack-query/hooks/queries/posts/useGetPostById'
 import { E_FORM_ACTIONS } from '@/values'
 import { useParams } from 'react-router-dom'
 
@@ -20,7 +20,11 @@ const EditPost = () => {
           <h2 className='h3-bold md:h2-bold text-left w-full'>Edit Post</h2>
         </div>
         {isLoading && <Loader />}
-        {isError && <h3 className='body-medium text-center text-red-800 animate-pulsing'>Error getting the post</h3>}
+        {isError && (
+          <h3 className='body-medium text-center text-red-800 animate-pulsing'>
+            Error getting the post
+          </h3>
+        )}
         {!isLoading && !isError && post != null && (
           <PostForm action={E_FORM_ACTIONS.UPDATE} post={post} />
         )}
