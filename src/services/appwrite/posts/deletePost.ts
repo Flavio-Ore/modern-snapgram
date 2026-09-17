@@ -1,13 +1,12 @@
 import { appwriteConfig, databases } from '@/services/appwrite/config'
-import {
-  deleteManyFilesByIds
-} from '@/services/appwrite/file'
+
 import { appwriteResponse } from '@/services/appwrite/utils/appwriteResponse'
 import { APPWRITE_RESPONSE_CODES } from '@/services/appwrite/utils/constants/APPWRITE_RESPONSE_CODES'
 import {
   type DeletePostParams
 } from '@/types'
 import { AppwriteException } from 'appwrite'
+import { deleteManyFilesByIds } from '../files/deleteManyFilesByIds'
 
 export async function deletePost ({ postId, filesId }: DeletePostParams) {
   try {

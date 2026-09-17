@@ -1,7 +1,7 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
-import { useGetInfinitePosts } from '@/states/query/hooks/infiniteQueries'
+import { useGetInfinitePosts } from '@/states/TanStack-query/hooks/infinite-queries/posts/useGetInfinitePosts'
 import { useMemo } from 'react'
 
 const ExplorePosts = () => {
