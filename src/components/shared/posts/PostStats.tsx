@@ -66,7 +66,7 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
         {(isLoading || isRefetching || isLiking) && (
           <HeartIcon
             size={20}
-            className='fill-red/50 stroke-red/50 animate-float cursor-not-allowed'
+            className='fill-red-500/50 stroke-red-500/50 animate-float cursor-not-allowed'
           />
         )}
         {!isLoading && !isRefetching && !isLiking && (
@@ -74,13 +74,13 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
             {checkIsLiked(likes, userId)
               ? (
               <HeartIcon
-                className='fill-red stroke-red hover:fill-red/50'
+                className='fill-red-500 stroke-red-500 hover:fill-red-500/50'
                 size={20}
               />
                 )
               : (
               <HeartIcon
-                className='fill-none stroke-primary-500 hover:fill-red/50 hover:stroke-red/50'
+                className='fill-none stroke-primary-500 hover:fill-red-500/50 hover:stroke-red-500/50'
                 size={20}
               />
                 )}

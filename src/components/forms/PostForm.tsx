@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
 import { PostValidationSchema } from '@/lib/validations'
@@ -34,7 +34,7 @@ const PostForm: FC<PostFormProps> = ({ post, action }) => {
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
     useUpdatePost()
-  const { user } = useUserContext()
+  const { user } = useAccount()
   const { toast } = useToast()
   const navigate = useNavigate()
   // 1. Define your form.

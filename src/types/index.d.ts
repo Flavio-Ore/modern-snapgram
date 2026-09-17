@@ -3,13 +3,13 @@ import { type ReactNode } from 'react'
 
 export type EmptyObject = Record<keyof object, never>
 export type ObjectWithKeys = Record<keyof object, unknown>
-export interface IContextType {
+export interface AccountContextType {
   user: IUser
   isLoading: boolean
   setUser: React.Dispatch<React.SetStateAction<IUser>>
   isAuthenticated: boolean
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
-  checkAuthUser: () => Promise<boolean>
+  checkAuth: () => Promise<boolean>
 }
 
 

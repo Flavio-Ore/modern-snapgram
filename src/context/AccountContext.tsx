@@ -1,25 +1,19 @@
-import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/auth.state'
+import { INITIAL_ACCOUNT_STATE, INITIAL_USER } from '@/context/accountState'
 import { api } from '@/services'
-import { type IContextType, type IUser } from '@/types'
+import { type AccountContextType, type IUser } from '@/types'
 import { createContext, type ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export const AuthContext = createContext<IContextType>(INITIAL_AUTH_STATE)
-const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AccountContext = createContext<AccountContextType>(INITIAL_ACCOUNT_STATE)
+const AccountProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser>(INITIAL_USER)
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  const checkAuthUser = async () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const checkAuth = async () => {
     try {
       setIsLoading(true)
       const currentUser = await api.account.user()
-
-      // ✅ Check if user is authenticated
-      // ✅ If user is authenticated, set `isAuthenticated` to true
-      // ✅ If user is not authenticated, set `isAuthenticated` to false
-
       console.log('currentUser CONTEXT :>> ', currentUser)
       if (currentUser != null) {
         const {
@@ -47,10 +41,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true)
         return true
       }
-
+      setIsAuthenticated(false)
       return false
     } catch (error) {
       console.error(error)
+      setIsAuthenticated(false)
       return false
     } finally {
       setIsLoading(false)
@@ -63,20 +58,26 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated,
     setUser,
     setIsAuthenticated,
-    checkAuthUser
+    checkAuth
   }
 
   useEffect(() => {
+    console.log('isAuthenticated :>> ', isAuthenticated)
+    console.log('user :>> ', user)
+    console.log('isLoading :>> ', isLoading)
     if (
-      localStorage.getItem('cookieFallback') === '[]' ||
-      localStorage.getItem('cookieFallback') === null
+      window.localStorage.getItem('cookieFallback') === '[]' ||
+      window.localStorage.getItem('cookieFallback') == null
     ) {
       navigate('/sign-in')
+      setIsAuthenticated(false)
+    } else {
+      setIsAuthenticated(true)
+      checkAuth()
     }
-    checkAuthUser()
   }, [])
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>
 }
 
-export default AuthProvider
+export default AccountProvider

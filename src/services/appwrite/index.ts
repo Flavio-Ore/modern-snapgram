@@ -18,7 +18,7 @@ const appwriteService = {
     create: usersFunctions.createUser,
     findById: usersFunctions.findUserById,
     findAll: usersFunctions.findAllUsers,
-    update: usersFunctions.updateUser,
+    // update: usersFunctions.updateUser,
     findInfinite: usersFunctions.findInfiniteUsers
   },
   account: {
@@ -26,7 +26,8 @@ const appwriteService = {
     create: auth.createUserAccount,
     get: auth.getAccount,
     signIn: auth.signInAccount,
-    signOut: auth.signOutAccount
+    signOut: auth.signOutAccount,
+    anonymousSignIn: auth.anonymousSignIn
   },
   likes: {
     update: likes.updateLikesPost

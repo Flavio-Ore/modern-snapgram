@@ -12,12 +12,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useAuthContext'
-
+import { useAccount } from '@/context/useAccountContext'
 import { useCreateAccount, useSignIn } from '@/lib/queries/mutations'
-import { isObjectEmpty } from '@/lib/utils'
 import { SignupValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { AppwriteException } from 'appwrite'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
@@ -25,11 +24,10 @@ import { type z } from 'zod'
 const SignupForm = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
+  const { checkAuth, isLoading: isSessionLoading } = useAccount()
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateAccount()
-  const { mutateAsync: signInAccount, isPending: isSigningIn } =
-    useSignIn()
+  const { mutateAsync: signInAccount } = useSignIn()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidationSchema>>({
@@ -45,9 +43,15 @@ const SignupForm = () => {
   // 2. Define a submit handler. Create a user
   const handleSignup = async (user: z.infer<typeof SignupValidationSchema>) => {
     try {
-      const newUser = await createUserAccount(user)
-      if (isObjectEmpty(newUser)) {
-        toast({ title: 'Sign up failed. Please try again.' })
+      const createdUser = await createUserAccount(user)
+      console.log({ newUser: createdUser })
+
+      if (createdUser instanceof AppwriteException) {
+        toast({
+          title: 'Something went wrong.',
+          description: createdUser.message ?? 'Please try again later.',
+          variant: 'destructive'
+        })
         return
       }
 
@@ -56,25 +60,29 @@ const SignupForm = () => {
         password: user.password
       })
 
-      if (isObjectEmpty(session)) {
+      if (session instanceof AppwriteException) {
         toast({
           title: 'Something went wrong.',
-          description: 'Please try again.'
+          description: session.message ?? 'Please try again later.',
+          variant: 'destructive'
         })
         navigate('/sign-in')
         return
       }
 
-      const isLoggedIn = await checkAuthUser()
-
+      const isLoggedIn = await checkAuth()
       if (isLoggedIn) {
         form.reset()
         navigate('/')
       } else {
-        toast({ title: 'Login failed. Please try again.' })
+        toast({
+          title: 'Login failed.',
+          description: 'Please try again.',
+          variant: 'destructive'
+        })
       }
     } catch (error) {
-      console.error(error)
+      console.error({ error })
     }
   }
   return (
@@ -165,7 +173,7 @@ const SignupForm = () => {
             )}
           />
           <Button className='shad-button_primary' type='submit'>
-            {isCreatingAccount || isUserLoading ? <LoaderIcon /> : 'Signup'}
+            {isCreatingAccount || isSessionLoading ? <LoaderIcon /> : 'Signup'}
           </Button>
 
           <p className='text-small-regular text-light-2 text-center mt-2'>

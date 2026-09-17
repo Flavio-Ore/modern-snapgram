@@ -1,7 +1,7 @@
 import EditIcon from '@/components/icons/EditIcon'
 import PostStats from '@/components/shared/posts//PostStats'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useAuthContext'
+import { useAccount } from '@/context/useAccountContext'
 import { cn, isObjectEmpty, multiFormatDateString } from '@/lib/utils'
 import { type Post } from '@/types'
 import { type FC } from 'react'
@@ -11,7 +11,7 @@ interface PostCardProps {
   post: Post | null
 }
 const PostCard: FC<PostCardProps> = ({ post }) => {
-  const { user } = useUserContext()
+  const { user } = useAccount()
   if (
     post == null ||
     isObjectEmpty(post?.creator) ||

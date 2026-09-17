@@ -1,7 +1,7 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 
 import { api } from '@/services'
-import { type INewPost, type IUpdatePost, type IUpdateUser } from '@/types'
+import { type INewPost, type IUpdatePost } from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const { account, likes, posts, saves, users } = api
@@ -146,21 +146,22 @@ export const useDeleteSavedPost = () => {
   })
 }
 
-export const useUpdateUser = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (updatedUser: IUpdateUser) =>
-      await users.update({ user: updatedUser }),
-    onSuccess: data => {
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USERS]
-      })
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-      })
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id]
-      })
-    }
-  })
-}
+// todo update user
+// export const useUpdateUser = () => {
+//   const queryClient = useQueryClient()
+//   return useMutation({
+//     mutationFn: async (updatedUser: IUpdateUser) =>
+//       await users.update({ user: updatedUser }),
+//     onSuccess: data => {
+//       void queryClient.invalidateQueries({
+//         queryKey: [QUERY_KEYS.GET_USERS]
+//       })
+//       void queryClient.invalidateQueries({
+//         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+//       })
+//       void queryClient.invalidateQueries({
+//         queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id]
+//       })
+//     }
+//   })
+// }
