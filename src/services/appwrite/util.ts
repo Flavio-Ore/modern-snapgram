@@ -1,5 +1,6 @@
 import { isObjectEmpty } from '@/lib/utils'
 import { appwriteConfig, databases } from '@/services/appwrite/config'
+import { getFilesWithUrlsByIds } from '@/services/appwrite/file'
 import {
   type EmptyObject,
   type ObjectWithKeys,
@@ -7,7 +8,6 @@ import {
   type PostModel
 } from '@/types'
 import { AppwriteException, Query, type Models } from 'appwrite'
-import { getFilesWithUrlsByIds } from './file'
 
 export async function findUserPosts ({ userId }: { userId?: string }) {
   if (userId == null || userId.trim().length === 0) return null

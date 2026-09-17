@@ -9,7 +9,7 @@ import {
 } from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const { auth, likes, posts, saves, users } = appwriteService
+const { auth, likes, posts, saves, users, messages } = appwriteService
 
 export const useCreateAccount = () => {
   return useMutation({
@@ -34,7 +34,7 @@ export const useCreatePost = () => {
   return useMutation({
     mutationFn: async (newPost: NewPostData) => await posts.createPost(newPost),
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       })
     }
@@ -46,18 +46,19 @@ export const useUpdatePost = () => {
     mutationFn: async (updatedPost: UpdatedPostData) =>
       await posts.updatePost(updatedPost),
     onSuccess: success => {
-      if (success?.data != null) {
-        const { data: updatedPost } = success
-        void queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_POST_BY_ID, updatedPost.$id]
-        })
-        void queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_USER_POSTS, updatedPost.creator.$id]
-        })
-        void queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-        })
+      if (success?.data == null) {
+        return
       }
+      const { data: updatedPost } = success
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, updatedPost.$id]
+      })
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_USER_POSTS, updatedPost.creator.$id]
+      })
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+      })
     }
   })
 }
@@ -68,13 +69,13 @@ export const useDeletePost = () => {
     mutationFn: async ({ postId, filesId }: DeletePostParams) =>
       await posts.deletePost({ postId, filesId }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       })
-      void queryClient.invalidateQueries({
+      void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_INFINITE_POSTS]
       })
-      void queryClient.invalidateQueries({
+      void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.SEARCH_POSTS]
       })
     }
@@ -89,16 +90,10 @@ export const useLikePost = () => {
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
       })
       void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-      })
-      void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       })
       // queryClient.invalidateQueries({
       //   queryKey: [QUERY_KEYS.GET_POSTS]
-      // })
-      // void queryClient.invalidateQueries({
-      //   queryKey: [QUERY_KEYS.GET_CURRENT_USER]
       // })
     }
   })
@@ -179,8 +174,21 @@ export const useUpdateUser = () => {
   })
 }
 
+export const useDeleteMessage = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ messageId }: { messageId: string }) =>
+      await messages.deleteMessage({ messageId }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+      })
+    }
+  })
+}
+
 // ============================================================
-// BETA POST QUERIES
+// BETAS
 // ============================================================
 export const useBetaCreatePost = () => {
   const queryClient = useQueryClient()
