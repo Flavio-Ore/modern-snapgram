@@ -12,10 +12,7 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 
-import {
-  useCreateUserAccount,
-  useSignInAccount
-} from '@/lib/queries/queriesAndMutations'
+import { useCreateUserAccount, useSignInAccount } from '@/lib/queries/mutations'
 import { SignupValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'

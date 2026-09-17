@@ -6,11 +6,9 @@ import PostStats from '@/components/shared/PostStats'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
-import {
-  useDeletePost,
-  useGetPostById,
-  useGetUserPosts
-} from '@/lib/queries/queriesAndMutations'
+import { useDeletePost } from '@/lib/queries/mutations'
+
+import { useGetPostById, useGetUserPosts } from '@/lib/queries/queries'
 import { multiFormatDateString } from '@/lib/utils'
 
 const PostDetails = () => {
@@ -149,7 +147,6 @@ const PostDetails = () => {
       )}
 
       <div className='w-full max-w-5xl'>
-        
         <hr className='border w-full border-dark-4/80' />
 
         <h3 className='body-bold md:h3-bold w-full my-10'>

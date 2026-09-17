@@ -1,6 +1,6 @@
 import PostForm from '@/components/forms/PostForm'
 import Loader from '@/components/shared/Loader'
-import { useGetPostById } from '@/lib/queries/queriesAndMutations'
+import { useGetPostById } from '@/lib/queries/queries'
 import { E_FORM_ACTIONS } from '@/values'
 import { useParams } from 'react-router-dom'
 

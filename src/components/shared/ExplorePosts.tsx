@@ -1,36 +1,47 @@
-import { useGetPosts } from '@/lib/queries/queriesAndMutations'
+import { useGetPosts } from '@/lib/queries/queries'
 import { OPERATIONS } from '@/values'
+import { useEffect, useState } from 'react'
 import GridPostList from './GridPostList'
 import InfinitePosts from './InfiniteScroll'
+import Loader from './Loader'
 
-interface ExploreDefaultPostsModel {
-  isSearching: boolean
-  searchValue: string
-  isNothingMoreToShow: boolean
-}
-type ExploreDefaultPostsProps = ExploreDefaultPostsModel
+const ExploreDefaultPosts = () => {
+  // Add a loading state
+  const [loading, setLoading] = useState(true)
+  const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
+    useGetPosts()
+  const lastPosts = data?.pages.reverse()[0] ?? []
+  const noMoreDefaultResults = lastPosts.length === 0
+  console.log('EXPLORE DEFAULT POSTS :>> ', {
+    data,
+    isFetching,
+    isError,
+    isLoading,
+    hasNextPage,
+    noMoreDefaultResults
+  })
 
-const ExploreDefaultPosts: React.FC<ExploreDefaultPostsProps> = ({
-  searchValue,
-  isSearching,
-  isNothingMoreToShow
-}) => {
-  const infinitePostsResponse = useGetPosts()
-  const { data } = infinitePostsResponse
+  // Update loading state when hasNextPage changes
+  useEffect(() => {
+    setLoading(false)
+  }, [hasNextPage])
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <InfinitePosts
-      infinityHookResponse={infinitePostsResponse}
-      isNothingMoreToShow={isNothingMoreToShow}
-      dependencyList={[searchValue]}
-      triggerLoader={isSearching}
-      triggerFetchNextPage={!searchValue}
-      triggerNextPage={!searchValue}
+      data={data}
+      isFetching={isFetching}
+      isLoading={isLoading}
+      isError={isError}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isDataEmpty={noMoreDefaultResults}
     >
-      {data?.pages.map((currentPosts, i) => (
+      {data?.pages.map((postsPage, i) => (
         <GridPostList
-          key={`${currentPosts}-${OPERATIONS.EXPLORE_POSTS}-${i}`}
-          posts={currentPosts.documents}
+          key={`${postsPage[i]}-${OPERATIONS.EXPLORE_POSTS}-${i}`}
+          posts={postsPage}
         />
       ))}
     </InfinitePosts>

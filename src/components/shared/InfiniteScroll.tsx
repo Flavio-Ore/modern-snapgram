@@ -1,19 +1,17 @@
-import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query'
-import { Models } from 'appwrite'
-import { DependencyList, useEffect } from 'react'
+import { InfiniteData } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import Loader from './Loader'
 
 type InfinitePostsProps = {
   children: React.ReactNode
-  infinityHookResponse: UseInfiniteQueryResult<
-    InfiniteData<Models.DocumentList<Models.Document>, unknown>
-  >
-  isNothingMoreToShow: boolean
-  dependencyList?: DependencyList
-  triggerNextPage?: boolean
-  triggerFetchNextPage?: boolean
-  triggerLoader?: boolean
+  isDataEmpty: boolean
+  data: InfiniteData<unknown> | undefined
+  fetchNextPage: () => void
+  isFetching: boolean
+  isLoading: boolean
+  isError: boolean
+  hasNextPage: boolean
 }
 
 /**
@@ -22,7 +20,6 @@ type InfinitePostsProps = {
  * @component
  * @param children - The elements to be rendered for each post.-
  * @param infinityHookResponse - The response from the `useInfiniteQuery` hook.
- * @param notEmptyData - If `true`, the component will render the children elements when there is data available.
  * @param dependencyList - Array of dependencies to trigger the `fetchNextPage` function only when inView is `true` and the dependencies have changed
  * @param triggerLoader  - If `true`, the component will show a loading spinner, regardless of the state of the data fetching.
  * @param triggerFetchNextPage - If `true`, the component will fetch the next page when it comes into view.
@@ -42,41 +39,67 @@ type InfinitePostsProps = {
  */
 const InfinitePosts: React.FC<InfinitePostsProps> = ({
   children,
-  infinityHookResponse,
-  isNothingMoreToShow = false,
-  dependencyList = [],
-  triggerLoader = false,
-  triggerFetchNextPage = true,
-  triggerNextPage = true
+  isDataEmpty,
+  data,
+  fetchNextPage,
+  isFetching,
+  isLoading,
+  isError,
+  hasNextPage
 }) => {
   const { ref, inView } = useInView({
     threshold: 0
   })
-  const { data, fetchNextPage, isFetching, hasNextPage } = infinityHookResponse
+
+  console.log('infinityHookResponse :>> ', {
+    children,
+    data,
+    isDataEmpty,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isLoading,
+    isError
+  })
 
   useEffect(() => {
-    if (inView && !isFetching && triggerFetchNextPage) fetchNextPage()
-  }, [inView, ...dependencyList])
+    if (inView && !isFetching && hasNextPage) fetchNextPage()
+  }, [inView])
 
-  if (triggerLoader || !data) {
-    return <Loader />
-  } else if (data) {
-    return (
-      <>
-        {children}
-        {hasNextPage && triggerNextPage && (
-          <div ref={ref} className='flex flex-center w-full'>
-            <Loader />
-          </div>
-        )}
-      </>
-    )
-  } else if (isNothingMoreToShow)
-    return (
-      <p className='text-light-4 mt-10 text-center w-full'>
-        There is nothing more to show!
-      </p>
-    )
+  return (
+    <>
+      {isLoading && <Loader />}
+      {isError && (
+        <p className='text-light-4 mt-10 text-center w-full'>
+          An error occurred while fetching the data 👮‍♂️👮‍♀️
+        </p>
+      )}
+      {/* If there is no data and the loading spinner is not showing, show a message */}
+      {!isLoading && !isError && isDataEmpty && (
+        <p className='text-light-4 mt-10 text-center w-full'>
+          No posts found 🗑
+        </p>
+      )}
+      {/* If there is data, show the children elements and the loading spinner at the end of the page if there are more pages to load */}
+      {!isLoading && !isError && data && (
+        <>
+          {children}
+          {hasNextPage === true && (
+            <div ref={ref} className='flex flex-center w-full'>
+              <Loader />
+            </div>
+          )}
+          {!isLoading && !isError && hasNextPage === false && (
+            <p className='text-light-4 mt-10 text-center w-full'>
+              There is nothing more to show! 💤
+            </p>
+          )}
+        </>
+      )}
+
+      {/* If there is no more data to show, show a message */}
+    </>
+  )
 }
 
 export default InfinitePosts

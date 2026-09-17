@@ -1,5 +1,5 @@
 import { useUserContext } from '@/context/useUserContext'
-import { useSignOutAccount } from '@/lib/queries/queriesAndMutations'
+import { useSignOutAccount } from '@/lib/queries/mutations'
 import { INavLink } from '@/types'
 import { sidebarLinks } from '@/values'
 import { useEffect } from 'react'

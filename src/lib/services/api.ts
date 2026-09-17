@@ -1,5 +1,5 @@
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
-import { ID, Models, Query } from 'appwrite'
+import { ID, Query } from 'appwrite'
 import { account, appwriteConfig, avatars, databases, storage } from './config'
 
 // ============================================================
@@ -193,19 +193,19 @@ export async function deleteFile (fileId: string) {
 }
 
 // ============================== GET POSTS
-export async function getRecentPosts () {
-  try {
-    const posts = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.postsCollectionId,
-      [Query.orderDesc('$createdAt'), Query.limit(1)]
-    )
-    if (!posts) throw Error
-    return posts
-  } catch (error) {
-    console.error(error)
-  }
-}
+// export async function getRecentPosts () {
+//   try {
+//     const posts = await databases.listDocuments(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.postsCollectionId,
+//       [Query.orderDesc('$createdAt'), Query.limit(1)]
+//     )
+//     if (!posts) throw Error
+//     return posts
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
 
 // ============================== GET USER'S POST
 export async function getUserPosts ({ userId }: { userId?: string }) {
@@ -225,25 +225,33 @@ export async function getUserPosts ({ userId }: { userId?: string }) {
 }
 
 // ============================== LIKE / UNLIKE POST
-export async function likePost (postId: string, likesArray: string[]) {
+export type LikePost = { postId: string; usersLikes: string[] }
+export async function likePost ({ postId, usersLikes }: LikePost) {
   try {
     const updatedPost = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       postId,
       {
-        likes: likesArray
+        likes: usersLikes
       }
     )
     if (!updatedPost) throw Error
     return updatedPost
   } catch (error) {
     console.error(error)
+    return
   }
 }
 
 // ============================== SAVE POST
-export async function savePost (postId: string, userId: string) {
+export async function savePost ({
+  postId,
+  userId
+}: {
+  postId: string
+  userId: string
+}) {
   try {
     const savedPost = await databases.createDocument(
       appwriteConfig.databaseId,
@@ -262,7 +270,10 @@ export async function savePost (postId: string, userId: string) {
 }
 
 // ============================== DELETE SAVED POST
-export async function deleteSavedPost (savedRecordId: string) {
+export type DeleteSavedPost = {
+  savedRecordId: string
+}
+export async function deleteSavedPost ({ savedRecordId }: DeleteSavedPost) {
   try {
     const statusCode = await databases.deleteDocument(
       appwriteConfig.databaseId,
@@ -386,41 +397,39 @@ export async function getInfinitePosts ({
   const query = [...queries, Query.limit(1)]
   if (lastId) query.push(Query.cursorAfter(lastId.toString()))
   try {
-    const posts = await databases.listDocuments(
+    const postsDocumentList = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       query
     )
-    if (!posts) throw Error
-    return posts
+    console.log('posts :>> ', postsDocumentList)
+    if (!postsDocumentList) throw Error
+
+    return postsDocumentList.documents || []
   } catch (error) {
     console.error(error)
-    const emptyPosts: Models.DocumentList<Models.Document> = {
-      total: 0,
-      documents: []
-    }
-    return emptyPosts
+    return []
   }
 }
 
-export async function searchPosts ({ searchTerm }: { searchTerm: string }) {
-  try {
-    const posts = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.postsCollectionId,
-      [Query.search('caption', searchTerm)]
-    )
-    if (!posts) throw Error
-    return posts
-  } catch (error) {
-    console.error(error)
-    const emptyPosts: Models.DocumentList<Models.Document> = {
-      total: 0,
-      documents: []
-    }
-    return emptyPosts
-  }
-}
+// export async function searchPosts ({ searchTerm }: { searchTerm: string }) {
+//   try {
+//     const posts = await databases.listDocuments(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.postsCollectionId,
+//       [Query.search('caption', searchTerm)]
+//     )
+//     if (!posts) throw Error
+//     return posts
+//   } catch (error) {
+//     console.error(error)
+//     const emptyPosts: Models.DocumentList<Models.Document> = {
+//       total: 0,
+//       documents: []
+//     }
+//     return emptyPosts
+//   }
+// }
 
 // ============================================================
 // USERS
