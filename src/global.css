@@ -78,8 +78,8 @@
   .invert-white {
     @apply invert brightness-0 transition;
   }
-  .text-overflow-ellipsis {
-    @apply whitespace-nowrap overflow-hidden overflow-ellipsis;
+  .overflow-ellipsis {
+    @apply whitespace-nowrap overflow-hidden text-ellipsis;
   }
   .flex-center {
     @apply flex justify-center items-center;
@@ -113,7 +113,7 @@
   }
 
   .common-container {
-    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
+    @apply flex flex-col flex-1 items-center gap-10 overflow-y-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
   }
 
   /*! All Users */
@@ -225,7 +225,7 @@
 
   /*! Left Sidebar */
   .leftsidebar {
-    @apply hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px] bg-dark-2;
+    @apply hidden md:flex px-6 py-10 flex-col justify-between max-w-[270px] bg-dark-2;
   }
 
   .leftsidebar-link {
