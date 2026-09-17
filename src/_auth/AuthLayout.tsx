@@ -1,3 +1,4 @@
+import LoaderIcon from '@/components/icons/LoaderIcon'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,11 +10,19 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/components/ui/use-toast'
 import { Label } from '@radix-ui/react-label'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { Navigate } from 'react-router-dom'
+
+const Outlet = lazy(
+  async () =>
+    await import('react-router-dom').then(module => ({
+      default: module.Outlet
+    }))
+)
 
 const AuthLayout = () => {
   const [isEmailClicked, setIsEmailClicked] = useState(false)
@@ -61,15 +70,21 @@ const AuthLayout = () => {
   }, [isLargeScreen])
 
   return (
-    <>
-      {isAuth ? (
-        <Navigate to='/' />
-      ) : (
-        <section className='flex flex-1 items-center justify-center flex-col'>
-          <Outlet />
-          {/* TO TEST THE APP */}
-          {(import.meta.env.DEV || import.meta.env.PROD) && (
-            <Dialog>
+    <> {isAuth
+      ? <Navigate to='/' />
+      : <section className='flex flex-1 items-center justify-center flex-col'>
+          <Suspense
+            fallback={
+              <Skeleton className='common-container animate-pulse-fade-in flex-center backdrop-blur-sm size-full bg-primary-600/5 '>
+                <LoaderIcon />
+              </Skeleton>
+            }
+          >
+            <Outlet />
+        </Suspense>
+        {/* TO TEST THE APP */}
+        {(import.meta.env.DEV || import.meta.env.PROD) && (
+          <Dialog>
               <DialogTrigger
                 asChild
                 className='shad-button_ghost  border mt-2 p-2 cursor-pointer bg-dark-1 text-secondary-500 hover:text-light-1'
@@ -150,10 +165,10 @@ const AuthLayout = () => {
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
-            </Dialog>
-          )}
+          </Dialog>
+        )}
         </section>
-      )}
+      }
       {isLargeScreen && (
         <img
           src='/assets/images/side-img.svg'

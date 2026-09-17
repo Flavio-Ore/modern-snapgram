@@ -1,10 +1,11 @@
+import EditIcon from '@/components/icons/EditIcon'
 import CustomTabs from '@/components/shared/app/CustomTabs'
 import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { useGetUserById } from '@/lib/queries/queries'
-import { PROFILES_TRIGGERS } from '@/values/tabsTriggers'
+import { PROFILES_TRIGGERS } from '@/values/TabsTriggers'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -22,13 +23,8 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({
         to='/update-profile'
         className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
       >
-        <img
-          src='/assets/icons/edit-profile.svg'
-          alt='edit'
-          height={18}
-          width={18}
-          className='invert-primary stroke-secondary-500'
-        />
+        <EditIcon className='size-5 fill-secondary-500' />
+
         Edit Profile
       </Link>
     )}

@@ -46,6 +46,7 @@ export async function createPost (post: INewPost) {
     if (file?.$id == null) throw Error('File not stored')
 
     const fileUrl = await getFilePreview(file.$id)
+    console.log('fileUrl :>> ', fileUrl)
     if (fileUrl === '') {
       await deleteFile(file.$id)
       throw Error('File URL not found')

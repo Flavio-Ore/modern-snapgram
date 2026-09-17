@@ -1,4 +1,5 @@
-import Loader from '@/components/shared/app/Loader'
+import LoaderIcon from '@/components/icons/LoaderIcon'
+import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -11,7 +12,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
-
 import { useSignInAccount } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
 import { SigninValidationSchema } from '@/lib/validations'
@@ -67,7 +67,7 @@ const SigninForm = () => {
   return (
     <Form {...form}>
       <div className='sm:w-420 flex-center flex-col'>
-        <img src='/assets/images/logo.svg' alt='logo' />
+        <Logo />
         <h2 className='h3-bold md:h2-bold pt-5 sm:pt-12'>
           Log in into your account
         </h2>
@@ -115,7 +115,7 @@ const SigninForm = () => {
             )}
           />
           <Button className='shad-button_primary' type='submit'>
-            {isUserLoading ? <Loader /> : 'Sign in'}
+            {isUserLoading ? <LoaderIcon /> : 'Sign in'}
           </Button>
 
           <p className='text-small-regular text-light-2 text-center mt-2'>

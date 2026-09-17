@@ -1,3 +1,4 @@
+import FileUploadIcon from '@/components/icons/FileUploadIcon'
 import { Button } from '@/components/ui/button'
 import { useCallback, useState } from 'react'
 import { type FileWithPath, useDropzone } from 'react-dropzone'
@@ -34,8 +35,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       className='flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer'
     >
       <input {...getInputProps()} className='cursor-pointer' />
-      {(fileUrl != null && fileUrl.trim().length > 0)
-        ? <>
+      {fileUrl != null && fileUrl.trim().length > 0
+        ? (
+        <>
           <div className='flex flex-1 justify-center w-full p-5 lg:p-10'>
             <img
               src={fileUrl}
@@ -45,13 +47,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
           <p className='file_uploader-label'>Click or drag photo to replace</p>
         </>
-        : <div className='file_uploader-box'>
-          <img
-            src='/assets/icons/file-upload.svg'
-            width={96}
-            height={77}
-            alt='file-upload'
-          />
+          )
+        : (
+        <div className='file_uploader-box'>
+          <FileUploadIcon />
           <h3 className='base-medium text-light-2 mb-2 mt-6'>
             Drag photo here
           </h3>
@@ -63,7 +62,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             Select from computer
           </Button>
         </div>
-      }
+          )}
     </div>
   )
 }

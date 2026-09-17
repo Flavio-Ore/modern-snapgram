@@ -1,11 +1,12 @@
-import AuthLayout from '@/_auth/AuthLayout'
-import RootLayout from '@/_root/RootLayout'
 import { Toaster } from '@/components/ui/toaster'
 import '@/global.css'
 import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/values'
 import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import LazyPages from './components/shared/app/LazyPages'
 
+const AuthLayout = lazy(async () => await import('@/_auth/AuthLayout'))
+const RootLayout = lazy(async () => await import('@/_root/RootLayout'))
 const SignInForm = lazy(async () => await import('@/_auth/forms/SigninForm'))
 const SignupForm = lazy(async () => await import('@/_auth/forms/SignupForm'))
 const Home = lazy(async () => await import('@/_root/pages/Home'))
@@ -28,13 +29,25 @@ const App = () => {
     <main className='flex h-dvh'>
       <Routes>
         {/* public routes */}
-        <Route element={<AuthLayout />}>
+        <Route
+          element={
+            <LazyPages>
+              <AuthLayout />
+            </LazyPages>
+          }
+        >
           <Route path={PUBLIC_ROUTES.SIGN_IN} element={<SignInForm />} />
           <Route path={PUBLIC_ROUTES.SIGN_UP} element={<SignupForm />} />
         </Route>
 
         {/* private routes */}
-        <Route element={<RootLayout />}>
+        <Route
+          element={
+            <LazyPages>
+              <RootLayout />
+            </LazyPages>
+          }
+        >
           <Route index element={<Home />} />
           <Route path={PRIVATE_ROUTES.EXPLORE} element={<Explore />} />
           <Route path={PRIVATE_ROUTES.PEOPLE} element={<People />} />

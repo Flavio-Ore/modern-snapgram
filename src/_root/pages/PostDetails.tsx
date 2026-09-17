@@ -7,6 +7,9 @@ import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 import { useDeletePost } from '@/lib/queries/mutations'
 
+import BackIcon from '@/components/icons/BackIcon'
+import DeleteIcon from '@/components/icons/DeleteIcon'
+import EditIcon from '@/components/icons/EditIcon'
 import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
 import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkeleton'
 import { useGetPostById, useGetUserPosts } from '@/lib/queries/queries'
@@ -56,18 +59,17 @@ const PostDetails = () => {
           variant='ghost'
           className='shad-button_ghost'
         >
-          <img
-            src={'/assets/icons/back.svg'}
-            alt='back'
-            width={24}
-            height={24}
-          />
+          <BackIcon className='size-6' />
           <p className='small-medium lg:base-medium'>Back</p>
         </Button>
       </div>
 
       {isLoading && <PostDetailsSkeleton />}
-      {isError && <h3 className='h2-bold text-secondary-500'>Oops... Error loading post!</h3>}
+      {isError && (
+        <h3 className='h2-bold text-secondary-500'>
+          Oops... Error loading post!
+        </h3>
+      )}
       {!isError && !isLoading && post == null && (
         <h3 className='h2-bold'>Post not found</h3>
       )}
@@ -113,12 +115,7 @@ const PostDetails = () => {
                   to={`/update-post/${post.$id}`}
                   className={cn({ hidden: user.id !== post.creator.$id })}
                 >
-                  <img
-                    src={'/assets/icons/edit.svg'}
-                    alt='Edit button'
-                    width={24}
-                    height={24}
-                  />
+                  <EditIcon className='size-6' />
                 </Link>
 
                 <Button
@@ -129,12 +126,7 @@ const PostDetails = () => {
                     user.id !== post.creator.$id && 'hidden'
                   )}
                 >
-                  <img
-                    src={'/assets/icons/delete.svg'}
-                    alt='Delete button'
-                    width={24}
-                    height={24}
-                  />
+                  <DeleteIcon className='size-6' />
                 </Button>
               </div>
             </div>
@@ -170,7 +162,9 @@ const PostDetails = () => {
         </h3>
         {(isLoading || isRelatedLoading) && <GridPostSkeleton />}
         {isRelatedError && (
-          <p className='body-bold text-secondary-500'>Oops... Error loading related posts!</p>
+          <p className='body-bold text-secondary-500'>
+            Oops... Error loading related posts!
+          </p>
         )}
         {!isRelatedLoading &&
           !isRelatedError &&

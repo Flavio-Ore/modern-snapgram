@@ -1,4 +1,6 @@
-import Loader from '@/components/shared/app/Loader'
+import LoaderIcon from '@/components/icons/LoaderIcon'
+import Logo from '@/components/icons/Logo'
+
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -78,7 +80,7 @@ const SignupForm = () => {
   return (
     <Form {...form}>
       <div className='sm:w-420 flex-center flex-col'>
-        <img src='/assets/images/logo.svg' alt='logo' />
+        <Logo />
         <h2 className='h3-bold md:h2-bold pt-5 sm:pt-12'>
           Create a new account
         </h2>
@@ -163,7 +165,7 @@ const SignupForm = () => {
             )}
           />
           <Button className='shad-button_primary' type='submit'>
-            {isCreatingAccount || isUserLoading ? <Loader /> : 'Signup'}
+            {isCreatingAccount || isUserLoading ? <LoaderIcon /> : 'Signup'}
           </Button>
 
           <p className='text-small-regular text-light-2 text-center mt-2'>
