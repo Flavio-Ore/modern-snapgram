@@ -1,9 +1,9 @@
-import CollectionsIcon from '@/components/icons/CollectionsIcon'
+import PeopleIcon from '@/components/icons/PeopleIcon'
 import PostsIcon from '@/components/icons/PostsIcon'
-import ReelsIcon from '@/components/icons/ReelsIcon'
 import { TC, TR } from '@/components/shared/app/CustomTabs'
+import Followers from '@/components/shared/profile/Followers'
+import Followings from '@/components/shared/profile/Followings'
 import ProfileDetails from '@/components/shared/profile/ProfileDetails'
-import { SavedCollections, SavedReels } from '@/components/shared/saves'
 import UserPosts from '@/components/shared/users/UserPosts'
 import { Tabs, TabsList } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
@@ -15,14 +15,14 @@ const ProfileTriggers = [
     Content: UserPosts
   },
   {
-    trigger: 'Reels',
-    Icon: ReelsIcon,
-    Content: SavedReels
+    trigger: 'Followers',
+    Icon: PeopleIcon,
+    Content: Followers
   },
   {
-    trigger: 'Collections',
-    Icon: CollectionsIcon,
-    Content: SavedCollections
+    trigger: 'Following',
+    Icon: PeopleIcon,
+    Content: Followings
   }
 ]
 

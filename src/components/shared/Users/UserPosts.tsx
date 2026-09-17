@@ -29,8 +29,8 @@ const UserPosts = () => {
         !isRelatedError &&
         userPostsResponse != null &&
         userPosts.length === 0 && (
-          <h4 className='h3-bold animate-pulse text-primary-600/80  text-center '>
-            No more posts...
+          <h4 className='h3-bold animate-pulse text-primary-600/80  text-center'>
+            No more posts to show!
           </h4>
       )}
       {!isRelatedLoading && !isRelatedError && userPostsResponse != null && (

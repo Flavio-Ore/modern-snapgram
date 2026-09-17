@@ -13,8 +13,22 @@ interface UserModel extends Models.Document {
   posts: Post[]
   liked: Post[]
   saves: SaveModel[]
+  followings: Following[]
+  followers: Followers[]
 }
 
+interface FollowingFollowersModel extends Models.Document {
+  following: UserModel
+  followed: UserModel
+}
+
+interface Following extends Models.Document {
+  followed: UserModel
+}
+
+interface Followers extends Models.Document {
+  following: UserModel
+}
 interface FileModelWithUrl extends Models.File {
   url: string
 }
@@ -63,7 +77,7 @@ interface MessageAttributes {
 
 interface UserSession extends Models.User<Models.Preferences> {}
 
-
+export type UserStats = Array<{ name: string, value: number }>
 export type EmptyObject = Record<keyof object, never>
 export type ObjectWithKeys = Record<keyof object, unknown>
 export interface AccountContextType {

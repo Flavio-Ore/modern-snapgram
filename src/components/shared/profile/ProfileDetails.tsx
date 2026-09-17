@@ -1,91 +1,42 @@
-import EditIcon from '@/components/icons/EditIcon'
 import LoaderIcon from '@/components/icons/LoaderIcon'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useGetUserById, useUser } from '@/lib/queries/queries'
+import { type UserStats } from '@/types'
 import { useMemo } from 'react'
-import { Link, useParams } from 'react-router-dom'
-
-interface ProfileButtonProps {
-  className?: string
-  idMatch: boolean
-}
-const ProfileButtons = ({ idMatch, className }: ProfileButtonProps) => {
-  const { id } = useParams()
-  return (
-    <div className={className}>
-      {idMatch && (
-        <Link
-          to='/update-profile'
-          className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
-        >
-          <EditIcon className='size-5 fill-secondary-500' />
-          Edit Profile
-        </Link>
-      )}
-      {!idMatch && [
-        <Button
-          key='follow'
-          className='shad-button_primary px-5 py-2.5 hover:bg-primary-600 small-medium'
-        >
-          Follow
-        </Button>,
-        <Button
-          key='message'
-          className='shad-button_ghost bg-light-1 text-dark-1 hover:bg-light-4 small-semibold'
-          asChild
-        >
-          <Link key='message' to={`/chats/${id}`} className=' '>
-            Message
-          </Link>
-        </Button>
-      ]}
-    </div>
-  )
-}
-
-type UserStats = Array<{ name: string, value: number }>
-interface ProfileStatsProps {
-  stats: UserStats
-}
-const ProfileStats = ({ stats }: ProfileStatsProps) => (
-  <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
-    {stats.map(({ name, value }) => (
-      <Button
-        key={name}
-        className='shad-button_ghost small-medium md:body-medium'
-      >
-        <span className='text-primary-500'>{value}</span> {name}
-      </Button>
-    ))}
-  </div>
-)
+import { useParams } from 'react-router-dom'
+import ProfileActions from './ProfileActions'
+import ProfileStats from './ProfileStats'
 
 const ProfileDetails = () => {
   const { id } = useParams()
-  const { data: account, isLoading: isSessionLoading } = useUser()
+  const { data: sessionUser, isLoading: isSessionLoading } = useUser()
   const {
-    data: user,
+    data: profileUser,
     isLoading: isUserLoading,
     isError,
     isFetched
   } = useGetUserById({ userId: id ?? '' })
 
-  const isCurrentUser = useMemo(() => id === account?.$id, [id, account])
-
   const profileStats = useMemo(
     () => ({
-      posts: user?.posts?.length ?? 0,
-      followers: user?.followers?.length ?? 0,
-      following: user?.following?.length ?? 0
+      posts: profileUser?.posts?.length ?? 0,
+      followers: profileUser?.followers?.length ?? 0,
+      following: profileUser?.followings?.length ?? 0
     }),
-    [user]
+    [profileUser]
   )
-  const isLoading = isSessionLoading || isUserLoading
-  const stats: UserStats = Object.keys(profileStats).map(key => ({
-    name: key.charAt(0).toUpperCase() + key.slice(1),
-    value: profileStats[key as keyof typeof profileStats]
-  }))
+  const isLoading = useMemo(
+    () => isUserLoading || isSessionLoading,
+    [isUserLoading, isSessionLoading]
+  )
+  const stats: UserStats = useMemo(
+    () =>
+      Object.keys(profileStats).map(key => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1),
+        value: profileStats[key as keyof typeof profileStats]
+      })),
+    [profileStats]
+  )
   return (
     <div className='profile-inner_container'>
       {isLoading && (
@@ -98,8 +49,8 @@ const ProfileDetails = () => {
       )}
       {!isLoading && !isError && (
         <img
-          src={user?.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
-          alt={user?.name ?? 'Profile Avatar'}
+          src={profileUser?.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
+          alt={profileUser?.name ?? 'Profile Avatar'}
           height={144}
           width={144}
           className='rounded-full aspect-square object-cover'
@@ -115,11 +66,15 @@ const ProfileDetails = () => {
         {!isLoading && !isError && (
           <div className='flex-between flex-col md:flex-row gap-2 xl:gap-0 w-full min-w-0 overflow-ellipsis'>
             <h2 className='body-medium text-center md:text-justify xs:h3-bold w-full lg:h1-semibold overflow-ellipsis'>
-              {user?.name}
+              {profileUser?.name}
             </h2>
-            {isFetched && user != null
+            {isFetched && sessionUser != null && profileUser != null
               ? (
-              <ProfileButtons idMatch={isCurrentUser} className='flex gap-4' />
+              <ProfileActions
+                currentUser={sessionUser}
+                profileUser={profileUser}
+                className='flex gap-4'
+              />
                 )
               : (
               <div className='w-1/2'>
@@ -136,7 +91,7 @@ const ProfileDetails = () => {
         )}
         {!isError && !isLoading && (
           <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3'>
-            @{user?.username ?? 'Not Found'}
+            @{profileUser?.username ?? 'Not Found'}
           </h3>
         )}
 
@@ -154,7 +109,7 @@ const ProfileDetails = () => {
         )}
         {!isError && !isLoading && (
           <p className='base-regular text-light-2 max-w-xl text-pretty'>
-            {user?.bio ?? ''}
+            {profileUser?.bio ?? ''}
           </p>
         )}
       </div>
