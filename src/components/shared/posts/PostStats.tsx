@@ -4,10 +4,10 @@ import {
   useLikePost,
   useSavePost
 } from '@/lib/queries/mutations'
-import { useGetCurrentUser } from '@/lib/queries/queries'
-import { checkIsLiked, isObjectEmpty } from '@/lib/utils'
-import { type Post, type User } from '@/types'
-import { type FC, useEffect, useState } from 'react'
+import { useUser } from '@/lib/queries/queries'
+import { checkIsLiked, doubleNegationStr, isObjectEmpty } from '@/lib/utils'
+import { type Post } from '@/types'
+import { type FC, useEffect, useMemo, useState } from 'react'
 
 interface PostStatsProps {
   post: Post
@@ -16,21 +16,25 @@ interface PostStatsProps {
 const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
   const [likes, setLikes] = useState(() => {
     if (post?.likes == null || isObjectEmpty(post)) return []
-    return post.likes.map((user: User) => user.$id)
+    return post.likes.map(user => user.$id)
   })
   const [isSaved, setIsSaved] = useState(false)
-  const { mutate: likePost } = useLikePost()
+  const { mutate: likePost, isPending: isLikingPost } = useLikePost()
   const { mutate: savePost, isPending: isSavingPost } = useSavePost()
   const { mutate: deleteSavedPost, isPending: isDeletingSavedPost } =
     useDeleteSavedPost()
-  const { data: currentUser } = useGetCurrentUser()
+  const { data: currentUser } = useUser()
   const { $id: postId } = post
-  const savedPostRecord = currentUser?.save?.find(
-    (record: Post) => record.post.$id === postId
-  )
 
+  console.log('currentUser.save :>> ', currentUser)
+  const saveRecord = useMemo(
+    () =>
+      currentUser?.save?.find((record: Post) => record.post.$id === postId)
+        ?.$id,
+    [currentUser]
+  )
   useEffect(() => {
-    setIsSaved(isObjectEmpty(savedPostRecord))
+    setIsSaved(doubleNegationStr(saveRecord))
   }, [])
 
   const handleLikePost = (
@@ -49,37 +53,40 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     e.stopPropagation()
-    if (savedPostRecord?.$id != null && savedPostRecord.$id.trim().length > 0) {
+    if (saveRecord != null && saveRecord.trim().length > 0) {
       setIsSaved(false)
-      deleteSavedPost({ savedRecordId: savedPostRecord.$id })
+      deleteSavedPost({ savedRecordId: saveRecord })
       return
     }
-    savePost({ userId, postId })
     setIsSaved(true)
+    savePost({ postId, userId })
   }
 
   return (
     <div className='flex justify-between item-center z-20'>
       <div className='flex gap-2 mr-5'>
-        <img
-          src={
-            checkIsLiked(likes, userId)
-              ? '/assets/icons/liked.svg'
-              : '/assets/icons/like.svg'
-          }
-          alt='Icon to be displayed when a post is liked'
-          loading='lazy'
-          width={20}
-          height={20}
-          onClick={handleLikePost}
-          className='cursor-pointer'
-        />
+        {isLikingPost && <Loader />}
+        {!isLikingPost && (
+          <img
+            src={
+              checkIsLiked(likes, userId)
+                ? '/assets/icons/liked.svg'
+                : '/assets/icons/like.svg'
+            }
+            alt='Icon to be displayed when a post is liked'
+            loading='lazy'
+            width={20}
+            height={20}
+            onClick={handleLikePost}
+            className='cursor-pointer'
+          />
+        )}
         <p className='small-medium lg:base-medium'>{likes.length}</p>
       </div>
       <div className='flex gap-2'>
-        {isSavingPost || isDeletingSavedPost
-          ? <Loader />
-          : <img
+        {(isSavingPost || isDeletingSavedPost) && <Loader />}
+        {!isSavingPost && !isDeletingSavedPost && (
+          <img
             src={isSaved ? '/assets/icons/saved.svg' : '/assets/icons/save.svg'}
             alt='Icon to be displayed when a post is save'
             loading='lazy'
@@ -88,7 +95,7 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
             onClick={handleSavePost}
             className='cursor-pointer'
           />
-        }
+        )}
       </div>
     </div>
   )

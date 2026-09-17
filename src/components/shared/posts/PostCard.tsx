@@ -30,7 +30,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
   return (
     <div className='post-card'>
       <div className='flex-between'>
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-3 overflow-ellipsis'>
           <Link to={`/profile/${post.$id}`}>
             <img
               src={
@@ -38,11 +38,11 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
                 '/assets/icons/profile-placeholder.svg'
               }
               alt='profile of the owner of the post'
-              className='rounded-full w-12 lg:h-12'
+              className='rounded-full min-w-12 max-w-12 lg:h-12'
             />
           </Link>
           <div className='flex flex-col'>
-            <p className='base-medium lg:body-bold text-light-1'>
+            <p className='base-medium lg:body-bold text-light-1 overflow-ellipsis'>
               {post.creator.name}
             </p>
             <div className='flex-center gap-2 text-light-3'>
@@ -50,7 +50,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
                 {multiFormatDateString(post.$createdAt)}
               </p>
               -
-              <p className='subtle-semibold lg:small-regular'>
+              <p className='subtle-semibold lg:small-regular overflow-ellipsis'>
                 {post.location}
               </p>
             </div>
