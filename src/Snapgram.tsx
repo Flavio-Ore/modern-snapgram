@@ -1,6 +1,9 @@
+import { Skeleton } from '@/components/ui/skeleton'
+import { links } from '@/routes/links'
 import { appwriteConfig, client } from '@/services/config'
 import { type MessageModel } from '@/types'
 import { cn } from '@/utils/cn'
+import { extractFirstRoutePart } from '@/utils/extractFirstRoutePart'
 import { useAuth } from '@auth/hooks/useAuth'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
 import { useSignOut } from '@auth/hooks/useSignOut'
@@ -12,9 +15,6 @@ import Topbar from '@components/Topbar'
 import { useToast } from '@shadcn/use-toast'
 import { Suspense, useEffect, useMemo } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { Skeleton } from './components/ui/skeleton'
-import { links } from './routes/links'
-import { extractFirstRoutePart } from './utils/extractFirstRoutePart'
 
 const Snapgram = () => {
   const { toast } = useToast()

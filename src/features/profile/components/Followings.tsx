@@ -1,5 +1,5 @@
 import InfiniteScroll from '@/components/InfiniteScroll'
-import { useGetInfiniteFollowings } from '@/features/following-followers/hooks/useGetInfiniteFollowings'
+import { useGetInfiniteFollowings } from '@following-followers/hooks/useGetInfiniteFollowings'
 import AllUsersSkeleton from '@users/components/AllUsersSkeleton'
 import UserCard from '@users/components/UserCard'
 import { E_USERS } from '@users/utils/DISPLAY-USERS'

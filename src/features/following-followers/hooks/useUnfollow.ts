@@ -1,6 +1,6 @@
 
-import { deleteFollow } from '@/features/following-followers/services/deleteFollow'
 import { QUERY_KEYS } from '@/states/queryKeys'
+import { deleteFollow } from '@following-followers/services/deleteFollow'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useUnfollow = () => {

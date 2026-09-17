@@ -1,7 +1,7 @@
 import PhoneIcon from '@/components/icons/PhoneIcon'
 import SendIcon from '@/components/icons/SendIcon'
 import VideoIcon from '@/components/icons/VideoIcon'
-import MessagesSkeleton from '@/features/chats/components/skeletons/MessagesSkeleton'
+import MessagesSkeleton from '@chats/components/skeletons/MessagesSkeleton'
 import { Skeleton } from '@shadcn/skeleton'
 
 const ChatSkeleton = () => (

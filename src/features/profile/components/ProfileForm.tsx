@@ -1,9 +1,9 @@
 import LoaderIcon from '@/components/icons/LoaderIcon'
-import { ProfileValidationSchema } from '@/features/profile/schemas/profile.validation.schema'
 import { useSessionUser } from '@auth/hooks/useSessionUser'
 import { useUpdateSessionUser } from '@auth/hooks/useUpdateSessionUser'
 import { zodResolver } from '@hookform/resolvers/zod'
 import AvatarFileUploader from '@profile/components/AvatarFileUploader'
+import { ProfileValidationSchema } from '@profile/schemas/profile.validation.schema'
 import { Button } from '@shadcn/button'
 import {
   Form,
