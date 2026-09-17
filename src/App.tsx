@@ -2,6 +2,7 @@ import LazyPages from '@/components/shared/app/LazyPages'
 import { Toaster } from '@/components/ui/toaster'
 import '@/global.css'
 import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/values'
+import { Analytics } from '@vercel/analytics/react'
 import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -27,6 +28,7 @@ const NotFound = lazy(async () => await import('@/_root/pages/NotFound'))
 const App = () => {
   return (
     <main className='flex h-dvh'>
+      <Analytics />
       <Toaster />
       <Routes>
         {/* public routes */}
