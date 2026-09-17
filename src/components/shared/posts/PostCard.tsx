@@ -13,7 +13,6 @@ interface PostCardProps {
 }
 const PostCard = ({ post }: PostCardProps) => {
   const { data: user } = useUser()
-  console.log('postCard :>> ', post)
   const userId = useMemo(() => user?.$id ?? '', [user])
   if (post == null) {
     return (

@@ -12,7 +12,7 @@ const PreviousFiles = ({
 }) => (
   <div className='flex flex-center flex-col bg-dark-3 rounded-xl border-dotted border-spacing-4 border-secondary-500'>
     <div className='flex-center flex-col p-7 h-36 lg:h-48'>
-      <ImageDownIcon size={60} className='stroke-light-4' />
+      <ImageDownIcon strokeWidth={1.1} size={60} className='stroke-light-4' />
       <h3 className='base-medium text-light-3 mb-2 mt-6'>
         Delete the previous ones!
       </h3>

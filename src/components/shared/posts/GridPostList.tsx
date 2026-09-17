@@ -1,3 +1,4 @@
+import ManyPostIcon from '@/components/icons/ManyPostIcon'
 import PostStats from '@/components/shared/posts/PostStats'
 import { useUser } from '@/lib/queries/queries'
 import { type Post } from '@/types'
@@ -14,12 +15,16 @@ const GridPostList = ({
   showStats = true
 }: GridPostListProps) => {
   const { data: user } = useUser()
-  console.log('posts :>> ', posts)
   return (
     <ul className='grid-container'>
       {posts.map(post => (
-        <li key={post.$id} className='relative'>
-          <Link to={`/posts/${post?.$id}`} className='grid-post_link'>
+        <li key={post.$id} className='relative overflow-hidden'>
+          {post?.files?.length > 1 && (
+            <div className='absolute top-0 right-0 z-10 p-5'>
+              <ManyPostIcon className='size-6' />
+            </div>
+          )}
+          <Link to={`/posts/${post?.$id}`} className='relative grid-post_link overflow-hidden'>
             {post?.files?.length > 0 &&
             post.files[0].mimeType === 'video/mp4'
               ? (
@@ -28,7 +33,7 @@ const GridPostList = ({
                 loop
                 autoPlay
                 muted
-                className='size-full aspect-square object-cover'
+                className='size-full aspect-square object-contain sm:object-cover transition duration-700 hover:object-contain hover:scale-105'
               >
                 <source src={post.files[0].url} type='video/mp4' />
               </video>
@@ -40,7 +45,7 @@ const GridPostList = ({
                 loading='lazy'
                 height={100}
                 width={100}
-                className='size-full aspect-square object-cover'
+                className='size-full aspect-square object-contain sm:object-cover transition duration-700 hover:object-contain hover:scale-105'
               />
                 )}
           </Link>

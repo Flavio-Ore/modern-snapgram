@@ -1,7 +1,8 @@
 import { useId, type SVGProps } from 'react'
 const Logo = (props: SVGProps<SVGSVGElement>) => {
   const id = useId()
-  return <svg
+  return (
+    <svg
       width='171'
       height='36'
       fill='#000'
@@ -12,15 +13,14 @@ const Logo = (props: SVGProps<SVGSVGElement>) => {
       <defs>
         <linearGradient
           id={id}
-          x1='15'
-          y1='3'
-          x2='15'
-          y2='33'
+          x1='5'
+          y1='50'
+          x2='65'
+          y2='50'
           gradientUnits='userSpaceOnUse'
         >
-          <stop stopColor='#877EFF'></stop>
-          <stop offset='0.461' stopColor='#685DFF'></stop>
-          <stop offset='1' stopColor='#3121FF'></stop>
+          <stop stopColor='#ffb620' />
+          <stop offset='.461' stopColor='#3121FF' />
         </linearGradient>
       </defs>
       <path
@@ -34,5 +34,6 @@ const Logo = (props: SVGProps<SVGSVGElement>) => {
         fill='#f2f2f2'
       ></path>
     </svg>
+  )
 }
 export default Logo
