@@ -1,27 +1,17 @@
 import CollectionsIcon from '@/components/icons/CollectionsIcon'
 import PostsIcon from '@/components/icons/PostsIcon'
-import ReelsIcon from '@/components/icons/ReelsIcon'
 import SaveIcon from '@/components/icons/SaveIcon'
 import { TC, TR } from '@/components/shared/app/CustomTabs'
-import {
-  SavedCollections,
-  SavedPosts,
-  SavedReels
-} from '@/components/shared/saves'
+import SavedCollections from '@/components/shared/saves/SavedCollections'
+import SavedPosts from '@/components/shared/saves/SavedPosts'
 import { Tabs, TabsList } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-
 
 export const SavesTabs = [
   {
     trigger: 'Posts',
     Icon: PostsIcon,
     Content: SavedPosts
-  },
-  {
-    trigger: 'Reels',
-    Icon: ReelsIcon,
-    Content: SavedReels
   },
   {
     trigger: 'Collections',

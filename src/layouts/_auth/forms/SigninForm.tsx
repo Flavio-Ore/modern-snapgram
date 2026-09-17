@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { SigninValidationSchema } from '@/lib/validations/signin.validation.schema'
+import { SigninValidationSchema } from '@/lib/validations/schemas/signin.validation.schema'
 import { useAccount } from '@/states/account/hooks/useAccountContext'
 import { useSignIn } from '@/states/query/hooks/mutations'
 import { zodResolver } from '@hookform/resolvers/zod'

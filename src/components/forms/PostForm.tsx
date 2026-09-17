@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { PostValidationSchema } from '@/lib/validations/post.validation.schema'
+import { PostValidationSchema } from '@/lib/validations/schemas/post.validation.schema'
 import { useCreatePost, useUpdatePost } from '@/states/query/hooks/mutations'
 import { useUser } from '@/states/query/hooks/queries'
 import { type FileModelWithUrl, type Post } from '@/types'

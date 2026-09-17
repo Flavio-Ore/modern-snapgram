@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
-import { MessageValidationSchema } from '@/lib/validations/message.validation.schema'
+import { MessageValidationSchema } from '@/lib/validations/schemas/message.validation.schema'
 import { appwriteConfig, client } from '@/services/appwrite/config'
 import { useGetInfiniteMessagesByChatRoomId } from '@/states/query/hooks/infiniteQueries'
 import {

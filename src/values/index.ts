@@ -33,7 +33,6 @@ const ROUTES = {
     EXPLORE: '/explore',
     PEOPLE: '/all-users',
     SAVED: '/saved',
-    REELS: '/reels',
     CHATS: '/chats',
     CHATS_ROOM: '/chats/:chatRoomId',
     CREATE_POST: '/create-post',

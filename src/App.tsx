@@ -18,7 +18,6 @@ const Home = lazy(async () => await import('@/layouts/_root/pages/Home'))
 const Explore = lazy(async () => await import('@/layouts/_root/pages/Explore'))
 const People = lazy(async () => await import('@/layouts/_root/pages/People'))
 const Saved = lazy(async () => await import('@/layouts/_root/pages/Saved'))
-const Reels = lazy(async () => await import('@/layouts/_root/pages/Reels'))
 const Chats = lazy(async () => await import('@/layouts/_root/pages/Chats'))
 const CreatePost = lazy(
   async () => await import('@/layouts/_root/pages/CreatePost')
@@ -67,7 +66,6 @@ const App = () => {
           <Route path={PRIVATE_ROUTES.EXPLORE} element={<Explore />} />
           <Route path={PRIVATE_ROUTES.PEOPLE} element={<People />} />
           <Route path={PRIVATE_ROUTES.SAVED} element={<Saved />} />
-          <Route path={PRIVATE_ROUTES.REELS} element={<Reels />} />
           <Route path={PRIVATE_ROUTES.CHATS} element={<Chats />} />
           <Route path={PRIVATE_ROUTES.CHATS_ROOM} element={<Chats />} />
           <Route path={PRIVATE_ROUTES.CREATE_POST} element={<CreatePost />} />
