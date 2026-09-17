@@ -1,12 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
+import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import {
   getCurrentUser,
   getPostById,
   getUserById,
   getUserPosts,
   getUsers
-} from '../services/api'
-import { QUERY_KEYS } from './queryKeys'
+} from '@/lib/services/api'
+import { useQuery } from '@tanstack/react-query'
 
 export const useGetPostById = ({ postId }: { postId: string }) => {
   return useQuery({

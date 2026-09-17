@@ -1,8 +1,8 @@
+import PostStats from '@/components/shared/posts//PostStats'
 import { useUserContext } from '@/context/useUserContext'
 import { multiFormatDateString } from '@/lib/utils'
 import { Models } from 'appwrite'
 import { Link } from 'react-router-dom'
-import PostStats from './PostStats'
 
 interface PostCardModel {
   post: Models.Document

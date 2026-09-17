@@ -1,3 +1,4 @@
+import Loader from '@/components/shared/app/Loader'
 import {
   FetchNextPageOptions,
   InfiniteData,
@@ -5,7 +6,6 @@ import {
 } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-import Loader from './Loader'
 
 interface InfinitePostsProps {
   children: React.ReactNode
@@ -77,7 +77,7 @@ const InfiniteScroll: React.FC<InfinitePostsProps> = ({
           An error occurred while fetching the data 👮‍♂️👮‍♀️
         </p>
       )}
-      {!isLoading && !isError && isDataEmpty && (
+      {!isLoading && !isError && data && isDataEmpty && (
         <p className='text-light-4 mt-10 text-center w-full'>
           No posts found 🗑
         </p>
