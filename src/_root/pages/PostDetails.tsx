@@ -1,8 +1,8 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import GridPostList from '@/components/shared/GridPostList'
-import Loader from '@/components/shared/Loader'
-import PostStats from '@/components/shared/PostStats'
+import Loader from '@/components/shared/app/Loader'
+import GridPostList from '@/components/shared/posts/GridPostList'
+import PostStats from '@/components/shared/posts/PostStats'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'

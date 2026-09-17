@@ -1,14 +1,18 @@
-import InfinitePosts from '@/components/shared/InfinitePosts'
-import PostCard from '@/components/shared/PostCard'
-import RightSidebar from '@/components/shared/RightSidebar'
+import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
+import PostCard from '@/components/shared/posts/PostCard'
+import RightSidebar from '@/components/shared/Users/RightSidebar'
 import { useGetInfiniteRecentPosts } from '@/lib/queries/infiniteQueries'
+import { useMemo } from 'react'
 
 const HomePosts = () => {
   const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } =
     useGetInfiniteRecentPosts()
-  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
+  const posts = useMemo(
+    () => data?.pages.flatMap(postsPage => postsPage) ?? [],
+    [data]
+  )
   return (
-    <InfinitePosts
+    <InfiniteScroll
       data={data}
       isDataEmpty={posts.length === 0}
       fetchNextPage={fetchNextPage}
@@ -20,7 +24,7 @@ const HomePosts = () => {
       {posts.map(post => (
         <PostCard post={post} key={post.$id} />
       ))}
-    </InfinitePosts>
+    </InfiniteScroll>
   )
 }
 

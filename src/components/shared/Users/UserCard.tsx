@@ -1,4 +1,5 @@
 import { E_USERS } from '@/values'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 const roleClassNames = {
@@ -33,7 +34,7 @@ const UserCard: React.FC<UserCardProps> = ({
   mainFollower,
   role
 }) => {
-  const classes = roleClassNames[role]
+  const classes = useMemo(() => roleClassNames[role], [role])
   return (
     <div className={`user-card ${classes.card}`}>
       <img

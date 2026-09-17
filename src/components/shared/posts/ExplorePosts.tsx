@@ -1,7 +1,6 @@
-import GridPostList from '@/components/shared/GridPostList'
-import InfinitePosts from '@/components/shared/InfinitePosts'
+import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
+import GridPostList from '@/components/shared/posts/GridPostList'
 import { useGetInfinitePosts } from '@/lib/queries/infiniteQueries'
-import { OPERATIONS } from '@/values'
 import { useMemo } from 'react'
 
 const ExplorePosts = () => {
@@ -12,7 +11,7 @@ const ExplorePosts = () => {
     [data]
   )
   return (
-    <InfinitePosts
+    <InfiniteScroll
       data={data}
       isFetching={isFetching}
       isLoading={isLoading}
@@ -21,11 +20,8 @@ const ExplorePosts = () => {
       fetchNextPage={fetchNextPage}
       isDataEmpty={posts.length === 0}
     >
-      <GridPostList
-        key={`${posts[posts.length - 1]}-${OPERATIONS.EXPLORE_POSTS}-$}`}
-        posts={posts}
-      />
-    </InfinitePosts>
+      <GridPostList posts={posts} />
+    </InfiniteScroll>
   )
 }
 

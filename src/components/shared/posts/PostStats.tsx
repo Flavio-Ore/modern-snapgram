@@ -7,7 +7,7 @@ import { useGetCurrentUser } from '@/lib/queries/queries'
 import { checkIsLiked } from '@/lib/utils'
 import { Models } from 'appwrite'
 import { useEffect, useState } from 'react'
-import Loader from './Loader'
+import Loader from '../app/Loader'
 
 interface PostStatsModel {
   post: Models.Document
