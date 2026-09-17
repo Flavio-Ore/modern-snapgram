@@ -2,7 +2,7 @@ import { type INewPost, type IUpdatePost, type Post } from '@/types'
 import { ID, Query } from 'appwrite'
 
 import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
-import { deleteFile, getFilePreview, uploadFile } from '@/lib/services/appwrite/file'
+import { createFile, deleteFile, getFilePreview } from '@/lib/services/appwrite/file'
 import { parseModel } from '@/lib/services/appwrite/util'
 import { isObjectEmpty } from '@/lib/utils'
 
@@ -30,23 +30,23 @@ export async function findInfinitePosts ({
     return postsDocumentList.documents as Post[]
   } catch (error) {
     console.error(error)
-    return null
+    return []
   }
 }
 // ============================== CREATE POST
 export async function createPost (post: INewPost) {
   try {
     let tags
-    const uploadedFile = await uploadFile(post.file[0])
+    const file = await createFile(post.file[0])
 
-    if (uploadedFile?.$id == null && uploadedFile == null) throw Error('File not uploaded')
+    if (file?.$id == null) throw Error('File not stored')
 
-    const fileUrl = await getFilePreview(uploadedFile.$id)
-    if (fileUrl != null && fileUrl.toString() !== '') {
-      await deleteFile(uploadedFile.$id)
-      throw Error('File not found')
+    const fileUrl = await getFilePreview(file.$id)
+    if (fileUrl === '') {
+      await deleteFile(file.$id)
+      throw Error('File URL not found')
     }
-    if (post.tags == null) tags = []
+    if (post?.tags == null) tags = []
     tags = post.tags?.replace(/ /g, '').split(',')
 
     const newPost = await databases.createDocument(
@@ -58,13 +58,13 @@ export async function createPost (post: INewPost) {
         caption: post.caption,
         location: post.location,
         imageUrl: fileUrl,
-        imageId: uploadedFile?.$id,
+        imageId: file.$id,
         tags
       }
     )
     if (isObjectEmpty(newPost)) {
-      await deleteFile(uploadedFile.$id)
-      throw Error('Post not saved, try again')
+      await deleteFile(file.$id)
+      throw Error('Post not created, try again')
     }
     return newPost as Post
   } catch (error) {
@@ -100,7 +100,7 @@ export async function updatePost (post: IUpdatePost) {
 
     if (hasFileToUpdate) {
       // Upload new file to appwrite storage
-      const uploadedFile = await uploadFile(post.file[0])
+      const uploadedFile = await createFile(post.file[0])
 
       if (uploadedFile?.$id == null && uploadedFile == null) {
         throw Error('File not uploaded')
