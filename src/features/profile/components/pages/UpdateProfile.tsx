@@ -1,7 +1,7 @@
 import EditIcon from '@/components/icons/EditIcon'
 import { useAuth } from '@auth/hooks/useAuth'
+import ProfileForm from '@profile/components/ProfileForm'
 import { useToast } from '@shadcn/use-toast'
-import ProfileForm from '@users/profile/components/ProfileForm'
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,10 +21,7 @@ const UpdateProfile = () => {
     refetch()
   }, [])
   useEffect(() => {
-    if (
-      !authentication.isAuthenticated ||
-      authentication.errorCode === 401
-    ) {
+    if (!authentication.isAuthenticated || authentication.errorCode === 401) {
       toast({
         title: 'Session expired',
         description: 'Please sign in again to continue.',
