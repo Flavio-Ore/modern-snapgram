@@ -6,13 +6,13 @@ import { Link } from 'react-router-dom'
 
 const roleClassNames = {
   ALL_USERS: {
-    card: '2xl:max-w-[303px] 2xl:max-h-[319px]',
+    cardSize: '2xl:max-w-[303px] 2xl:max-h-[319px]',
     name: 'body-bold',
     subtitle: 'base-semibold',
     link: 'small-medium w-[110px] h-[38px] py-2.5 px-5'
   },
   TOP_CREATORS: {
-    card: '2xl:max-w-[190px] 2xl:max-h-[190px]',
+    cardSize: '2xl:max-w-[190px] 2xl:max-h-[190px]',
     name: 'base-semibold',
     subtitle: 'small-medium',
     link: 'subtle-semibold py-1.5 px-[18px]'
@@ -38,7 +38,12 @@ const UserCard = ({
 }: UserCardProps) => {
   const classes = useMemo(() => roleClassNames[role], [role])
   return (
-    <div className={cn('user-card transition-[background-color] group hover:bg-dark-2', classes.card)}>
+    <div
+      className={cn(
+        'user-card transition-[background-color] group hover:bg-dark-2',
+        classes.cardSize
+      )}
+    >
       <img
         src={imgUrl}
         alt={name}
@@ -58,7 +63,7 @@ const UserCard = ({
       <Link
         to={profileLink}
         className={cn(
-          'px-5 py-2.5 small-medium flex-center rounded-lg text-center bg-dark-4 group-hover:bg-secondary-500/90 group-hover:text-dark-1',
+          'px-5 py-2.5 small-medium flex-center rounded-lg text-center bg-dark-4 group-hover:bg-secondary-500/90 group-hover:text-dark-1 hover:opacity-80',
           classes.link
         )}
       >

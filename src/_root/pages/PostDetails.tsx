@@ -3,7 +3,7 @@ import DeleteIcon from '@/components/icons/DeleteIcon'
 import EditIcon from '@/components/icons/EditIcon'
 import PostsSlider from '@/components/shared/posts/PostsCarousel'
 import PostStats from '@/components/shared/posts/PostStats'
-import UserPosts from '@/components/shared/posts/UserPosts'
+import RelatedPosts from '@/components/shared/posts/RelatedPosts'
 import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkeleton'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
@@ -30,9 +30,6 @@ const PostDetails = () => {
     [user, post]
   )
   const userId = useMemo(() => user?.$id ?? '', [user])
-  // console.log('user :>> ', user)
-  // console.log('post creator :>> ', post?.creator)
-  // console.log('user.id === post?.creator?.$id :>> ', isCreator)
 
   const handleDeletePost = () => {
     if (!isCreator) return
@@ -49,13 +46,13 @@ const PostDetails = () => {
 
   return (
     <div className='post_details-container'>
-      <div className='hidden md:flex max-w-7xl w-full'>
+      <div className='max-w-7xl w-full'>
         <Button
           onClick={() => {
             navigate(-1)
           }}
           variant='ghost'
-          className='shad-button_ghost group'
+          className='inline-flex gap-x-2'
         >
           <BackIcon className='size-6 group-hover:fill-primary-500/50' />
           <p className='small-medium lg:base-medium'>Back</p>
@@ -109,7 +106,7 @@ const PostDetails = () => {
                 })}
               >
                 <Link to={`/update-post/${post.$id}`}>
-                  <EditIcon className='size-6 hover:fill-primary-500/50' />
+                  <EditIcon className='size-6 hover:fill-light-4' />
                 </Link>
 
                 <Button
@@ -122,7 +119,7 @@ const PostDetails = () => {
               </div>
             </div>
 
-            <hr className='border w-full border-dark-4/80' />
+            <hr className='border w-full border-dark-4' />
 
             <div className='flex flex-col flex-1 w-full small-medium lg:base-regular'>
               <p>{post.caption}</p>
@@ -146,11 +143,14 @@ const PostDetails = () => {
       )}
 
       <div className='w-full max-w-7xl'>
-        <hr className='border w-full border-dark-4/80' />
+        <hr className='border w-full border-dark-4' />
         <h3 className='body-bold md:h3-bold w-full my-10'>
           More Related Posts
         </h3>
-        <UserPosts userId={post?.creator?.$id ?? ''} />
+        <RelatedPosts
+          creatorId={post?.creator.$id ?? ''}
+          currentPostId={post?.$id ?? ''}
+        />
       </div>
     </div>
   )

@@ -16,8 +16,6 @@ const ProfileActions = ({
   profileUser,
   className
 }: ProfileButtonProps) => {
-  console.log('currentUser :>> ', currentUser)
-  console.log('profileUser :>> ', profileUser)
   const [isFollowing, setIsFollowing] = useState(() => {
     return currentUser.followings.some(
       record => record.followed.$id === profileUser.$id
@@ -32,8 +30,6 @@ const ProfileActions = ({
       )?.$id ?? '',
     [currentUser, profileUser]
   )
-
-  console.log({ followRecordId })
 
   const isCurrentUser = useMemo(
     () => currentUser.accountId === profileUser.accountId,

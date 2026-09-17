@@ -184,17 +184,6 @@ export const useCreateMessage = () => {
           queryKey: [QUERY_KEYS.GET_CHAT_USERS]
         })
       }
-      // void queryClient.setQueryData(
-      //   [
-      //     QUERY_KEYS.GET_INFINITE_MESSAGES,
-      //     response?.data?.sender,
-      //     ...(response?.data?.receivers ?? '')
-      //   ],
-      //   (oldData: AppwriteResponse<MessageModel[]>) => {
-      //     console.log('newData', response)
-      //     console.log('oldData', oldData)
-      //   }
-      // )
     }
   })
 }

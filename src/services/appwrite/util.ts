@@ -1,8 +1,3 @@
-import { isObjectEmpty } from '@/lib/utils'
-import {
-  type EmptyObject,
-  type ObjectWithKeys
-} from '@/types'
 import { AppwriteException, type Models } from 'appwrite'
 
 export class AppwriteError extends AppwriteException {
@@ -90,15 +85,6 @@ export const checkValidData = <T>(
       ? dataProperty
       : null
 
-export const parseModel = ({
-  model,
-  errorMsg
-}: {
-  model: ObjectWithKeys | EmptyObject | null | undefined
-  errorMsg: string
-}): never | void => {
-  if (isObjectEmpty(model)) throw Error(errorMsg)
-}
 
 export const tagsToArray = (tagsString: string) =>
   tagsString?.trim()?.replace(/ /g, '').split(',') ?? []
