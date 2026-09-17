@@ -15,12 +15,12 @@ import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { PostValidationSchema } from '@/lib/validations'
-import { E_FORM_ACTIONS } from '@/values'
+import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Models } from 'appwrite'
+import { type Models } from 'appwrite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { z } from 'zod'
+import { type z } from 'zod'
 
 type Actions = keyof typeof E_FORM_ACTIONS
 interface PostFormModel {
@@ -75,7 +75,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
 
     if (!newPost) {
       toast({
-        title: `Creation post failed. Please try again.`
+        title: 'Creation post failed. Please try again.'
       })
     }
     navigate('/')
@@ -164,7 +164,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
           <Button
             type='button'
             className='shad-button_dark_4'
-            onClick={() => navigate(-1)}
+            onClick={() => { navigate(-1) }}
           >
             Cancel
           </Button>
@@ -173,11 +173,13 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
             className='shad-button_primary whitespace-nowrap'
             disabled={isLoadingCreate || isLoadingUpdate}
           >
-            {isLoadingCreate || isLoadingUpdate ? (
+            {isLoadingCreate || isLoadingUpdate
+              ? (
               <Loader />
-            ) : (
+                )
+              : (
               `${action[0].toUpperCase() + action.slice(1)} Post`
-            )}
+                )}
           </Button>
         </div>
       </form>

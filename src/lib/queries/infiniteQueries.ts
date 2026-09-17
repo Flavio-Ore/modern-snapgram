@@ -1,14 +1,19 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import {
-  getInfinitePosts,
-  getInfiniteSaves,
-  getInfiniteUsers,
-  getSavedPosts
-} from '@/lib/services/api'
+import { findInfiniteSaves, findSave } from '@/lib/services/appwrite/savesCol'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { Models, Query } from 'appwrite'
+import { type Models, Query } from 'appwrite'
+import { findInfinitePosts } from '../services/appwrite/posts'
+import { findInfiniteUsers } from '../services/appwrite/users'
+
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 const initialPageParam = ''
+
+const enabledId = (id: string) => {
+  if (id != null && id.trim().length === 0) return false
+  if (id === '') return false
+  return true
+}
 const INFINITY_QUERIES = {
   RECENT_POSTS: [Query.orderDesc('$createdAt')],
   UPDATED_POSTS: [Query.orderDesc('$updatedAt')],
@@ -20,30 +25,30 @@ const INFINITY_QUERIES = {
 }
 
 const nextCursor = (lastPage: Models.Document[]) => {
-  if (!lastPage) return null
+  if (lastPage == null) return null
   if (lastPage.length === 0) return null
   const lastId = lastPage[lastPage.length - 1].$id
-  return lastId || null
+  return lastId
 }
 
 export const useGetInfiniteRecentPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-    queryFn: ({ pageParam }) =>
-      getInfinitePosts({
+    queryFn: async ({ pageParam }) =>
+      await findInfinitePosts({
         lastId: pageParam,
         queries: INFINITY_QUERIES.RECENT_POSTS
       }),
     getNextPageParam: nextCursor,
-    initialPageParam
+    initialPageParam: ''
   })
 }
 
 export function useGetInfinitePosts () {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: ({ pageParam }) =>
-      getInfinitePosts({
+    queryFn: async ({ pageParam }) =>
+      await findInfinitePosts({
         lastId: pageParam,
         queries: INFINITY_QUERIES.UPDATED_POSTS
       }),
@@ -52,16 +57,18 @@ export function useGetInfinitePosts () {
   })
 }
 
-type SearchTerm = { searchTerm: string }
+interface SearchTerm {
+  searchTerm: string
+}
 export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
-    queryFn: ({ pageParam }) =>
-      getInfinitePosts({
+    queryFn: async ({ pageParam }) =>
+      await findInfinitePosts({
         lastId: pageParam,
         queries: INFINITY_QUERIES.searchPosts({ searchTerm })
       }),
-    enabled: !!searchTerm,
+    enabled: enabledId(searchTerm),
     getNextPageParam: nextCursor,
     initialPageParam
   })
@@ -74,8 +81,11 @@ export const useInfiniteSearchPosts = ({ searchTerm }: SearchTerm) => {
 export const useGetInfiniteUsers = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USERS],
-    queryFn: ({ pageParam }) =>
-      getInfiniteUsers({ lastId: pageParam, queries: INFINITY_QUERIES.USERS }),
+    queryFn: async ({ pageParam }) =>
+      await findInfiniteUsers({
+        lastId: pageParam,
+        queries: INFINITY_QUERIES.USERS
+      }),
     getNextPageParam: nextCursor,
     initialPageParam
   })
@@ -89,12 +99,12 @@ export const useGetInfiniteUsers = () => {
 export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
-    queryFn: ({ pageParam }) =>
-      getInfiniteSaves({
+    queryFn: async ({ pageParam }) =>
+      await findInfiniteSaves({
         lastId: pageParam,
         queries: [Query.equal('user', userId)]
       }),
-    enabled: !!userId,
+    enabled: enabledId(userId),
     getNextPageParam: nextCursor,
     initialPageParam
   })
@@ -103,7 +113,7 @@ export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
 export const useSavedPosts = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId + '12'],
-    queryFn: () => getSavedPosts({ userId }),
-    enabled: !!userId
+    queryFn: async () => await findSave({ userId }),
+    enabled: enabledId(userId)
   })
 }

@@ -1,17 +1,29 @@
 import { clsx, type ClassValue } from 'clsx'
+import { type EmptyObject } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
-export function cn (...inputs: ClassValue[]) {
+export function cn (...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 
-export const truncateRoute = (route: string) => {
+export const truncateRoute = (route: string): string => {
+  if (route === '/') return route
   return route.split('/').slice(0, 2).join('/')
 }
 
-export const convertFileToUrl = (file: File) => URL.createObjectURL(file)
+export const isObjectEmpty = (
+  objectName: EmptyObject | object
+): boolean => {
+  return (
+    objectName == null ||
+    (Object.keys(objectName).length === 0 && objectName.constructor === Object)
+  )
+}
 
-export function formatDateString (dateString: string) {
+export const convertFileToUrl = (file: File): string =>
+  URL.createObjectURL(file)
+
+export function formatDateString (dateString: string): string {
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
@@ -57,6 +69,6 @@ export const multiFormatDateString = (timestamp: string = ''): string => {
   }
 }
 
-export const checkIsLiked = (likeList: string[], userId: string) => {
+export const checkIsLiked = (likeList: string[], userId: string): boolean => {
   return likeList.includes(userId)
 }
