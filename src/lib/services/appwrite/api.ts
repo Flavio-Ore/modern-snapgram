@@ -10,13 +10,13 @@ export async function findUserPosts ({
 }) {
   if (userId == null || userId.trim().length === 0) return null
   try {
-    const post = await databases.listDocuments(
+    const post = await databases.listDocuments<Post>(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
       [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
     )
     parseModel({ model: post, errorMsg: 'No posts found' })
-    return post.documents as Post[]
+    return post.documents
   } catch (error) {
     console.error(error)
     return null
