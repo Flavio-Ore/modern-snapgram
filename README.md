@@ -14,9 +14,25 @@
   <h3>Practically a social network 🤯</h4>
 =======
   <img src="https://github.com/user-attachments/assets/ec28b252-d471-420e-a4e8-d297982f0571" alt="snapgram-logo" />
+<<<<<<< HEAD
   <p>My version of the original Snapgram project by <a href="https://github.com/adrianhajdin">Adrian Hajdin</a></p>
 >>>>>>> refs/rewritten/main
+=======
+  <p>My own version of the original <a href="https://github.com/adrianhajdin/social_media_app">Snapgram</a> project by <a href="https://github.com/adrianhajdin">Adrian Hajdin</a></p>
+
+>>>>>>> 17de56d (feat: update README with new features and add type definitions for user and post models)
 </div>
+
+##  Todo: New key Features developed by me
+- [x] Integrated chat
+- [x] Upload up to 10 multimedia contents per post
+- [x] Improved UI with new layouts, components, interactions and animations
+- [x] Online/offline status updated only at login/logout
+- [x] Follow/unfollow users functionality
+- [x] New Software Architecture
+- [ ] Testing: Unit, Integration, End-to-End, Performance
+- [ ] Dockerize the project for easier deployment
+- [ ] Better Appwrite Authentication, email verification
 
 ## Table of Contents 📋
 
@@ -25,10 +41,9 @@
 2. [Database Design](#database-design)
 3. [The design](#the-design)
 4. [The tools](#the-tools)
-5. [Features](#features)
-6. [Local Setup](#local-setup)
-7. [Contacts](#contact)
-8. [Links](#links)
+5. [Local Setup](#local-setup)
+6. [Contacts](#contact)
+7. [Links](#links)
 
 ## <a name="preview">Preview 👀</a>
 
@@ -90,6 +105,7 @@ Originally, the project was built using the following technologies:
 This project uses Backend as a Service (BaaS) for the backend. The BaaS provider used is [Appwrite](https://appwrite.io/).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## <a name="quick-start">🏃🏿Quick Start</a>
 =======
 ## <a name="features">New Features ⭐</a>
@@ -106,6 +122,8 @@ The [original features](https://github.com/adrianhajdin/social_media_app?tab=rea
 
 🤜 **Followers**: You can now follow users and be followed by others.
 
+=======
+>>>>>>> 17de56d (feat: update README with new features and add type definitions for user and post models)
 ## <a name="local-setup">Local Setup 👩‍💻</a>
 >>>>>>> refs/rewritten/main
 
@@ -122,15 +140,8 @@ Make sure you have the following installed on your machine:
 ### Cloning the Repository
 
 ```bash
-<<<<<<< HEAD
 git clone https://github.com/Flavio-Ore/modern-snapgram.git
 cd modern-snapgram
-=======
-# Cloning via HTTPS
-git clone https://github.com/Flavio-Ore/Snapgram-2.git
-# Proyect dir
-cd social_media_app
->>>>>>> refs/rewritten/main
 ```
 
 ### Dependencies
@@ -157,7 +168,6 @@ Create a new file named `.env` in the root of your project and add the following
 > Consider using the [database schema]() to guide you.
 
 ```env
-<<<<<<< HEAD
 VITE_APPWRITE_PROJECT_ID=
 VITE_APPWRITE_ENDPOINT=
 VITE_APPWRITE_DATABASE=
@@ -165,37 +175,19 @@ VITE_APPWRITE_STORAGE_POSTS_FILES=
 VITE_APPWRITE_STORAGE_PROFILE_IMAGES=
 VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID=
 VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID=
-VITE_APPWRITE_DATABASE_COLLECTION_FOLLOWERS_ID=
 VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_MESSAGES_ID=
+VITE_APPWRITE_DATABASE_COLLECTION_FOLLOWERS_ID=
 VITE_APPWRITE_DATABASE_COLLECTION_MESSAGE_ID=
 VITE_APPWRITE_DATABASE_COLLECTION_CHAT_MEMBER_ID=
 VITE_APPWRITE_DATABASE_COLLECTION_CHAT_ROOM_ID=
-=======
-VITE_APPWRITE_PROJECT_ID=""
-VITE_APPWRITE_ENDPOINT=""
-VITE_APPWRITE_DATABASE=""
-VITE_APPWRITE_STORAGE_POSTS_FILES=""
-VITE_APPWRITE_STORAGE_PROFILE_IMAGES=""
-VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_MESSAGES_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_FOLLOWERS_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_MESSAGE_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_CHAT_MEMBER_ID=""
-VITE_APPWRITE_DATABASE_COLLECTION_CHAT_ROOM_ID=""
->>>>>>> refs/rewritten/main
 ```
 
 Replace the placeholder values with your actual Appwrite credentials. You can obtain these credentials by signing up on the [Appwrite website](https://appwrite.io/).
 
 ### Running the Project
 
-<<<<<<< HEAD
-See the commands available using `npm`, `pnpm` or `yarn` run:
-=======
 See the `package.json` file for the available scripts. You can run the project using the following commands:
->>>>>>> refs/rewritten/main
 
 ```json
   "scripts": {
@@ -223,11 +215,15 @@ Use the `"dev"` script to start the development server on your local machine:
 
 Open [http://localhost:5173/](http://localhost:5173/) in your browser to view the project.
 
-## <a name="contact">Contacts 📞</a>
+## <a name="contact">Author & Contact 📞</a>
 
-If there's anything you'd like to add or change, please feel free to open an issue or a pull request. I'd love to hear your feedback and suggestions.
+- **Author**: Flavio Oré
+- **GitHub**: [Flavio-Ore](https://github.com/Flavio-Ore)
+- **LinkedIn**: [Flavio Oré](https://www.linkedin.com/in/flavio-ore/)
+- **Portfolio**: [Gonfolio](https://github.com/Flavio-Ore/gonfolio)
+- **Discord**: `ph4lanx`
 
-Also, you can contact me on discord, here's my user id: **ph4lanx** :)
+If there's anything you'd like to add or change, please feel free to open an issue or a pull request.
 
 ## <a name="links">Links 🔗</a>
 
