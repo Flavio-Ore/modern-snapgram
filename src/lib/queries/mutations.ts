@@ -1,6 +1,6 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 
-import { api } from '@/lib/services'
+import { api } from '@/services'
 import { type INewPost, type IUpdatePost, type IUpdateUser } from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -152,6 +152,9 @@ export const useUpdateUser = () => {
     mutationFn: async (updatedUser: IUpdateUser) =>
       await users.update({ user: updatedUser }),
     onSuccess: data => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USERS]
+      })
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
       })

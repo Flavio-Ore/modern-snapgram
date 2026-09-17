@@ -1,9 +1,9 @@
-import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
-import { parseModel } from '@/lib/services/appwrite/util'
+import { updateAccount } from '@/services/appwrite/auth'
+import { appwriteConfig, databases } from '@/services/appwrite/config'
+import { createFile, deleteFile, getFilePreview } from '@/services/appwrite/file'
+import { parseModel } from '@/services/appwrite/util'
 import { type IUpdateUser, type User } from '@/types'
 import { ID, Query } from 'appwrite'
-import { updateAccount } from './auth'
-import { createFile, deleteFile, getFilePreview } from './file'
 
 export async function createUser (user: {
   accountId: string
@@ -82,7 +82,6 @@ export async function findUserById ({ userId }: { userId: string }) {
     return user
   } catch (error) {
     console.error(error)
-    return null
   }
 }
 

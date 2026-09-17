@@ -1,9 +1,9 @@
 import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
 import GridPostList from '@/components/shared/posts/GridPostList'
-import { useUserContext } from '@/context/useUserContext'
+import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
+import { useUserContext } from '@/context/useAuthContext'
 import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
 import { useMemo } from 'react'
-import GridPostSkeleton from '../skeletons/GridPostSkeleton'
 
 const SavedPosts = () => {
   const { user, isLoading: isUserLoading } = useUserContext()

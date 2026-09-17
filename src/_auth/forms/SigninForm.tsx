@@ -2,16 +2,16 @@ import LoaderIcon from '@/components/icons/LoaderIcon'
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { useSignIn } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
 import { SigninValidationSchema } from '@/lib/validations'
@@ -26,7 +26,6 @@ const SigninForm = () => {
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
   const { mutateAsync: signInAccount } = useSignIn()
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof SigninValidationSchema>>({
     resolver: zodResolver(SigninValidationSchema),
     defaultValues: {
@@ -35,7 +34,6 @@ const SigninForm = () => {
     }
   })
 
-  // 2. Define a submit handler. Create a user
   const handleSignin = async (user: z.infer<typeof SigninValidationSchema>) => {
     try {
       const session = await signInAccount({

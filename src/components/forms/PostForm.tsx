@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
 import { isObjectEmpty } from '@/lib/utils'
 import { PostValidationSchema } from '@/lib/validations'

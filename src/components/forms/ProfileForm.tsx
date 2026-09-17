@@ -1,4 +1,3 @@
-import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -9,11 +8,12 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { useUpdateUser } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { isObjectEmpty } from '@/lib/utils'
+import { cn, isObjectEmpty } from '@/lib/utils'
 import { ProfileValidationSchema } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useState } from 'react'
@@ -51,7 +51,9 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
   return (
     <div
       {...getRootProps()}
-      className='flex-center flex-col cursor-pointer w-full'
+      className={cn('flex-center flex-col cursor-pointer w-full', {
+        'bg-light-1/20': isDragActive
+      })}
     >
       <input {...getInputProps()} type='file' className='cursor-pointer' />
       <div className='flex-start flex-1 gap-4 w-full py-5 lg:py-10'>
@@ -117,13 +119,20 @@ const ProfileForm = () => {
     navigate(`/profile/${user.$id}`)
   }
 
-  if (isLoading) return <Loader />
+  if (isLoading) {
+    return (
+      <div className='flex flex-col gap-9 w-full max-w-5xl'>
+        <Skeleton className='h-4 w-4 rounded-full'/>
+      </div>
+    )
+  }
   if (user == null) return <p>Something went wrong</p>
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-9 w-full max-w-5xl'>
+        className='flex flex-col gap-9 w-full max-w-5xl'
+      >
         <FormField
           control={form.control}
           name='file'
@@ -161,6 +170,7 @@ const ProfileForm = () => {
         <FormField
           control={form.control}
           name='username'
+          disabled
           render={({ field }) => (
             <FormItem>
               <FormLabel className='shad-form_label'>Username</FormLabel>
@@ -182,6 +192,7 @@ const ProfileForm = () => {
         <FormField
           control={form.control}
           name='email'
+          disabled
           render={({ field }) => (
             <FormItem>
               <FormLabel className='shad-form_label'>Email</FormLabel>

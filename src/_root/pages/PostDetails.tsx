@@ -4,7 +4,7 @@ import GridPostList from '@/components/shared/posts/GridPostList'
 import PostStats from '@/components/shared/posts/PostStats'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { useDeletePost } from '@/lib/queries/mutations'
 
 import BackIcon from '@/components/icons/BackIcon'

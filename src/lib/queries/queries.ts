@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { api } from '@/lib/services'
+import { api } from '@/services'
 import { useQuery } from '@tanstack/react-query'
 const { account, findUserPosts, posts, users, saves } = api
 

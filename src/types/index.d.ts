@@ -12,11 +12,6 @@ export interface IContextType {
   checkAuthUser: () => Promise<boolean>
 }
 
-export interface INavLink {
-  Icon: ReactNode
-  route: string
-  label: string
-}
 
 export interface IUpdateUser {
   userId: string
@@ -54,7 +49,7 @@ export interface IUser {
   bio: string
   posts: Post[]
   liked: Post[]
-  save: Post[]
+  save: Save[]
 }
 
 export interface INewUser {
@@ -64,10 +59,11 @@ export interface INewUser {
   password: string
 }
 
+
 export interface TabsTriggers {
   trigger: string
   Icon: ReactNode
-  Element: ReactNode
+  Content: ReactNode
 }
 
 interface User extends Models.Document {
@@ -82,7 +78,6 @@ interface User extends Models.Document {
   liked: Post[]
   save: Save[]
 }
-
 
 interface Post extends Models.Document {
   caption: string

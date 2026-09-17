@@ -1,5 +1,5 @@
 import PostStats from '@/components/shared/posts/PostStats'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { type Post } from '@/types'
 import { type FC } from 'react'
 import { Link } from 'react-router-dom'
