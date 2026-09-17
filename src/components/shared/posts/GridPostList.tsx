@@ -1,22 +1,20 @@
 import PostStats from '@/components/shared/posts/PostStats'
-import { useAccount } from '@/context/useAccountContext'
+import { useUser } from '@/lib/queries/queries'
 import { type Post } from '@/types'
-import { type FC } from 'react'
 import { Link } from 'react-router-dom'
 
-interface GridPostListModel {
+interface GridPostListProps {
   posts: Post[]
   showUser?: boolean
   showStats?: boolean
 }
-type GridPostListProps = GridPostListModel
-const GridPostList: FC<GridPostListProps> = ({
+const GridPostList = ({
   posts,
   showUser = true,
   showStats = true
-}) => {
-  const { user } = useAccount()
-  const key = posts.map(posts => posts?.$id).toString()
+}: GridPostListProps) => {
+  const { data: user } = useUser()
+  const key = posts.map(posts => posts.$id).toString()
   console.log('key :>> ', key)
   console.log('posts :>> ', posts)
   return (
@@ -49,7 +47,7 @@ const GridPostList: FC<GridPostListProps> = ({
                 <p className='lime-clamp-1'>{post?.creator?.name}</p>
               </div>
             )}
-            {showStats && <PostStats post={post} userId={user.id} />}
+            {showStats && <PostStats post={post} userId={user?.data?.$id ?? ''} />}
           </div>
         </li>
       ))}

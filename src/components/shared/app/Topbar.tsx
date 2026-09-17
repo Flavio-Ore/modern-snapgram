@@ -4,12 +4,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useAccount } from '@/context/useAccountContext'
 import { useSignOut } from '@/lib/queries/mutations'
+import { useUser } from '@/lib/queries/queries'
 import { LogOutIcon } from 'lucide-react'
 const Topbar = () => {
   const navigate = useNavigate()
-  const { user, isLoading } = useAccount()
+  const { data: user, isLoading, isError } = useUser()
   const { mutate: signOut, isSuccess } = useSignOut()
 
   const handleLogOut = () => {
@@ -36,10 +36,11 @@ const Topbar = () => {
             <LogOutIcon size={24} className='stroke-red-500 w-full' />
           </Button>
           {isLoading && <Skeleton className='min-w-8 min-h-8 rounded-full' />}
-          {!isLoading && user != null && (
-            <Link to={`/profile/${user.id}`} className='flex-center gap-3'>
+          {isError && <Skeleton className='min-w-8 min-h-8 rounded-full bg-red-500/40' />}
+          {!isLoading && user?.data != null && (
+            <Link to={`/profile/${user.data.$id}`} className='flex-center gap-3'>
               <img
-                src={user.imageUrl}
+                src={user.data.imageUrl}
                 alt='profile'
                 height={32}
                 width={32}
