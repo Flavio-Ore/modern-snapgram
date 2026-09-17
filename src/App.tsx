@@ -4,7 +4,7 @@ import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/routes/routes'
 import { Toaster } from '@shadcn/toaster'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 const Auth = lazy(async () => await import('@auth/Auth'))
 const Snapgram = lazy(async () => await import('@/Snapgram'))
@@ -38,9 +38,8 @@ const App = () => {
       <ReactQueryDevtools />
       <Toaster />
       <Routes>
-        <Route path='/' element={<Navigate to={PRIVATE_ROUTES.HOME} />} />
         <Route element={<Auth />}>
-          <Route index path={PUBLIC_ROUTES.SIGN_IN} element={<SignInForm />} />
+          <Route path={PUBLIC_ROUTES.SIGN_IN} element={<SignInForm />} />
           <Route path={PUBLIC_ROUTES.SIGN_UP} element={<SignupForm />} />
         </Route>
         <Route element={<AuthGuard />}>

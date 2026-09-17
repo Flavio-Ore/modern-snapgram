@@ -6,7 +6,10 @@ import { APPWRITE_RESPONSE_CODES } from '@/services/utils/constants/APPWRITE_RES
 import { AppwriteException } from 'appwrite'
 
 export async function isAuthenticated () {
-  if (window.localStorage.getItem('cookieFallback') === '[]' || window.localStorage.getItem('cookieFallback') == null) {
+  console.log({
+    localStorage: window.localStorage.getItem('cookieFallback')
+  })
+  if (window.localStorage.getItem('cookieFallback') == null) {
     return appwriteResponse({
       data: false,
       code: APPWRITE_RESPONSE_CODES.OK.code,
@@ -16,9 +19,9 @@ export async function isAuthenticated () {
   }
 
   try {
-    await account.getSession('current')
+    const session = await account.get()
     return appwriteResponse({
-      data: true,
+      data: session != null,
       code: APPWRITE_RESPONSE_CODES.OK.code,
       message: 'session retrieved successfully',
       status: APPWRITE_RESPONSE_CODES.OK.status

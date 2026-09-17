@@ -81,7 +81,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           navigate(`/posts/${post.$id}.`)
           return
         }
-        navigate('/')
+        navigate('/home')
         return
       }
 
@@ -99,7 +99,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
             description: createPostResponse?.message ?? 'Please try again.'
           })
         } else {
-          navigate('/')
+          navigate('/home')
         }
       }
     } catch (error) {

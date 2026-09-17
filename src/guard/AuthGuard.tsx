@@ -1,15 +1,16 @@
-import { PUBLIC_ROUTES } from '@/routes/routes'
 import { useAuth } from '@auth/hooks/useAuth'
-import { useMemo } from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 
 const AuthGuard = () => {
-  const { data: isAuthenticated } = useAuth()
-  const isAuth = useMemo(
-    () => isAuthenticated?.data ?? false,
-    [isAuthenticated]
-  )
-  return isAuth ? <Outlet /> : <Navigate to={PUBLIC_ROUTES.SIGN_IN} />
+  const navigate = useNavigate()
+  const { data: isAuth } = useAuth()
+  useEffect(() => {
+    if (isAuth?.data == null) return
+    if (isAuth.data) navigate('/home')
+    else navigate('/sign-in')
+  }, [isAuth])
+  return <Outlet />
 }
 
 export default AuthGuard

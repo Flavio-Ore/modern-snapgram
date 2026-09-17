@@ -45,7 +45,7 @@ const SigninForm = () => {
         })
         navigate('/sign-in')
       } else {
-        navigate('/')
+        navigate('/home')
       }
     } catch (error) {
       console.error(error)

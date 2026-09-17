@@ -6,7 +6,7 @@ const ROUTES = {
     SIGN_UP: '/sign-up'
   },
   PRIVATE_ROUTES: {
-    HOME: '/',
+    HOME: '/home',
     EXPLORE: '/explore',
     PEOPLE: '/all-users',
     SAVED: '/saved',

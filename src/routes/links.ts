@@ -9,7 +9,7 @@ export const links = {
   sidebar: [
     {
       Icon: HomeIcon,
-      route: '/',
+      route: '/home',
       label: 'Home'
     },
     {
@@ -41,7 +41,7 @@ export const links = {
   bottom: [
     {
       Icon: HomeIcon,
-      route: '/',
+      route: '/home',
       label: 'Home'
     },
     {
