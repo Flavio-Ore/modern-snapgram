@@ -1,12 +1,12 @@
 import { appwriteConfig, databases, storage } from '@/services/appwrite/config'
+import { deleteFile } from '@/services/appwrite/file'
 import {
   APPWRITE_ERROR_TYPES,
   APPWRITE_RESPONSE_CODES,
   appwriteResponse
 } from '@/services/appwrite/util'
-import { type IUpdateUser, type User } from '@/types'
+import { type UserModel, type UserUpdateData } from '@/types'
 import { AppwriteException, ID, Query } from 'appwrite'
-import { deleteFile } from './file'
 
 export async function createUser (user: {
   accountId: string
@@ -16,14 +16,14 @@ export async function createUser (user: {
   username: string
 }) {
   try {
-    return await databases.createDocument<User>(
+    return await databases.createDocument<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
       user
     )
   } catch (e) {
-    console.error({ error: e })
+    console.error({ e })
     if (e instanceof AppwriteException) {
       return appwriteResponse({
         data: null,
@@ -48,7 +48,7 @@ export async function findInfiniteUsers ({
     query.push(Query.cursorAfter(lastId.toString()))
   }
   try {
-    const users = await databases.listDocuments<User>(
+    const users = await databases.listDocuments<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       query
@@ -78,7 +78,7 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
   const queries = [Query.orderDesc('$createdAt')]
   if (limit != null && limit > 0) queries.push(Query.limit(limit))
   try {
-    const users = await databases.listDocuments<User>(
+    const users = await databases.listDocuments<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       queries
@@ -106,7 +106,7 @@ export async function findAllUsers ({ limit }: { limit?: number }) {
 // ============================== GET USER BY ID
 export async function findUserById ({ userId }: { userId: string }) {
   try {
-    const user = await databases.getDocument<User>(
+    const user = await databases.getDocument<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       userId
@@ -132,7 +132,7 @@ export async function findUserById ({ userId }: { userId: string }) {
 }
 
 // ============================== UPDATE USER
-export async function updateUser ({ user }: { user: IUpdateUser }) {
+export async function updateUser ({ user }: { user: UserUpdateData }) {
   try {
     let newImage = {
       url: user.imageUrl,
@@ -142,14 +142,11 @@ export async function updateUser ({ user }: { user: IUpdateUser }) {
     console.log({ user })
     if (hasFile !== false) {
       const file = await storage.createFile(
-        appwriteConfig.storageId,
+        appwriteConfig.profileStorageId,
         ID.unique(),
         hasFile
       )
-      const fileUrl = storage.getFilePreview(
-        appwriteConfig.storageId,
-        file.$id
-      )
+      const fileUrl = storage.getFilePreview(appwriteConfig.profileStorageId, file.$id)
 
       if (fileUrl == null) {
         await deleteFile(file.$id)
@@ -162,7 +159,7 @@ export async function updateUser ({ user }: { user: IUpdateUser }) {
       }
     }
 
-    const updatedUser = await databases.updateDocument<User>(
+    const updatedUser = await databases.updateDocument<UserModel>(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       user.userId,
