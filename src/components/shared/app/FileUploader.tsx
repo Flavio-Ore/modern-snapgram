@@ -120,7 +120,7 @@ const FileUploader = ({ fieldChange, fileLimit = 10 }: FileUploaderProps) => {
         <p className='text-red-400/60 small-regular mb-6'>
           JPG is accepted but JPEG is not!
         </p>
-        <Button type='button' className='shad-button_dark_4 hover:bg-dark-2'>
+        <Button type='button' variant='ghost' className='shad-button_dark_4 hover:bg-dark-2'>
           Select from computer
         </Button>
       </div>

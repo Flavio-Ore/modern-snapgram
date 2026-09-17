@@ -1,6 +1,14 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 
-import { appwriteService } from '@/services'
+import {
+  auth,
+  follows,
+  likes,
+  messages,
+  posts,
+  saves,
+  users
+} from '@/services/appwrite'
 import {
   type DeletePostParams,
   type NewPostData,
@@ -8,8 +16,6 @@ import {
   type UserUpdateData
 } from '@/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-const { auth, likes, posts, saves, users, messages, follows } = appwriteService
 
 export const useCreateAccount = () => {
   return useMutation({
@@ -160,6 +166,54 @@ export const useUpdateUser = () => {
   })
 }
 
+export const useCreateMessage = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      body,
+      sender,
+      receivers
+    }: Parameters<typeof messages.createMessage>[0]) =>
+      await messages.createMessage({ body, sender, receivers }),
+    onSuccess: response => {
+      if (response != null) {
+        void queryClient.refetchQueries({
+          queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+        })
+        void queryClient.refetchQueries({
+          queryKey: [QUERY_KEYS.GET_CHAT_USERS]
+        })
+      }
+      // void queryClient.setQueryData(
+      //   [
+      //     QUERY_KEYS.GET_INFINITE_MESSAGES,
+      //     response?.data?.sender,
+      //     ...(response?.data?.receivers ?? '')
+      //   ],
+      //   (oldData: AppwriteResponse<MessageModel[]>) => {
+      //     console.log('newData', response)
+      //     console.log('oldData', oldData)
+      //   }
+      // )
+    }
+  })
+}
+
+export const useEditMessage = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      messageId,
+      newBody
+    }: Parameters<typeof messages.editMessage>[0]) =>
+      await messages.editMessage({ messageId, newBody }),
+    onSuccess: () => {
+      void queryClient.refetchQueries({
+        queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
+      })
+    }
+  })
+}
 export const useDeleteMessage = () => {
   const queryClient = useQueryClient()
   return useMutation({
@@ -168,7 +222,7 @@ export const useDeleteMessage = () => {
     }: Parameters<typeof messages.deleteMessage>[0]) =>
       await messages.deleteMessage({ messageId }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      void queryClient.refetchQueries({
         queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES]
       })
     }
@@ -213,21 +267,6 @@ export const useUnfollow = () => {
           queryKey: [QUERY_KEYS.GET_USER_BY_ID]
         })
       }
-    }
-  })
-}
-// ============================================================
-// BETAS
-// ============================================================
-export const useBetaCreatePost = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (newPost: NewPostData) =>
-      await posts.betaCreatePost(newPost),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_INFINITE_RECENT_POSTS]
-      })
     }
   })
 }

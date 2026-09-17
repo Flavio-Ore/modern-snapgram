@@ -3,6 +3,7 @@ export const QUERY_KEYS = {
   GET_CURRENT_USER: 'getUser',
   GET_USER_BY_ID: 'findUserById',
   GET_TOP_CREATORS: 'findAllUsers',
+  GET_CHAT_USERS: 'findChatUsers',
 
   // INFINITE USER KEYS
   GET_INFINITE_USERS: 'findInfiniteUsers',
