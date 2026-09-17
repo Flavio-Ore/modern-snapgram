@@ -83,7 +83,7 @@ const InfinitePosts: React.FC<InfinitePostsProps> = ({
         <>
           {children}
           {hasNextPage === true && (
-            <div ref={ref} className='flex flex-center w-full'>
+            <div ref={ref} className='flex mt-10 flex-center w-full'>
               <Loader />
             </div>
           )}

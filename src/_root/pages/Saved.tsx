@@ -1,6 +1,51 @@
-import { SavedCollections, SavedReels } from '@/App'
+import GridPostList from '@/components/shared/GridPostList'
+import InfinitePosts from '@/components/shared/InfinitePosts'
+import Loader from '@/components/shared/Loader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useUserContext } from '@/context/useUserContext'
+import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
+import { useMemo } from 'react'
 
+export const SavedPosts = () => <h1 className='h1-bold w-full'>Saved</h1>
+export const SavedReels = () => {
+  const { user } = useUserContext()
+  const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } =
+    useGetInfiniteSavedPosts({ userId: user.id })
+  const posts = useMemo(
+    () =>
+      data?.pages.flatMap(savesPage =>
+        savesPage.flatMap(saved => saved.post)
+      ) ?? [],
+    [data]
+  )
+  if (!user)
+    return (
+      <div className='flex-center w-full h-full'>
+        <Loader />
+      </div>
+    )
+  return (
+    <InfinitePosts
+      data={data}
+      isLoading={isLoading}
+      isError={isError}
+      isDataEmpty={posts.length === 0}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isFetching={isFetching}
+    >
+      <GridPostList
+        key={`${posts}-SAVED_REELS-%&`}
+        posts={posts}
+        showStats={false}
+        showUser={false}
+      />
+    </InfinitePosts>
+  )
+}
+export const SavedCollections = () => (
+  <h1 className='h1-bold'>Saved Collections</h1>
+)
 const savedCollections = [
   {
     filter: 'Posts',
@@ -45,9 +90,9 @@ const Saved = () => {
       <div className='flex flex-1 w-full'>
         <Tabs
           defaultValue={savedCollections[0].filter}
-          className='flex flex-col xs:gap-8 xs:items-start gap-20 w-full'
+          className='flex flex-col xxs:gap-8 gap-16 w-full'
         >
-          <TabsList className='grid grid-flow-row xs:flex place-items-center w-full max-w-lg gap-1 xs:gap-0'>
+          <TabsList className='grid grid-flow-row xxs:flex-center w-full max-w-lg gap-1 xs:gap-0'>
             {savedCollections.map(({ filter, icon }, index) => (
               <TabsTrigger
                 key={filter + icon}

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { useUserContext } from '@/context/useUserContext'
 import { useSignOutAccount } from '@/lib/queries/mutations'
 import { INavLink } from '@/types'
@@ -10,7 +11,6 @@ import {
   useNavigate,
   useParams
 } from 'react-router-dom'
-import { Button } from '../ui/button'
 
 const truncateRoute = (route: string) => {
   return route.split('/').slice(0, 2).join('/')
@@ -41,7 +41,7 @@ const LeftSidebar = () => {
         <Link
           to={`/profile/${user.id}`}
           className={`relative flex gap-3 items-center ${
-            profileId === user.id
+            profileId === user.id || pathname === '/update-profile'
               ? 'before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full relative'
               : ''
           }`}

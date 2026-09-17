@@ -55,3 +55,38 @@ export type INewUser = {
   username: string
   password: string
 }
+
+type User =
+  | {
+      name: string
+      username: string
+      accountId: string
+      email: string
+      bio?: string
+      imageId?: string
+      imageUrl: string
+      $id: string
+      $createdAt: string
+      $updatedAt: string
+      $permissions: string[]
+      posts: Post[]
+      liked: Post[]
+      save: Post[]
+    }
+  | undefined
+
+export type Post =
+  | {
+      caption: string
+      tags: string[]
+      imageUrl: string
+      imageId: string
+      location: string
+      $id: string
+      $createdAt: string
+      $updatedAt: string
+      $permissions: string[]
+      likes: User[]
+      save: User[]
+    }
+  | undefined
