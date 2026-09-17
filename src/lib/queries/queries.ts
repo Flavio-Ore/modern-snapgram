@@ -19,7 +19,7 @@ export const useGetPostById = ({ postId }: { postId: string }) => {
 export const useGetUserPosts = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
-    queryFn: () => getUserPosts({ userId }),
+    queryFn: async () => await getUserPosts({ userId }),
     enabled: !!userId
   })
 }

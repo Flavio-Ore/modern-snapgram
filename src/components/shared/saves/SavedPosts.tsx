@@ -3,9 +3,9 @@ import Loader from '@/components/shared/app/Loader'
 import GridPostList from '@/components/shared/posts/GridPostList'
 import { useUserContext } from '@/context/useUserContext'
 import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
-import { useMemo } from 'react'
+import { type FC, useMemo } from 'react'
 
-const SavedPosts = () => {
+const SavedPosts: FC = () => {
   const { user } = useUserContext()
   const { data, isError, isLoading, isFetching, hasNextPage, fetchNextPage } =
     useGetInfiniteSavedPosts({ userId: user.id })
@@ -16,12 +16,13 @@ const SavedPosts = () => {
       ) ?? [],
     [data]
   )
-  if (!user)
+  if (user == null) {
     return (
       <div className='flex-center w-full h-full'>
         <Loader />
       </div>
     )
+  }
   return (
     <InfiniteScroll
       data={data}
