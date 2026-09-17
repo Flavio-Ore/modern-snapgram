@@ -11,10 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/components/ui/use-toast'
-import { useAccount } from '@/states/account/hooks/useAccountContext'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
 const Outlet = lazy(
   async () =>
     await import('react-router-dom').then(module => ({
@@ -29,7 +27,6 @@ const AuthSkeleton = () => (
 )
 
 const AuthLayout = () => {
-  const { isAuthenticated } = useAccount()
   const [isEmailClicked, setIsEmailClicked] = useState(false)
   const [isPasswordClicked, setIsPasswordClicked] = useState(false)
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280)
@@ -78,11 +75,7 @@ const AuthLayout = () => {
     }
   }, [isLargeScreen])
 
-  return isAuthenticated
-    ? (
-    <Navigate to={'/'} />
-      )
-    : (
+  return (
     <>
       <section className='flex flex-1 items-center justify-center flex-col'>
         <Suspense fallback={<AuthSkeleton />}>
@@ -168,7 +161,7 @@ const AuthLayout = () => {
         />
       )}
     </>
-      )
+  )
 }
 
 export default AuthLayout

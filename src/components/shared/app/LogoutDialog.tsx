@@ -10,7 +10,11 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { useSetChatMemberOnline, useSignOut } from '@/states/query/hooks/mutations'
+import { useToast } from '@/components/ui/use-toast'
+import {
+  useSetChatMemberOnline,
+  useSignOut
+} from '@/states/query/hooks/mutations'
 import { useGetAllMemberChats, useUser } from '@/states/query/hooks/queries'
 import { LucideLogOut } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
@@ -18,6 +22,7 @@ import { useNavigate } from 'react-router-dom'
 
 const LogoutDialog = () => {
   const { data: user } = useUser()
+  const { toast } = useToast()
   const { data: ownMembers } = useGetAllMemberChats({
     userId: user?.$id ?? ''
   })
@@ -30,6 +35,11 @@ const LogoutDialog = () => {
     [ownMembers]
   )
   const handleLogout = async () => {
+    toast({
+      title: 'Logging out...',
+      description: 'Please wait while we log you out.',
+      variant: 'default'
+    })
     await updateStatus({
       chatIds: chatMembersIds,
       online: false
@@ -39,6 +49,7 @@ const LogoutDialog = () => {
   useEffect(() => {
     if (isSuccess) navigate(0)
   }, [isSuccess])
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
