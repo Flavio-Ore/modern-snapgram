@@ -1,7 +1,7 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { api } from '@/services'
+import { appwriteService } from '@/services'
 import { useQuery } from '@tanstack/react-query'
-const { account, findUserPosts, posts, users, saves } = api
+const { auth, utils, posts, users, saves } = appwriteService
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
@@ -11,7 +11,7 @@ const enabledId = (id: string) => {
 export const useGetPostById = ({ postId }: { postId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
-    queryFn: async () => await posts.findById(postId),
+    queryFn: async () => await posts.findPostById(postId),
     enabled: enabledId(postId)
   })
 }
@@ -19,7 +19,7 @@ export const useGetPostById = ({ postId }: { postId: string }) => {
 export const useGetUserPosts = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
-    queryFn: async () => await findUserPosts({ userId }),
+    queryFn: async () => await utils.findUserPosts({ userId }),
     enabled: enabledId(userId)
   })
 }
@@ -27,7 +27,7 @@ export const useGetUserPosts = ({ userId }: { userId: string }) => {
 export const useGetSavedRecord = ({ recordId }: { recordId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_RECORD, recordId],
-    queryFn: async () => await saves.findById({ savedRecordId: recordId }),
+    queryFn: async () => await saves.findSaveRecordById({ savedRecordId: recordId }),
     enabled: enabledId(recordId)
   })
 }
@@ -39,21 +39,21 @@ export const useGetSavedRecord = ({ recordId }: { recordId: string }) => {
 export const useUser = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
-    queryFn: account.user
+    queryFn: auth.getUser
   })
 }
 
 export const useGetUsers = ({ limit }: { limit?: number }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_TOP_CREATORS, limit],
-    queryFn: async () => await users.findAll({ limit })
+    queryFn: async () => await users.findAllUsers({ limit })
   })
 }
 
 export const useGetUserById = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
-    queryFn: async () => await users.findById({ userId }),
+    queryFn: async () => await users.findUserById({ userId }),
     enabled: enabledId(userId)
   })
 }

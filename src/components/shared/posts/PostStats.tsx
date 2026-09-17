@@ -10,13 +10,13 @@ import { useUser } from '@/lib/queries/queries'
 import { checkIsLiked, isObjectEmpty } from '@/lib/utils'
 import { type Post } from '@/types'
 import { BookmarkIcon, HeartIcon } from 'lucide-react'
-import { type FC, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface PostStatsProps {
   post: Post
   userId: string
 }
-const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
+const PostStats = ({ post, userId }: PostStatsProps) => {
   const [likes, setLikes] = useState(() => {
     if (post?.likes == null || isObjectEmpty(post)) return []
     return post.likes.map(user => user.$id)
@@ -28,8 +28,13 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
   const { data: currentUser, isLoading, isRefetching } = useUser()
   const { $id: postId } = post
   const saveRecordId = useMemo(
-    () =>
-      currentUser?.save?.find(record => record.post.$id === postId)?.$id ?? '',
+    () => {
+      if (currentUser?.data?.saves == null) return ''
+      const saveRecord = currentUser.data.saves.find(
+        record => record.postId === postId
+      )
+      return saveRecord?.$id ?? ''
+    },
     [currentUser]
   )
   useEffect(() => {

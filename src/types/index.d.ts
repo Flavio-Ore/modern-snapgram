@@ -4,9 +4,7 @@ import { type ReactNode } from 'react'
 export type EmptyObject = Record<keyof object, never>
 export type ObjectWithKeys = Record<keyof object, unknown>
 export interface AccountContextType {
-  user: IUser
   isLoading: boolean
-  setUser: React.Dispatch<React.SetStateAction<IUser>>
   isAuthenticated: boolean
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
   checkAuth: () => Promise<boolean>
@@ -46,6 +44,7 @@ export interface IUser {
   username: string
   email: string
   imageUrl: string
+  imageId: string
   bio: string
   posts: Post[]
   liked: Post[]
@@ -76,7 +75,7 @@ interface User extends Models.Document {
   imageUrl: string
   posts: Post[]
   liked: Post[]
-  save: Save[]
+  saves: Save[]
 }
 
 interface Post extends Models.Document {

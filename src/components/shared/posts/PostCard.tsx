@@ -1,17 +1,22 @@
 import EditIcon from '@/components/icons/EditIcon'
 import PostStats from '@/components/shared/posts//PostStats'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useAccount } from '@/context/useAccountContext'
+import { useUser } from '@/lib/queries/queries'
 import { cn, isObjectEmpty, multiFormatDateString } from '@/lib/utils'
+import { checkValidData } from '@/services/appwrite/util'
 import { type Post } from '@/types'
-import { type FC } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 interface PostCardProps {
   post: Post | null
 }
-const PostCard: FC<PostCardProps> = ({ post }) => {
-  const { user } = useAccount()
+const PostCard = ({ post }: PostCardProps) => {
+  const { data: user } = useUser()
+  const userId = useMemo(
+    () => checkValidData(user?.data, user?.data?.$id) ?? '',
+    [user]
+  )
   if (
     post == null ||
     isObjectEmpty(post?.creator) ||
@@ -61,10 +66,10 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
         <Link
           to={`/update-post/${post.$id}`}
           className={cn({
-            hidden: user?.id !== post.creator.$id
+            hidden: userId !== post.creator.$id
           })}
         >
-          <EditIcon className='size-5 hover:fill-secondary-500'/>
+          <EditIcon className='size-5 hover:fill-secondary-500' />
         </Link>
       </div>
       <Link to={`/posts/${post.$id}`}>
@@ -84,7 +89,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
           className='post-card_img'
         />
       </Link>
-      <PostStats post={post} userId={user.id} />
+      <PostStats post={post} userId={userId} />
     </div>
   )
 }

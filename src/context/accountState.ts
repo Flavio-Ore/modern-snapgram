@@ -4,6 +4,7 @@ export const INITIAL_USER = {
   email: '',
   username: '',
   imageUrl: '',
+  imageId: '',
   bio: '',
   posts: [],
   liked: [],
@@ -11,6 +12,7 @@ export const INITIAL_USER = {
 }
 
 export const INITIAL_ACCOUNT_STATE = {
+  id: '',
   user: INITIAL_USER,
   isLoading: false,
   isAuthenticated: false,

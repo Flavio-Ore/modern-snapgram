@@ -6,7 +6,7 @@ import { useGetInfiniteSavedPosts } from '@/lib/queries/infiniteQueries'
 import { useMemo } from 'react'
 
 const SavedPosts = () => {
-  const { user, isLoading: isUserLoading } = useAccount()
+  const { id, isLoading: isUserLoading } = useAccount()
   const {
     data,
     isError,
@@ -14,12 +14,12 @@ const SavedPosts = () => {
     isFetching,
     hasNextPage,
     fetchNextPage
-  } = useGetInfiniteSavedPosts({ userId: user.id })
+  } = useGetInfiniteSavedPosts({ userId: id })
 
   const posts = useMemo(
     () =>
       data?.pages.flatMap(savesPage =>
-        savesPage?.flatMap(saves => saves.post)
+        savesPage?.data?.flatMap(saves => saves.post) ?? []
       ) ?? [],
     [data]
   )

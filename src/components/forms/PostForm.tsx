@@ -12,13 +12,13 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { useAccount } from '@/context/useAccountContext'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
+import { useUser } from '@/lib/queries/queries'
 import { isObjectEmpty } from '@/lib/utils'
 import { PostValidationSchema } from '@/lib/validations'
 import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Models } from 'appwrite'
+import { AppwriteException, type Models } from 'appwrite'
 import { type FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -34,7 +34,7 @@ const PostForm: FC<PostFormProps> = ({ post, action }) => {
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
     useUpdatePost()
-  const { user } = useAccount()
+  const { data: user } = useUser()
   const { toast } = useToast()
   const navigate = useNavigate()
   // 1. Define your form.
@@ -73,10 +73,10 @@ const PostForm: FC<PostFormProps> = ({ post, action }) => {
         return
       }
 
-      if (post == null && action === 'CREATE') {
+      if (post == null && user != null && !(user instanceof AppwriteException) && action === 'CREATE') {
         const newPost = await createPost({
           ...value,
-          userId: user.id
+          userId: user.$id
         })
 
         if (isObjectEmpty(newPost)) {
