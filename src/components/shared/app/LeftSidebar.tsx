@@ -1,13 +1,11 @@
 import Logo from '@/components/icons/Logo'
 import LogoSmall from '@/components/icons/LogoSmall'
 import LogoutDialog from '@/components/shared/app/LogoutDialog'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUpdateUser } from '@/lib/queries/mutations'
-import { useUser } from '@/lib/queries/queries'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
+import { useUpdateUser } from '@/states/query/hooks/mutations'
+import { useUser } from '@/states/query/hooks/queries'
 import { links } from '@/values'
-import { SettingsIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
 
@@ -103,9 +101,7 @@ const LeftSidebar = ({
                     />
                     {route.includes('/chats') && (
                       <div className='absolute text-dark-1 subtle-regular bg-secondary-500 size-4 text-center pb-4 rounded-sm shadow-[0px_0px_6px_0.5px_#FFB620] shadow-secondary-500 -top-2 -right-2.5'>
-                        {
-                          totalMessagesToRead
-                        }
+                        {totalMessagesToRead}
                       </div>
                     )}
                   </div>
@@ -128,7 +124,7 @@ const LeftSidebar = ({
       </div>
       <div className='flex flex-col gap-2 mt-12'>
         <LogoutDialog />
-        <Button
+        {/* <Button
           variant='ghost'
           className='flex gap-x-3 w-full justify-center xl:justify-start items-center p-0 xl:px-4 hover:bg-primary-600'
         >
@@ -140,7 +136,7 @@ const LeftSidebar = ({
           <span className='hidden xl:inline group-hover:text-secondary-500 small-regular'>
             Settings
           </span>
-        </Button>
+        </Button> */}
       </div>
     </nav>
   )

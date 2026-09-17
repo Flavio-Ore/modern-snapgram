@@ -10,8 +10,8 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { useSetChatMemberOnline, useSignOut } from '@/lib/queries/mutations'
-import { useGetAllMemberChats, useUser } from '@/lib/queries/queries'
+import { useSetChatMemberOnline, useSignOut } from '@/states/query/hooks/mutations'
+import { useGetAllMemberChats, useUser } from '@/states/query/hooks/queries'
 import { LucideLogOut } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
