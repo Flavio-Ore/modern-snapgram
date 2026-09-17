@@ -1,14 +1,13 @@
-import { isObjectEmpty } from '@/lib/utils'
-import type { INewUser, User } from '@/types'
+import { account, appwriteConfig, avatars, databases } from '@/lib/services/appwrite/config'
+import { createUser } from '@/lib/services/appwrite/users'
+import { parseModel } from '@/lib/services/appwrite/util'
+import type { INewUser, User, UserSession } from '@/types'
 import { ID, type Models, Query } from 'appwrite'
-import { saveUserToDB } from './api'
-import { account, appwriteConfig, avatars, databases } from './config'
-import { parseModel } from './util'
 
 // ============================================================
 // AUTH
 // ============================================================
-export async function createUserAccount (user: INewUser): Promise<User> {
+export async function createUserAccount (user: INewUser) {
   try {
     const newAccount = await account.create(
       ID.unique(),
@@ -16,9 +15,9 @@ export async function createUserAccount (user: INewUser): Promise<User> {
       user.password,
       user.name
     )
-    if (isObjectEmpty(newAccount)) throw Error('Account not created')
+    parseModel({ model: newAccount, errorMsg: 'Account not created' })
     const avatarUrl = avatars.getInitials(user.name)
-    const newUser = await saveUserToDB({
+    const newUser = await createUser({
       accountId: newAccount.$id,
       name: newAccount.name,
       email: newAccount.email,
@@ -29,7 +28,7 @@ export async function createUserAccount (user: INewUser): Promise<User> {
     return newUser
   } catch (error) {
     console.error(error)
-    return {}
+    return null
   }
 }
 
@@ -48,20 +47,18 @@ export async function signInAccount (user: {
 }
 
 // ============================== GET ACCOUNT
-export async function getAccount (): Promise<
-Models.User<Models.Preferences> | undefined
-> {
+export async function getAccount () {
   try {
     const currentAccount = await account.get()
-    if (!currentAccount) throw Error('An error occurred')
-    return currentAccount
+    parseModel({ model: currentAccount, errorMsg: 'An error ocurred' })
+    return currentAccount as UserSession
   } catch (error) {
     console.error(error)
   }
 }
 
 // ============================== SIGN OUT
-export async function signOutAccount (): Promise<void> {
+export async function signOutAccount () {
   try {
     await account.deleteSession('current')
   } catch (error) {
@@ -70,19 +67,20 @@ export async function signOutAccount (): Promise<void> {
 }
 
 // ============================== GET USER
-export async function getCurrentSessionUser (): Promise<User | undefined> {
+export async function getCurrentSessionUser () {
   try {
     const currentAccount = await getAccount()
-    if (isObjectEmpty(currentAccount)) throw Error('An error occurred')
+    parseModel({ model: currentAccount, errorMsg: 'An error occurred' })
     const currentUser = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
-      [Query.equal('accountId', currentAccount.$id)]
+      [Query.equal('accountId', currentAccount?.$id ?? '')]
     )
-    if (isObjectEmpty(currentAccount)) throw Error('An error occurred')
+    parseModel({ model: currentUser, errorMsg: 'An error occurred' })
     console.log('currentUser :>> ', currentUser.documents[0])
-    return currentUser.documents[0]
+    return currentUser.documents[0] as User
   } catch (error) {
     console.error(error)
+    return null
   }
 }

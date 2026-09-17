@@ -1,6 +1,5 @@
 import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/constants'
 import { getCurrentSessionUser } from '@/lib/services/appwrite/auth'
-import { isObjectEmpty } from '@/lib/utils'
 import { type IContextType, type IUser } from '@/types'
 import { createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -22,7 +21,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // ✅ If user is not authenticated, set `isAuthenticated` to false
 
       console.log('currentUser CONTEXT :>> ', currentUser)
-      if (!isObjectEmpty(currentUser)) {
+      if (currentUser != null) {
         const { $id, name, email, username, imageUrl, bio } = currentUser
         setUser({ id: $id, name, email, username, imageUrl, bio })
         setIsAuthenticated(true)

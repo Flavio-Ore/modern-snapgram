@@ -1,10 +1,9 @@
-import { ID, type Models } from 'appwrite'
-import { type EmptyObject } from 'react-hook-form'
-import { appwriteConfig, storage } from './config'
+import { appwriteConfig, storage } from '@/lib/services/appwrite/config'
+import { ID } from 'appwrite'
 
 export async function uploadFile (
   file: File
-): Promise<Models.File | EmptyObject> {
+) {
   try {
     const newFile = await storage.createFile(
       appwriteConfig.storageId,
@@ -14,12 +13,11 @@ export async function uploadFile (
     return newFile
   } catch (error) {
     console.error(error)
-    return {}
   }
 }
 
 // ============================== GET FILE URL
-export async function getFilePreview (fileId: string): Promise<URL | ''> {
+export async function getFilePreview (fileId: string) {
   try {
     const fileUrl = storage.getFilePreview(
       appwriteConfig.storageId,
@@ -33,12 +31,12 @@ export async function getFilePreview (fileId: string): Promise<URL | ''> {
     return fileUrl
   } catch (error) {
     console.error(error)
-    return ''
+    return null
   }
 }
 
 // ============================== DELETE FILE
-export async function deleteFile (fileId: string): Promise<{ status: string }> {
+export async function deleteFile (fileId: string) {
   try {
     await storage.deleteFile(appwriteConfig.storageId, fileId)
     return {

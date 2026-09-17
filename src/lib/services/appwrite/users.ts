@@ -1,7 +1,29 @@
+import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
+import { parseModel } from '@/lib/services/appwrite/util'
 import { type IUpdateUser, type User } from '@/types'
-import { Models, Query } from 'appwrite'
-import { appwriteConfig, databases } from './config'
-import { parseModel } from './util'
+import { ID, Query } from 'appwrite'
+
+export async function createUser (user: {
+  accountId: string
+  email: string
+  name: string
+  imageUrl: URL
+  username?: string
+}) {
+  try {
+    const newUser = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      ID.unique(),
+      user
+    )
+    parseModel({ model: newUser, errorMsg: 'User not saved, try again' })
+    return newUser
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
 
 export async function findInfiniteUsers ({
   lastId = '',
@@ -9,7 +31,7 @@ export async function findInfiniteUsers ({
 }: {
   lastId: string
   queries: string[]
-}): Promise<Models.Document[]> {
+}) {
   const query = [...queries, Query.limit(2)]
   if (lastId != null && lastId !== '') {
     query.push(Query.cursorAfter(lastId.toString()))
@@ -30,7 +52,7 @@ export async function findInfiniteUsers ({
 }
 
 // ============================== GET USERS
-export async function findAllUsers ({ limit }: { limit?: number }): Promise<User[]> {
+export async function findAllUsers ({ limit }: { limit?: number }) {
   const queries = [Query.orderDesc('$createdAt')]
   if (limit != null && limit > 0) queries.push(Query.limit(limit))
   try {
@@ -49,7 +71,7 @@ export async function findAllUsers ({ limit }: { limit?: number }): Promise<User
 }
 
 // ============================== GET USER BY ID
-export async function findUserById ({ userId }: { userId: string }): Promise<User> {
+export async function findUserById ({ userId }: { userId: string }) {
   try {
     const user = await databases.getDocument(
       appwriteConfig.databaseId,
@@ -58,15 +80,14 @@ export async function findUserById ({ userId }: { userId: string }): Promise<Use
     )
     parseModel({ model: user, errorMsg: 'User not found' })
     console.log('user :>> ', user)
-    return user
+    return user as User
   } catch (error) {
     console.error(error)
-    return {}
   }
 }
 
 // ============================== UPDATE USER
-export async function updateUser ({ user }: { user: IUpdateUser }): Promise<User> {
+export async function updateUser ({ user }: { user: IUpdateUser }) {
   try {
     const updatedUser = await databases.updateDocument(
       appwriteConfig.databaseId,
@@ -83,6 +104,5 @@ export async function updateUser ({ user }: { user: IUpdateUser }): Promise<User
     return updatedUser
   } catch (error) {
     console.error(error)
-    return {}
   }
 }

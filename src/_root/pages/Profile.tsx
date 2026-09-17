@@ -2,7 +2,6 @@ import CustomTabs from '@/components/shared/app/CustomTabs'
 import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import { useGetCurrentUser, useGetUserById } from '@/lib/queries/queries'
-import { type User } from '@/types'
 import { PROFILES_TRIGGERS } from '@/values'
 import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -13,7 +12,8 @@ interface ProfileButtonProps {
 const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
   <div className='flex-start gap-1'>
     {idMatch
-      ? <Link
+      ? (
+      <Link
         to='/update-profile'
         className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
       >
@@ -26,8 +26,9 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
         />
         Edit Profile
       </Link>
-
-      : <>
+        )
+      : (
+      <>
         <Button className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'>
           <p className='small-medium'>Follow</p>
         </Button>
@@ -35,14 +36,13 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
           <p className='small-semibold'>Message</p>
         </Button>
       </>
-    }
+        )}
   </div>
 )
 
 type UserStats = Array<{ name: string, value: number }>
 interface ProfileStatsProps {
   stats: UserStats
-
 }
 const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
   <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
@@ -74,8 +74,8 @@ const ProfileInnerContainer = () => {
 
   const isLoading = isSessionLoading && isUserLoading
   const isError = isSessionError && isUserError
-  const realUser: User | undefined = useMemo(
-    () => (id === sessionUser?.$id ? sessionUser : user),
+  const realUser = useMemo(
+    () => (id === sessionUser?.$id ? sessionUser ?? null : user ?? null),
     [sessionUser, user, id]
   )
   const profileStats = useMemo(
@@ -116,12 +116,14 @@ const ProfileInnerContainer = () => {
               {realUser.name}
             </h2>
             {isSessionFetched && isUserFetched && sessionUser != null
-              ? <ProfileButtons idMatch={id === sessionUser.$id} />
-
-              : <div className='w-1/2'>
+              ? (
+              <ProfileButtons idMatch={id === sessionUser.$id} />
+                )
+              : (
+              <div className='w-1/2'>
                 <Loader />
               </div>
-            }
+                )}
           </div>
         )}
         <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3 '>

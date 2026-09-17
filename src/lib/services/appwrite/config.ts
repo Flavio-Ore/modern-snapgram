@@ -17,7 +17,7 @@ export const appwriteConfig: AppwriteConfig = {
   savesCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_SAVES_ID,
   usersCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_USERS_ID,
   postsCollectionId: import.meta.env.VITE_APPWRITE_DATABASE_COLLECTION_POSTS_ID
-}
+} as const
 
 export const client = new Client()
 client.setProject(appwriteConfig.projectId)

@@ -1,9 +1,7 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
+import { api } from '@/lib/services'
 import { useQuery } from '@tanstack/react-query'
-import { findUserPosts } from '../services/appwrite/api'
-import { getCurrentSessionUser } from '../services/appwrite/auth'
-import { findPostById } from '../services/appwrite/posts'
-import { findAllUsers, findUserById } from '../services/appwrite/users'
+const { account, findUserPosts, posts, users } = api
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
@@ -13,7 +11,7 @@ const enabledId = (id: string) => {
 export const useGetPostById = ({ postId }: { postId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
-    queryFn: async () => await findPostById(postId),
+    queryFn: async () => await posts.findById(postId),
     enabled: enabledId(postId)
   })
 }
@@ -33,21 +31,21 @@ export const useGetUserPosts = ({ userId }: { userId: string }) => {
 export const useGetCurrentUser = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
-    queryFn: getCurrentSessionUser
+    queryFn: account.get
   })
 }
 
 export const useGetUsers = ({ limit }: { limit?: number }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_TOP_CREATORS, limit],
-    queryFn: async () => await findAllUsers({ limit })
+    queryFn: async () => await users.findAll({ limit })
   })
 }
 
 export const useGetUserById = ({ userId }: { userId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
-    queryFn: async () => await findUserById({ userId }),
+    queryFn: async () => await users.findById({ userId }),
     enabled: enabledId(userId)
   })
 }
