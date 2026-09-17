@@ -9,7 +9,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 interface PostCardProps {
-  post: Post | null
+  post: Post | undefined | null
 }
 const PostCard = ({ post }: PostCardProps) => {
   const { data: user } = useUser()

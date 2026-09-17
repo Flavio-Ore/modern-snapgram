@@ -1,2 +1,4 @@
-const SavedCollections = () => <h1 className='h1-bold'>Saved Collections</h1>
+import { NotFound } from '@/_root/pages'
+
+const SavedCollections = () => <NotFound />
 export default SavedCollections

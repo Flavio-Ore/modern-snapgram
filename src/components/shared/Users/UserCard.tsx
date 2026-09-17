@@ -1,13 +1,14 @@
 import { cn } from '@/lib/utils'
 import { type E_USERS } from '@/values'
+import { RedoIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 const roleClassNames = {
   ALL_USERS: {
     card: '2xl:max-w-[303px] 2xl:max-h-[319px]',
-    name: 'h3-bold',
-    subtitle: 'body-medium',
+    name: 'body-bold',
+    subtitle: 'base-semibold',
     link: 'small-medium w-[110px] h-[38px] py-2.5 px-5'
   },
   TOP_CREATORS: {
@@ -28,16 +29,16 @@ interface UserCardModel {
 type UserCardProps = UserCardModel & {
   role: keyof typeof E_USERS
 }
-const UserCard: React.FC<UserCardProps> = ({
+const UserCard = ({
   profileLink,
   imgUrl,
   name,
   mainFollower,
   role
-}) => {
+}: UserCardProps) => {
   const classes = useMemo(() => roleClassNames[role], [role])
   return (
-    <div className={cn('user-card', classes.card)}>
+    <div className={cn('user-card transition-[background-color] group hover:bg-dark-2', classes.card)}>
       <img
         src={imgUrl}
         alt={name}
@@ -57,11 +58,12 @@ const UserCard: React.FC<UserCardProps> = ({
       <Link
         to={profileLink}
         className={cn(
-          'flex-center rounded-lg text-center bg-primary-500',
+          'px-5 py-2.5 small-medium flex-center rounded-lg text-center bg-dark-4 group-hover:bg-secondary-500/90 group-hover:text-dark-1',
           classes.link
         )}
       >
-        Follow
+        Visit
+        <RedoIcon size={16} className='ml-1' />
       </Link>
     </div>
   )

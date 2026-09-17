@@ -1,11 +1,16 @@
 import UserCard from '@/components/shared/users/UserCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useGetUsers } from '@/lib/queries/queries'
+import { useGetTopUsers } from '@/lib/queries/queries'
 import { E_USERS } from '@/values'
 
 const TopCreators = () => {
-  const { data: topCreators, isLoading, isError, error } = useGetUsers({ limit: 8 })
-  console.log(error)
+  const {
+    data: topCreators,
+    isLoading,
+    isError
+  } = useGetTopUsers({ limit: 8 })
+
+  console.log({ topCreators })
   return (
     <ul className='home-creators_grid'>
       {isLoading &&
@@ -16,7 +21,7 @@ const TopCreators = () => {
               <Skeleton className='min-h-4 w-4/6' />
               <Skeleton className='min-h-2 w-9/12' />
             </div>
-            <Skeleton className='min-h-6 w-5/12 rounded-lg bg-primary-500' />
+            <Skeleton className='min-h-6 w-5/12 rounded-lg bg-dark-4' />
           </div>
         ))}
       {isError && (
@@ -35,7 +40,7 @@ const TopCreators = () => {
                   : '/assets/icons/default-avatar.svg'
               }
               name={user.name.trim().length > 0 ? user.name : 'Not found'}
-              mainFollower={`Followed by ${user.followers ?? 'Not found'}`}
+              mainFollower={`@${user.username}`}
               profileLink={`/profile/${user.$id}`}
               role={E_USERS.TOP_CREATORS}
             />

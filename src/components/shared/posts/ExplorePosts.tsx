@@ -8,7 +8,7 @@ const ExplorePosts = () => {
   const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
     useGetInfinitePosts()
   const posts = useMemo(
-    () => data?.pages.flatMap(postsPage => postsPage) ?? [],
+    () => data?.pages.flatMap(postsPage => postsPage?.data ?? []) ?? [],
     [data]
   )
   return (

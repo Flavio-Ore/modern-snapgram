@@ -1,2 +1,8 @@
-const SavedReels = () => <h1 className='h1-bold w-full'>Saved Reels</h1>
+import { NotFound } from '@/_root/pages'
+
+const SavedReels = () => {
+  return (
+    <NotFound />
+  )
+}
 export default SavedReels

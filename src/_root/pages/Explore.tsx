@@ -2,7 +2,7 @@ import FilterIcon from '@/components/icons/FilterIcon'
 import SearchIcon from '@/components/icons/SearchIcon'
 import Loader from '@/components/shared/app/Loader'
 import ExplorePosts from '@/components/shared/posts/ExplorePosts'
-import SearchResults from '@/components/shared/posts/SearchResults'
+import SearchPostsResults from '@/components/shared/posts/SearchPostsResults'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useState } from 'react'
@@ -19,9 +19,12 @@ const Explore = () => {
   return (
     <div className='explore-container'>
       <div className='explore-inner_container'>
-        <h2 className='h3-bold md:h2-bold w-full'>Search Posts</h2>
+        <div className='flex-start w-full max-w-5xl gap-6'>
+          <SearchIcon className='size-9 stroke-primary-500'/>
+          <h2 className='h3-bold md:h2-bold w-full'>Search Posts</h2>
+        </div>
         <div className='flex items-center gap-1 px-4 w-full rounded-lg bg-dark-4'>
-          <SearchIcon className='size-6'/>
+          <SearchIcon className='size-6' />
           <Input
             type='search'
             placeholder='Search for posts...'
@@ -40,7 +43,7 @@ const Explore = () => {
       </div>
       <div className='flex flex-wrap gap-9 w-full max-w-5xl'>
         {isTyping && debouncedValue === '' && <Loader />}
-        {isTyping && <SearchResults debouncedValue={debouncedValue} />}
+        {isTyping && <SearchPostsResults debouncedValue={debouncedValue} />}
         {!isTyping && <ExplorePosts />}
       </div>
     </div>

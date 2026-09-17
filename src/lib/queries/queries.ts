@@ -1,7 +1,7 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import { appwriteService } from '@/services'
 import { useQuery } from '@tanstack/react-query'
-const { auth, utils, posts, users, saves } = appwriteService
+const { auth, posts, users, saves } = appwriteService
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
@@ -17,14 +17,6 @@ export const useGetPostById = ({ postId }: { postId: string }) => {
   })
 }
 
-export const useGetUserPosts = ({ userId }: { userId: string }) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
-    queryFn: async () => await utils.findUserPosts({ userId }),
-    enabled: enabledId(userId)
-  })
-}
-
 export const useGetSavedRecord = ({ recordId }: { recordId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_RECORD, recordId],
@@ -34,10 +26,6 @@ export const useGetSavedRecord = ({ recordId }: { recordId: string }) => {
   })
 }
 
-// ============================================================
-// USER QUERIES
-// ============================================================
-
 export const useUser = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
@@ -46,10 +34,10 @@ export const useUser = () => {
   })
 }
 
-export const useGetUsers = ({ limit }: { limit?: number }) => {
+export const useGetTopUsers = ({ limit }: { limit?: number }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_TOP_CREATORS, limit],
-    queryFn: async () => await users.findAllUsers({ limit }),
+    queryFn: async () => await users.findTopUsers({ limit }),
     select: response => response?.data
   })
 }

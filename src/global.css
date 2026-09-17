@@ -149,7 +149,7 @@
   }
 
   .home-creators {
-    @apply hidden xl:flex flex-col w-72 2xl:w-465 px-6 py-10 gap-10 bg-dark-2 overflow-scroll custom-scrollbar;
+    @apply hidden xl:flex flex-col w-72 2xl:w-465 px-6 py-10 gap-10 bg-dark-1 overflow-scroll custom-scrollbar;
   }
   .home-creators_grid {
     @apply grid grid-cols-1 2xl:grid-cols-2 h-full gap-4;
@@ -232,7 +232,7 @@
   }
 
   .leftsidebar-link {
-    @apply rounded-lg base-medium hover:bg-primary-500 transition;
+    @apply rounded-lg base-medium hover:bg-dark-4 transition;
   }
 
   /*! Post Card */
