@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "allowJs": false,
@@ -12,9 +16,46 @@
     /* Shadcn installation */
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@shadcn/*": [
+        "./src/components/ui/*"
+      ],
+      "@auth/*": [
+        "./src/features/auth/*"
+      ],
+      "@chats/*": [
+        "./src/features/chats/*"
+      ],
+      "@posts/*": [
+        "./src/features/posts/*"
+      ],
+      "@saved/*": [
+        "./src/features/saved/*"
+      ],
+      "@users/*": [
+        "./src/features/users/*"
+      ],
+      "@following-followers/*": [
+        "./src/features/following-followers/*"
+      ],
+      "@profile/*": [
+        "./src/features/profile/*"
+      ],
     },
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -23,14 +64,23 @@
     "noEmit": true,
     //! react-jsx was removed from the list of supported options
     "jsx": "preserve",
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "vite.config.ts", "tailwind.config.js"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "vite.config.ts",
+    "tailwind.config.js"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }
