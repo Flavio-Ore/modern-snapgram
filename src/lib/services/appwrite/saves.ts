@@ -1,9 +1,23 @@
 import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
 import { parseModel } from '@/lib/services/appwrite/util'
-import { type Post, type Save } from '@/types'
+import { type Save } from '@/types'
 import { ID, Query } from 'appwrite'
-interface DeleteSavedPost {
+interface SavesId {
   savedRecordId: string
+}
+
+export async function findSaveRecordById ({ savedRecordId }: SavesId) {
+  try {
+    const saveRecord = await databases.getDocument<Save>(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      savedRecordId
+    )
+    parseModel({ model: saveRecord, errorMsg: 'Error getting the record' })
+    return saveRecord
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export async function updateSave ({
@@ -14,7 +28,7 @@ export async function updateSave ({
   userId: string
 }) {
   try {
-    const savedPost = await databases.createDocument<Post>(
+    const saveRecord = await databases.createDocument<Save>(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
       ID.unique(),
@@ -23,8 +37,9 @@ export async function updateSave ({
         post: postId
       }
     )
-    parseModel({ model: savedPost, errorMsg: 'An error occurred' })
-    return savedPost
+    console.log('saveRecord :>> ', saveRecord)
+    parseModel({ model: saveRecord, errorMsg: 'An error occurred' })
+    return saveRecord
   } catch (error) {
     console.error(error)
   }
@@ -33,7 +48,7 @@ export async function updateSave ({
 // ============================== DELETE SAVED POST
 export async function deleteSave ({
   savedRecordId
-}: DeleteSavedPost): Promise<{ status: string }> {
+}: SavesId): Promise<{ status: string }> {
   try {
     const statusCode = await databases.deleteDocument(
       appwriteConfig.databaseId,

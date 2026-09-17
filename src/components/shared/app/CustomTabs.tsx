@@ -18,9 +18,9 @@ interface TabsTriggersProps {
   triggersAndIcons: Array<Omit<TabsTriggers, 'Element'>>
 }
 const TabTriggers: FC<TabsTriggersProps> = ({ className, triggersAndIcons }) =>
-  triggersAndIcons.map(({ trigger, icon }, index) => (
+  triggersAndIcons.map(({ trigger, Icon }, index) => (
     <TabsTrigger
-      key={trigger + icon}
+      key={trigger}
       value={trigger}
       className={cn(
         className,
@@ -28,7 +28,7 @@ const TabTriggers: FC<TabsTriggersProps> = ({ className, triggersAndIcons }) =>
         index === triggersAndIcons.length - 1 && 'rounded-r-lg col-span-2'
       )}
     >
-      <img src={icon} alt='Link selection' width={20} height={20} />
+      {Icon}
       <p className='overflow-ellipsis'>{trigger}</p>
     </TabsTrigger>
   ))

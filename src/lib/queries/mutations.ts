@@ -79,7 +79,9 @@ export const useLikePost = () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id]
       })
-
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+      })
       // queryClient.invalidateQueries({
       //   queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       // })
@@ -127,7 +129,10 @@ export const useDeleteSavedPost = () => {
   return useMutation({
     mutationFn: async ({ savedRecordId }: DeleteSavedPost) =>
       await saves.delete({ savedRecordId }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      void queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID]
+      })
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CURRENT_USER]
       })

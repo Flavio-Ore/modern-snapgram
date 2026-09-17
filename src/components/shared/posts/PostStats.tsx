@@ -1,12 +1,15 @@
-import Loader from '@/components/shared/app/Loader'
+import SavedIcon from '@/components/icons/SavedIcon'
+import SaveIcon from '@/components/icons/SaveIcon'
+
 import {
   useDeleteSavedPost,
   useLikePost,
   useSavePost
 } from '@/lib/queries/mutations'
 import { useUser } from '@/lib/queries/queries'
-import { checkIsLiked, doubleNegationStr, isObjectEmpty } from '@/lib/utils'
+import { checkIsLiked, isObjectEmpty } from '@/lib/utils'
 import { type Post } from '@/types'
+import { BookmarkIcon, HeartIcon } from 'lucide-react'
 import { type FC, useEffect, useMemo, useState } from 'react'
 
 interface PostStatsProps {
@@ -19,23 +22,19 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
     return post.likes.map(user => user.$id)
   })
   const [isSaved, setIsSaved] = useState(false)
-  const { mutate: likePost, isPending: isLikingPost } = useLikePost()
-  const { mutate: savePost, isPending: isSavingPost } = useSavePost()
-  const { mutate: deleteSavedPost, isPending: isDeletingSavedPost } =
-    useDeleteSavedPost()
-  const { data: currentUser } = useUser()
+  const { mutate: like, isPending: isLiking } = useLikePost()
+  const { mutate: save, isPending: isSaving } = useSavePost()
+  const { mutate: deleteSave, isPending: isDeletingSave } = useDeleteSavedPost()
+  const { data: currentUser, isLoading, isRefetching } = useUser()
   const { $id: postId } = post
-
-  console.log('currentUser.save :>> ', currentUser)
-  const saveRecord = useMemo(
+  const saveRecordId = useMemo(
     () =>
-      currentUser?.save?.find((record: Post) => record.post.$id === postId)
-        ?.$id,
+      currentUser?.save?.find(record => record.post.$id === postId)?.$id ?? '',
     [currentUser]
   )
   useEffect(() => {
-    setIsSaved(doubleNegationStr(saveRecord))
-  }, [])
+    setIsSaved(saveRecordId !== '')
+  }, [saveRecordId])
 
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -47,54 +46,64 @@ const PostStats: FC<PostStatsProps> = ({ post, userId }) => {
     } else usersLikes.push(userId)
 
     setLikes(usersLikes)
-    likePost({ postId, usersLikes })
+    like({ postId, usersLikes })
   }
   const handleSavePost = (
-    e: React.MouseEvent<HTMLImageElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation()
-    if (saveRecord != null && saveRecord.trim().length > 0) {
+    if (saveRecordId !== '') {
       setIsSaved(false)
-      deleteSavedPost({ savedRecordId: saveRecord })
+      deleteSave({ savedRecordId: saveRecordId })
       return
     }
     setIsSaved(true)
-    savePost({ postId, userId })
+    save({ postId, userId })
   }
-
   return (
     <div className='flex justify-between item-center z-20'>
       <div className='flex gap-2 mr-5'>
-        {isLikingPost && <Loader />}
-        {!isLikingPost && (
-          <img
-            src={
-              checkIsLiked(likes, userId)
-                ? '/assets/icons/liked.svg'
-                : '/assets/icons/like.svg'
-            }
-            alt='Icon to be displayed when a post is liked'
-            loading='lazy'
-            width={20}
+        {(isLoading || isRefetching || isLiking) && (
+          <HeartIcon
             height={20}
-            onClick={handleLikePost}
-            className='cursor-pointer'
+            width={20}
+            className='fill-red/50 stroke-red/50 animate-pulsing animate-duration-1000 cursor-not-allowed'
           />
+        )}
+        {!isLoading && !isRefetching && !isLiking && (
+          <div onClick={handleLikePost} className='flex-center cursor-pointer'>
+            {checkIsLiked(likes, userId)
+              ? (
+              <HeartIcon className='fill-red stroke-red' size={20} />
+                )
+              : (
+              <HeartIcon className='fill-none stroke-primary-500' size={20} />
+                )}
+          </div>
         )}
         <p className='small-medium lg:base-medium'>{likes.length}</p>
       </div>
       <div className='flex gap-2'>
-        {(isSavingPost || isDeletingSavedPost) && <Loader />}
-        {!isSavingPost && !isDeletingSavedPost && (
-          <img
-            src={isSaved ? '/assets/icons/saved.svg' : '/assets/icons/save.svg'}
-            alt='Icon to be displayed when a post is save'
-            loading='lazy'
-            width={20}
+        {(isLoading || isRefetching || isSaving || isDeletingSave) && (
+          <BookmarkIcon
             height={20}
-            onClick={handleSavePost}
-            className='cursor-pointer'
+            width={20}
+            className='fill-primary-500/50 stroke-primary-500/50 animate-pulsing animate-duration-1000 cursor-not-allowed'
           />
+        )}
+        {!isLoading && !isRefetching && !isSaving && !isDeletingSave && (
+          <button
+            onClick={handleSavePost}
+            className='flex-center cursor-pointer'
+          >
+            {isSaved
+              ? (
+              <SavedIcon className='fill-primary-500' />
+                )
+              : (
+              <SaveIcon className='fill-primary-500' />
+                )}
+          </button>
         )}
       </div>
     </div>
