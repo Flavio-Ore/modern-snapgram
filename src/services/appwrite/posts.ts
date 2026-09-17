@@ -46,7 +46,7 @@ export async function findInfinitePostsByUserId ({
   userId
 }: {
   lastId: Post['$id']
-  userId?: string
+  userId?: UserModel['$id']
 }) {
   if (userId == null || userId.trim().length === 0) return null
   return await findInfinitePosts({
@@ -129,7 +129,6 @@ export async function findInfinitePosts ({
   }
 }
 
-// ============================== GET POST BY ID
 export async function findPostById (postId: Post['$id']) {
   try {
     const { filesId, ...postDocument } = await databases.getDocument<PostModel>(
@@ -162,7 +161,6 @@ export async function findPostById (postId: Post['$id']) {
   }
 }
 
-// ============================== CREATE POST
 export async function createPost (post: NewPostData) {
   const tags = tagsToArray(post?.tags ?? '')
   try {
@@ -212,7 +210,6 @@ export async function createPost (post: NewPostData) {
   }
 }
 
-// ============================== UPDATE POST
 export async function updatePost (post: UpdatedPostData) {
   try {
     const tags = tagsToArray(post?.tags ?? '')
@@ -265,7 +262,6 @@ export async function updatePost (post: UpdatedPostData) {
   }
 }
 
-// ============================== DELETE POST
 export async function deletePost ({ postId, filesId }: DeletePostParams) {
   try {
     await Promise.all([

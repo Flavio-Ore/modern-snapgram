@@ -9,14 +9,13 @@ import { cn, extractFirstRoutePart } from '@/lib/utils'
 import { links } from '@/values'
 import { SettingsIcon } from 'lucide-react'
 import { useEffect } from 'react'
-import {
-  Link,
-  NavLink,
-  useLocation,
-  useParams
-} from 'react-router-dom'
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
 
-const LeftSidebar = () => {
+const LeftSidebar = ({
+  totalMessagesToRead = 0
+}: {
+  totalMessagesToRead?: number
+}) => {
   const { pathname } = useLocation()
   const { data: user, isLoading, isError, refetch } = useUser()
   const { isSuccess: userUpdate } = useUpdateUser()
@@ -75,8 +74,8 @@ const LeftSidebar = () => {
           {links.sidebar.map(({ Icon, route, label }) => (
             <li
               key={label}
-              className={cn('leftsidebar-link group base-regular', {
-                'bg-dark-4 relative before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full':
+              className={cn('leftsidebar-link relative group base-regular', {
+                'bg-dark-4 before:block before:bg-primary-500 before:absolute before:-inset-0.5 before:-left-16 before:w-[50px] before:rounded-full':
                   extractFirstRoutePart(pathname) ===
                   extractFirstRoutePart(route)
               })}
@@ -92,14 +91,36 @@ const LeftSidebar = () => {
                   }
                 )}
               >
-                <Icon
-                  className={cn('size-6 group-hover:fill-secondary-500', {
-                    'fill-secondary-500':
-                      extractFirstRoutePart(pathname) ===
-                      extractFirstRoutePart(route)
-                  })}
-                />
-                <span className='hidden xl:inline'>{label}</span>
+                {route.includes('/chats')
+                  ? (
+                  <div className='relative'>
+                    <Icon
+                      className={cn('size-6 group-hover:fill-secondary-500', {
+                        'fill-secondary-500':
+                          extractFirstRoutePart(pathname) ===
+                          extractFirstRoutePart(route)
+                      })}
+                    />
+                    {route.includes('/chats') && (
+                      <div className='absolute text-dark-1 subtle-regular bg-secondary-500 size-4 text-center pb-4 rounded-sm shadow-[0px_0px_6px_0.5px_#FFB620] shadow-secondary-500 -top-2 -right-2.5'>
+                        {
+                          totalMessagesToRead
+                        }
+                      </div>
+                    )}
+                  </div>
+                    )
+                  : (
+                  <Icon
+                    className={cn('size-6 group-hover:fill-secondary-500', {
+                      'fill-secondary-500':
+                        extractFirstRoutePart(pathname) ===
+                        extractFirstRoutePart(route)
+                    })}
+                  />
+                    )}
+
+                <span className='relative hidden xl:inline'>{label}</span>
               </NavLink>
             </li>
           ))}

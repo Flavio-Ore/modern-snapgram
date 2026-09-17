@@ -3,9 +3,13 @@ import LeftSidebar from '@/components/shared/app/LeftSidebar'
 import Topbar from '@/components/shared/app/Topbar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAccount } from '@/context/useAccountContext'
+import { useSetChatMemberOnline } from '@/lib/queries/mutations'
+import { useGetAllChatRoomsByUserId, useUser } from '@/lib/queries/queries'
 import { cn, extractFirstRoutePart } from '@/lib/utils'
+import { appwriteConfig, client } from '@/services/appwrite/config'
+import { type MessageModel } from '@/types'
 import { links } from '@/values'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
 const Outlet = lazy(
@@ -17,13 +21,85 @@ const Outlet = lazy(
 
 const RootLayout = () => {
   const { pathname } = useLocation()
-  const { isAuthenticated } = useAccount()
+  const { isAuthenticated, isLoading } = useAccount()
+  const { data: user } = useUser()
+  const { mutateAsync: updateStatus } = useSetChatMemberOnline()
+  const chatRoomsIds = useMemo(
+    () => user?.chats.map(chat => chat.chat_room.$id) ?? [],
+    [user]
+  )
+  const { data: allChatRooms, refetch: refetchChats } =
+    useGetAllChatRoomsByUserId({
+      chatRoomsIds
+    })
 
-  return isAuthenticated
+  const ownChats = useMemo(
+    () =>
+      allChatRooms?.flatMap(chatRoom =>
+        chatRoom.members.filter(chat => chat.member.$id === user?.$id)
+      ) ?? null,
+    [allChatRooms, user]
+  )
+
+  const totalMessagesToRead = useMemo(
+    () => ownChats?.reduce((acc, chat) => acc + chat.messages_to_read, 0) ?? 0,
+    [ownChats]
+  )
+
+  const ownChatMembersIds = useMemo(
+    () => user?.chats.map(chat => chat.$id) ?? [],
+    [user]
+  )
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      updateStatus({
+        chatIds: ownChatMembersIds,
+        online: true
+      })
+    }
+  }, [isAuthenticated, ownChatMembersIds])
+
+  useEffect(() => {
+    if (ownChatMembersIds.length <= 0) return
+    const unsubscribeMessagesToRead = client.subscribe<MessageModel>(
+      [
+        `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
+      ],
+      ({ events, payload: newMessage }) => {
+        if (
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
+          ) ||
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.update`
+          ) ||
+          events.includes(
+            `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.delete`
+          )
+        ) {
+          if (
+            ownChatMembersIds.some(id => id === newMessage.author_chat_id) ||
+            newMessage.receivers_chat_id.some(id =>
+              ownChatMembersIds.some(ownId => ownId === id)
+            )
+          ) {
+            refetchChats()
+          }
+        }
+      }
+    )
+
+    return () => {
+      unsubscribeMessagesToRead()
+    }
+  }, [ownChatMembersIds])
+
+  return isAuthenticated || !isLoading
     ? (
     <div className='w-full md:flex'>
-      <Topbar />
-      <LeftSidebar />
+      <Topbar totalMessagesToRead={totalMessagesToRead} />
+      <LeftSidebar totalMessagesToRead={totalMessagesToRead} />
       <section
         className={cn('flex flex-1 size-full', {
           'overflow-ellipsis': pathname.startsWith('/profile')

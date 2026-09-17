@@ -1,5 +1,11 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { follows, messages, posts, saves, users } from '@/services/appwrite'
+import {
+  follows,
+  messages,
+  posts,
+  saves,
+  users
+} from '@/services/appwrite'
 import { type AppwriteResponse } from '@/services/appwrite/util'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { type Models } from 'appwrite'
@@ -164,40 +170,35 @@ export const useGetInfiniteFollowers = ({ userId }: { userId: string }) => {
   })
 }
 
-export const useGetInfiniteMessages = ({
-  senderId,
-  receiversId
+export const useGetInfiniteMessagesByChatRoomId = ({
+  chatRoomId
 }: {
-  senderId: string
-  receiversId: string[]
+  chatRoomId: string
 }) => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES, senderId, ...receiversId],
+    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES_BY_CHAT_ROOM_ID, chatRoomId],
     queryFn: async ({ pageParam }) =>
-      await messages.findInfiniteMessages({
+      await messages.findInfiniteMessagesByChatRoomId({
         lastId: pageParam,
-        senderId,
-        receiversId
+        chatRoomId
       }),
+    enabled: enabledId(chatRoomId),
     select: infiniteData => {
-      const responsesInDisarray = infiniteData.pages.map(
-        response => {
-          if (response?.data == null) {
-            return response
-          }
-          const messagesInDisorder = structuredClone(response.data)
-          return {
-            ...response,
-            data: messagesInDisorder.reverse()
-          }
+      const responsesInDisarray = infiniteData.pages.map(response => {
+        if (response?.data == null) {
+          return response
         }
-      )
+        const messagesInDisorder = structuredClone(response.data)
+        return {
+          ...response,
+          data: messagesInDisorder.reverse()
+        }
+      })
       return {
         pages: responsesInDisarray.reverse(),
         pageParams: infiniteData.pageParams
-      } satisfies typeof infiniteData
+      }
     },
-    enabled: enabledId(senderId) && receiversId.some(id => enabledId(id)),
     getNextPageParam: getNextCursor,
     initialPageParam: INITIAL_PAGE_PARAM
   })

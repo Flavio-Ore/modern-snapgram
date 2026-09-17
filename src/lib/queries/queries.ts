@@ -1,5 +1,12 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { auth, posts, saves, users } from '@/services/appwrite'
+import {
+  auth,
+  chatRooms,
+  chatsMember,
+  posts,
+  saves,
+  users
+} from '@/services/appwrite'
 import { useQuery } from '@tanstack/react-query'
 
 const enabledId = (id: string) => {
@@ -7,6 +14,7 @@ const enabledId = (id: string) => {
   if (id === '') return false
   return true
 }
+
 export const useGetPostById = ({ postId }: { postId: string }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
@@ -33,10 +41,30 @@ export const useUser = () => {
   })
 }
 
-export const useGetAliveChats = () => {
+export const useGetAllMemberChats = ({ userId }: { userId: string }) => {
   return useQuery({
-    queryKey: [QUERY_KEYS.GET_CHAT_USERS],
-    queryFn: users.findChatUsers,
+    queryKey: [QUERY_KEYS.GET_ALL_MEMBER_CHATS_BY_USER_ID, userId],
+    queryFn: async () =>
+      await chatsMember.findAllMemberChatsByUserId({
+        userId: userId ?? ''
+      }),
+    enabled: enabledId(userId),
+    select: response => response?.data
+  })
+}
+
+export const useGetAllChatRoomsByUserId = ({
+  chatRoomsIds
+}: {
+  chatRoomsIds: string[]
+}) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_CHAT_ROOMS_BY_USER_ID, ...chatRoomsIds],
+    queryFn: async () =>
+      await chatRooms.findAllChatRoomsByUserId({
+        chatRoomsIds
+      }),
+    enabled: chatRoomsIds.length > 0,
     select: response => response?.data
   })
 }
@@ -45,7 +73,8 @@ export const useGetTopUsers = ({ limit }: { limit?: number }) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_TOP_CREATORS, limit],
     queryFn: async () => await users.findTopUsers({ limit }),
-    select: response => response?.data
+    select: response => response?.data,
+    enabled: limit != null
   })
 }
 

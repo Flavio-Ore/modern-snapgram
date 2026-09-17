@@ -31,24 +31,32 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { useDeleteMessage, useEditMessage } from '@/lib/queries/mutations'
-import { useUser } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
 import { EditionMessageValidationSchema } from '@/lib/validations'
-import { type MessageModel } from '@/types'
+import { type ChatMemberModel, type MessageModel } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CopyIcon, Edit2Icon, GripIcon, SendHorizonalIcon } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { type z } from 'zod'
 
-const ChatBubble = ({ message }: { message: MessageModel }) => {
+const ChatBubble = ({
+  message,
+  currentChatMember
+}: {
+  message: MessageModel
+  currentChatMember: ChatMemberModel
+}) => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const { toast } = useToast()
   const { mutateAsync: deleteMessage } = useDeleteMessage()
   const { mutateAsync: editMessage } = useEditMessage()
-  const { data: currentUser } = useUser()
+  const isTheAuthor = useMemo(
+    () => message?.author_chat?.$id === currentChatMember?.$id,
+    [message, currentChatMember]
+  )
   const editMessageForm = useForm<
   z.infer<typeof EditionMessageValidationSchema>
   >({
@@ -58,7 +66,6 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
       body: message.body
     }
   })
-  const accountId = useMemo(() => currentUser?.accountId ?? '', [currentUser])
 
   const handleCopyMessage = (message: string) => () => {
     navigator.clipboard.writeText(message)
@@ -70,7 +77,6 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
     setIsDeleting(false)
   }
   const handleDeleteMessage = (messageId: string) => async () => {
-    console.log('messageId :>> ', messageId)
     try {
       await deleteMessage({
         messageId
@@ -95,11 +101,10 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
     values: z.infer<typeof EditionMessageValidationSchema>
   ) {
     try {
-      const messageRes = await editMessage({
+      await editMessage({
         messageId: values.messageId,
         newBody: values.body
       })
-      console.log('EDITED MESSAGE RESPONSE', messageRes)
       setIsEditing(false)
       setIsDeleting(false)
       editMessageForm.reset()
@@ -131,8 +136,8 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
     <div className='flex flex-col w-full py-2 gap-y-0.5 group hover:bg-dark-2'>
       <div
         className={cn('flex-center gap-1', {
-          'mr-4 self-end flex-row': message.sender === accountId,
-          'ml-4 self-start flex-row-reverse': message.sender !== accountId
+          'mr-4 self-end flex-row': isTheAuthor,
+          'ml-4 self-start flex-row-reverse': !isTheAuthor
         })}
       >
         <DropdownMenu>
@@ -147,7 +152,7 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
                 <CopyIcon size={16} className='mr-2 stroke-primary-600' />
                 <span>Copy</span>
               </DropdownMenuItem>
-              {message.sender === accountId && (
+              {isTheAuthor && (
                 <DropdownMenuItem
                   onClick={() => {
                     setIsEditing(true)
@@ -158,7 +163,7 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
                   <span>Edit</span>
                 </DropdownMenuItem>
               )}
-              {message.sender === accountId && (
+              {isTheAuthor && (
                 <DropdownMenuItem
                   onClick={() => {
                     setIsDeleting(true)
@@ -240,7 +245,11 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
                     >
                       Cancel
                     </DialogClose>
-                    <Button type='submit' variant='ghost' className='hover:bg-dark-4'>
+                    <Button
+                      type='submit'
+                      variant='ghost'
+                      className='hover:bg-dark-4'
+                    >
                       <div className='flex-center'>
                         <SendHorizonalIcon className='size-5 stroke-secondary-500' />
                         <span className='sr-only'>Upload edited message</span>
@@ -257,20 +266,20 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
             'py-3 px-4 max-w-80 min-w-30 rounded-xl text-pretty break-words tiny-medium xs:small-regular',
             {
               'bg-primary-600 relative after:block after:absolute after:bottom-0 after:-right-2 after:border-primary-600 after:border-b-[20px] after:border-b-primary-600 after:border-r-[20px] after:border-r-transparent':
-                message.sender === accountId,
+                isTheAuthor,
               'bg-dark-4 relative z-10 after:block after:absolute after:bottom-0 after:-left-2 after:border-dark-4 after:border-b-[20px] after:border-b-dark-4 after:border-l-[20px] after:border-l-transparent':
-                message.sender !== accountId
+                !isTheAuthor
             }
           )}
         >
           {message.body}
         </p>
       </div>
-      {message.isEdited && (
+      {message.is_edited && (
         <p
           className={cn('subtle-semibold text-light-3 w-max', {
-            'mr-4 self-end': message.sender === accountId,
-            'ml-4': message.sender !== accountId
+            'mr-4 self-end': isTheAuthor,
+            'ml-4': !isTheAuthor
           })}
         >
           Edited
@@ -278,8 +287,8 @@ const ChatBubble = ({ message }: { message: MessageModel }) => {
       )}
       <p
         className={cn('tiny-medium text-light-4 w-max', {
-          'mr-4 self-end': message.sender === accountId,
-          'ml-4': message.sender !== accountId
+          'mr-4 self-end': isTheAuthor,
+          'ml-4': !isTheAuthor
         })}
       >
         {multiFormatDateString(message.$createdAt)}
