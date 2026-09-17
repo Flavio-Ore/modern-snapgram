@@ -2,12 +2,15 @@ import GridPostList from '@/components/shared/GridPostList'
 import InfinitePosts from '@/components/shared/InfinitePosts'
 import { useGetInfinitePosts } from '@/lib/queries/infiniteQueries'
 import { OPERATIONS } from '@/values'
+import { useMemo } from 'react'
 
 const ExplorePosts = () => {
   const { data, isFetching, isError, isLoading, hasNextPage, fetchNextPage } =
     useGetInfinitePosts()
-  const posts = data?.pages.flatMap(postsPage => postsPage) ?? []
-
+  const posts = useMemo(
+    () => data?.pages.flatMap(postsPage => postsPage) ?? [],
+    [data]
+  )
   return (
     <InfinitePosts
       data={data}
@@ -18,12 +21,10 @@ const ExplorePosts = () => {
       fetchNextPage={fetchNextPage}
       isDataEmpty={posts.length === 0}
     >
-      {data?.pages.map((postsPage, i) => (
-        <GridPostList
-          key={`${postsPage[i]}-${OPERATIONS.EXPLORE_POSTS}-${i}`}
-          posts={postsPage}
-        />
-      ))}
+      <GridPostList
+        key={`${posts[posts.length - 1]}-${OPERATIONS.EXPLORE_POSTS}-$}`}
+        posts={posts}
+      />
     </InfinitePosts>
   )
 }

@@ -53,7 +53,7 @@ const AvatarFileUploader: React.FC<FileUploaderProps> = ({
       className='flex-center flex-col cursor-pointer w-full'
     >
       <input {...getInputProps()} type='file' className='cursor-pointer' />
-      <div className='flex-start flex-1 gap-4 w-full p-5 lg:p-10'>
+      <div className='flex-start flex-1 gap-4 w-full py-5 lg:py-10'>
         <img
           src={fileUrl || '/assets/icons/profile-placeholder.svg'}
           alt='New Avatar Image'

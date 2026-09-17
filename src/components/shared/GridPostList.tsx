@@ -15,17 +15,23 @@ const GridPostList: React.FC<GridPostListProps> = ({
   showStats = true
 }) => {
   const { user } = useUserContext()
+  console.log('posts :>> ', posts)
   if (!posts) return null
   return (
     <ul className='grid-container'>
-      {posts.map(post => (
-        <li key={post.$id} className='relative min-w-72 h-80'>
+      {posts.map((post, i) => (
+        <li
+          key={`${posts?.[i]?.$updatedAt || i}-${posts?.[i]?.$id || i + 1}`}
+          className='relative'
+        >
           <Link to={`/posts/${post.$id}`} className='grid-post_link'>
             <img
               src={post.imageUrl}
               alt='Post image'
               loading='lazy'
-              className='h-full w-full object-cover'
+              height={100}
+              width={100}
+              className='w-full h-full object-cover aspect-auto'
             />
           </Link>
           <div className='grid-post_user'>
