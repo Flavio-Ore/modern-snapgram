@@ -2,16 +2,13 @@ import { TabsContent, TabsTrigger } from '@/components/ui/tabs'
 import { type ReactNode } from 'react'
 
 interface TRProps {
-
   className?: string
   trigger: string
   Icon: ReactNode
 }
-export const TR = ({ className, trigger, Icon }: TRProps) => {
+export const TR = ({ trigger, Icon }: TRProps) => {
   return (
-    <TabsTrigger
-      value={trigger}
-    >
+    <TabsTrigger value={trigger}>
       {Icon}
       <p className='pl-2 overflow-ellipsis'>{trigger}</p>
     </TabsTrigger>

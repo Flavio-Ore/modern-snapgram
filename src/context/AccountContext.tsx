@@ -17,10 +17,8 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = async () => {
     try {
       setIsLoading(true)
-      const session = await account.getSession('current')
-      console.log('session :>> ', session)
+      await account.getSession('current')
       setIsAuthenticated(true)
-      // setSessionUser(session.userId)
       return true
     } catch (error) {
       console.error(error)
@@ -46,7 +44,6 @@ const AccountProvider = ({ children }: { children: ReactNode }) => {
       account
         .getSession('current')
         .then(session => {
-          console.log('session :>> ', session)
           if (session == null) {
             setIsAuthenticated(false)
             navigate('/sign-in')

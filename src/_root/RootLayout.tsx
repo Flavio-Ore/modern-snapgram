@@ -67,13 +67,6 @@ const RootLayout = () => {
         `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`
       ],
       ({ events, channels, payload: newMessage }) => {
-        console.log({
-          realTimeResponse: {
-            events,
-            channels,
-            newMessage
-          }
-        })
         if (
           events.includes(
             `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents.*.create`
@@ -91,7 +84,6 @@ const RootLayout = () => {
               ownChatMembersIds.some(ownId => ownId === id)
             )
           ) {
-            console.log('Refetching all chat rooms')
             refetchChats()
           }
         }

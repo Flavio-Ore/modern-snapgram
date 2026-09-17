@@ -92,7 +92,6 @@ const PostForm = ({ post, action }: PostFormProps) => {
           newFiles: value.newFiles,
           userId: user.$id
         })
-        console.log({ createPostResponse })
         if (createPostResponse?.data == null) {
           toast({
             title: 'Post is empty.',
@@ -199,10 +198,6 @@ const PostForm = ({ post, action }: PostFormProps) => {
             control={postForm.control}
             name='originalFiles'
             render={({ field }) => {
-              console.log(
-                'PREVIOUS UPDATED FILES VALUES: ',
-                postForm.getValues('originalFiles')
-              )
               return (
                 <FormItem>
                   <FormLabel className='shad-form_label'>
