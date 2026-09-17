@@ -114,7 +114,7 @@ export const useGetInfiniteSavedPosts = ({ userId }: { userId: string }) => {
   })
 }
 
-export const useInfiniteMessages = ({
+export const useGetInfiniteMessages = ({
   senderId,
   receiversId
 }: {
@@ -122,11 +122,22 @@ export const useInfiniteMessages = ({
   receiversId: string[]
 }) => {
   return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES, senderId, receiversId],
+    queryKey: [QUERY_KEYS.GET_INFINITE_MESSAGES, senderId, ...receiversId],
     queryFn: async ({ pageParam }) =>
       await messages.findInfiniteMessages({
         lastId: pageParam,
-        queries: [Query.contains('sender', [senderId, ...receiversId])]
+        queries: [
+          Query.or([
+            Query.and([
+              Query.contains('sender', [senderId]),
+              Query.contains('receivers', receiversId)
+            ]),
+            Query.and([
+              Query.contains('sender', receiversId),
+              Query.contains('receivers', [senderId])
+            ])
+          ])
+        ]
       }),
     enabled: enabledId(senderId),
     getNextPageParam: lastPage => {

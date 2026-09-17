@@ -1,7 +1,7 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
 import { appwriteService } from '@/services'
 import { useQuery } from '@tanstack/react-query'
-const { auth, utils, posts, users, saves, file } = appwriteService
+const { auth, utils, posts, users, saves } = appwriteService
 
 const enabledId = (id: string) => {
   if (id != null && id.trim().length === 0) return false
@@ -60,13 +60,5 @@ export const useGetUserById = ({ userId }: { userId: string }) => {
     queryFn: async () => await users.findUserById({ userId }),
     select: response => response?.data,
     enabled: enabledId(userId)
-  })
-}
-
-export const useGetFilesByIds = ({ filesId }: { filesId: string[] }) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_FILES_BY_IDS, filesId],
-    queryFn: async () => await file.getFilesById(filesId),
-    select: response => response ?? []
   })
 }
