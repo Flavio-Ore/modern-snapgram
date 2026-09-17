@@ -1,7 +1,7 @@
 import EditIcon from '@/components/icons/EditIcon'
 import PostStats from '@/components/shared/posts//PostStats'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { cn, isObjectEmpty, multiFormatDateString } from '@/lib/utils'
 import { type Post } from '@/types'
 import { type FC } from 'react'
@@ -32,7 +32,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
     <div className='post-card'>
       <div className='flex-between'>
         <div className='flex items-center gap-3 overflow-ellipsis'>
-          <Link to={`/profile/${post.$id}`}>
+          <Link to={`/profile/${post.creator.$id}`}>
             <img
               src={
                 post?.creator?.imageUrl ??

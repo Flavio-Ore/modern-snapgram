@@ -1,6 +1,7 @@
-import { useId, type SVGProps } from 'react'
+import { cn } from '@/lib/utils'
+import { type SVGProps, useId } from 'react'
 
-const PostsIcon = (props: SVGProps<SVGSVGElement>) => {
+const PostsIcon = ({ className }: SVGProps<SVGSVGElement>) => {
   const id = useId()
   return (
     <svg
@@ -9,7 +10,7 @@ const PostsIcon = (props: SVGProps<SVGSVGElement>) => {
       viewBox='0 0 20 20'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
-      {...props}
+      className={cn('stroke-primary-500', className)}
     >
       <g clipPath={`url(#${id})`} strokeWidth='1.5'>
         <path d='M1.667 10c0-3.929 0-5.893 1.22-7.113S6.072 1.667 10 1.667s5.893 0 7.113 1.22 1.22 3.184 1.22 7.113c0 3.928 0 5.892-1.22 7.113-1.22 1.22-3.184 1.22-7.113 1.22-3.928 0-5.892 0-7.113-1.22-1.22-1.22-1.22-3.185-1.22-7.113Z' />

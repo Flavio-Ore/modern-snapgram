@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Logo from '@/components/icons/Logo'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserContext } from '@/context/useUserContext'
+import { useUserContext } from '@/context/useAuthContext'
 import { useSignOut } from '@/lib/queries/mutations'
 import { LogOutIcon } from 'lucide-react'
 const Topbar = () => {

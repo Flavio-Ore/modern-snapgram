@@ -39,7 +39,7 @@ interface InfiniteScrollProps {
  * @returns {React.FC<InfiniteScrollProps>}
  *
  * @example
- * <InfinitePosts
+ * <InfiniteScroll
  *   isDataEmpty={isDataEmpty}
  *   data={data}
  *   hasNextPage={hasNextPage}
@@ -49,7 +49,7 @@ interface InfiniteScrollProps {
  *   isError={isError}
  *  >
  *    {children}
- * </InfinitePosts>
+ * </InfiniteScroll>
  */
 const InfiniteScroll: FC<InfiniteScrollProps> = ({
   children,

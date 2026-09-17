@@ -1,11 +1,11 @@
-import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/constants'
-import { api } from '@/lib/services'
+import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/auth.state'
+import { api } from '@/services'
 import { type IContextType, type IUser } from '@/types'
-import { createContext, useEffect, useState } from 'react'
+import { createContext, type ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const AuthContext = createContext<IContextType>(INITIAL_AUTH_STATE)
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser>(INITIAL_USER)
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
@@ -14,7 +14,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const checkAuthUser = async () => {
     try {
       setIsLoading(true)
-
       const currentUser = await api.account.user()
 
       // ✅ Check if user is authenticated

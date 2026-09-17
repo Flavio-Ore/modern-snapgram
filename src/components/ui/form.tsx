@@ -93,7 +93,7 @@ ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
   return (
     <Label
       ref={ref}
-      className={cn(error != null && 'text-destructive', className)}
+      className={cn('base-medium md:body-medium', { 'text-light-2': error != null }, className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -134,7 +134,7 @@ HTMLAttributes<HTMLParagraphElement>
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-sm text-muted-foreground', className)}
+      className={cn('base-regular text-light-1', className)}
       {...props}
     />
   )
@@ -156,7 +156,7 @@ HTMLAttributes<HTMLParagraphElement>
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-sm font-medium text-red animate-shake', className)}
+      className={cn('small-regular text-red animate-shake', className)}
       {...props}
     >
       {body}

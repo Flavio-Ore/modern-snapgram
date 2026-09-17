@@ -1,9 +1,9 @@
+import LazyPages from '@/components/shared/app/LazyPages'
 import { Toaster } from '@/components/ui/toaster'
 import '@/global.css'
 import { PRIVATE_ROUTES, PUBLIC_ROUTES } from '@/values'
 import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import LazyPages from './components/shared/app/LazyPages'
 
 const AuthLayout = lazy(async () => await import('@/_auth/AuthLayout'))
 const RootLayout = lazy(async () => await import('@/_root/RootLayout'))
