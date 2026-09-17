@@ -1,51 +1,9 @@
 import { isObjectEmpty } from '@/lib/utils'
-import { appwriteConfig, databases } from '@/services/appwrite/config'
-import { getFilesWithUrlsByIds } from '@/services/appwrite/file'
 import {
   type EmptyObject,
-  type ObjectWithKeys,
-  type Post,
-  type PostModel
+  type ObjectWithKeys
 } from '@/types'
-import { AppwriteException, Query, type Models } from 'appwrite'
-
-export async function findUserPosts ({ userId }: { userId?: string }) {
-  if (userId == null || userId.trim().length === 0) return null
-  try {
-    const postsDocumentList = await databases.listDocuments<PostModel>(
-      appwriteConfig.databaseId,
-      appwriteConfig.postsCollectionId,
-      [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
-    )
-
-    const data: Post[] = await Promise.all(
-      postsDocumentList.documents.map(
-        async ({ filesId, ...postWithoutFilesId }) => ({
-          ...postWithoutFilesId,
-          files: await getFilesWithUrlsByIds(filesId)
-        })
-      )
-    )
-
-    return appwriteResponse({
-      data,
-      message: APPWRITE_RESPONSE_CODES.OK.message,
-      status: 'OK',
-      code: 200
-    })
-  } catch (e) {
-    console.error({ e })
-    if (e instanceof AppwriteException) {
-      return appwriteResponse({
-        data: null,
-        message: e.message,
-        status: e.type,
-        code: e.code
-      })
-    }
-    return null
-  }
-}
+import { AppwriteException, type Models } from 'appwrite'
 
 export class AppwriteError extends AppwriteException {
   constructor ({

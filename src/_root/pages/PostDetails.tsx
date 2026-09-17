@@ -1,15 +1,14 @@
 import BackIcon from '@/components/icons/BackIcon'
 import DeleteIcon from '@/components/icons/DeleteIcon'
 import EditIcon from '@/components/icons/EditIcon'
-import GridPostList from '@/components/shared/posts/GridPostList'
 import PostsSlider from '@/components/shared/posts/PostsCarousel'
 import PostStats from '@/components/shared/posts/PostStats'
-import GridPostSkeleton from '@/components/shared/skeletons/GridPostSkeleton'
+import UserPosts from '@/components/shared/posts/UserPosts'
 import PostDetailsSkeleton from '@/components/shared/skeletons/PostDetailsSkeleton'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useDeletePost } from '@/lib/queries/mutations'
-import { useGetPostById, useGetUserPosts, useUser } from '@/lib/queries/queries'
+import { useGetPostById, useUser } from '@/lib/queries/queries'
 import { cn, multiFormatDateString } from '@/lib/utils'
 import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -24,13 +23,6 @@ const PostDetails = () => {
     isLoading,
     isError
   } = useGetPostById({ postId: id ?? '' })
-  const {
-    data: userPostsResponse,
-    isLoading: isRelatedLoading,
-    isError: isRelatedError
-  } = useGetUserPosts({
-    userId: post?.creator?.$id ?? ''
-  })
   const { mutate: deletePost } = useDeletePost()
   const isCreator = useMemo(
     () =>
@@ -38,17 +30,9 @@ const PostDetails = () => {
     [user, post]
   )
   const userId = useMemo(() => user?.$id ?? '', [user])
-  const userPosts = useMemo(
-    () => userPostsResponse?.data ?? [],
-    [userPostsResponse]
-  )
   // console.log('user :>> ', user)
   // console.log('post creator :>> ', post?.creator)
   // console.log('user.id === post?.creator?.$id :>> ', isCreator)
-  const relatedPosts = useMemo(
-    () => userPosts?.filter(userPost => userPost.$id !== id) ?? null,
-    [userPostsResponse]
-  )
 
   const handleDeletePost = () => {
     if (!isCreator) return
@@ -163,27 +147,10 @@ const PostDetails = () => {
 
       <div className='w-full max-w-7xl'>
         <hr className='border w-full border-dark-4/80' />
-
         <h3 className='body-bold md:h3-bold w-full my-10'>
           More Related Posts
         </h3>
-        {(isLoading || isRelatedLoading) && <GridPostSkeleton />}
-        {isRelatedError && (
-          <h4 className='h3-bold animate-pulse text-secondary-500  text-center'>
-            Oops... Error loading related posts!
-          </h4>
-        )}
-        {!isRelatedLoading &&
-          !isRelatedError &&
-          relatedPosts != null &&
-          relatedPosts.length === 0 && (
-            <h4 className='h3-bold animate-pulse text-primary-600/80  text-center '>
-              No related posts...
-            </h4>
-        )}
-        {!isRelatedLoading && !isRelatedError && relatedPosts != null && (
-          <GridPostList posts={relatedPosts} />
-        )}
+        <UserPosts userId={post?.creator?.$id ?? ''} />
       </div>
     </div>
   )

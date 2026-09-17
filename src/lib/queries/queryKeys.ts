@@ -1,33 +1,34 @@
 export const QUERY_KEYS = {
-  // AUTH KEYS
-  CREATE_USER_ACCOUNT: 'createUserAccount',
-
   // USER KEYS
-  GET_CURRENT_USER: 'getCurrentUser',
-  GET_USERS: 'getUsers',
-  GET_USER_BY_ID: 'getUserById',
-  GET_TOP_CREATORS: 'getTopCreators',
+  GET_CURRENT_USER: 'getUser',
+  GET_USER_BY_ID: 'findUserById',
+  GET_TOP_CREATORS: 'findAllUsers',
+
+  // INFINITE USER KEYS
+  GET_INFINITE_USERS: 'findInfiniteUsers',
+
+  // INFINITE FOLLOWERS - FOLLOWING
+  GET_INFINITE_FOLLOWERS: 'findInfiniteFollowers',
+  GET_INFINITE_FOLLOWINGS: 'findInfiniteFollowings',
 
   // POST KEYS
   GET_POSTS: 'getPosts',
-  GET_INFINITE_POSTS: 'getInfinitePosts',
-  GET_RECENT_POSTS: 'getRecentPosts',
   GET_POST_BY_ID: 'getPostById',
-  GET_USER_POSTS: 'getUserPosts',
-  GET_FILE_PREVIEW: 'getFilePreview',
 
-  // FILE KEYS
-  GET_FILES_BY_IDS: 'getFilesByIds',
+  // INFINITE POST KEYS
+  GET_INFINITE_UPDATED_POSTS: 'findInfiniteUpdatedPosts',
+  GET_INFINITE_RECENT_POSTS: 'findInfiniteRecentPosts',
+  GET_INFINITE_USER_POSTS: 'useGetInfiniteUserPosts',
 
   //  SEARCH KEYS
-  SEARCH_POSTS: 'getSearchPosts',
+  GET_INFINITE_SEARCHED_POSTS: 'findInfiniteSearchedPosts',
+  GET_INFINITE_SEARCHED_USERS: 'findInfiniteSearchedUsers',
 
   // SAVED POSTS KEYS
   GET_SAVED_RECORD: 'getSavedRecord',
-  GET_SAVED_POSTS: 'getSavedPosts',
-  GET_SAVED_REELS: 'getSavedReels',
+  GET_INFINITE_SAVED_POSTS: 'findInfiniteSaves',
   GET_SAVED_COLLECTIONS: 'getSavedCollections',
 
   // MESSAGE KEYS
-  GET_INFINITE_MESSAGES: 'getInfiniteMessages'
+  GET_INFINITE_MESSAGES: 'findInfiniteMessages'
 }

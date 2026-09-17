@@ -1,10 +1,10 @@
 import EditIcon from '@/components/icons/EditIcon'
+import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import { useFollow, useUnfollow } from '@/lib/queries/mutations'
 import { type UserModel } from '@/types'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Loader from '../app/Loader'
 
 interface ProfileButtonProps {
   className?: string
