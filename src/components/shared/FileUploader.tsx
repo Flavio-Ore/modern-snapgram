@@ -58,7 +58,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           <h3 className='base-medium text-light-2 mb-2 mt-6'>
             Drag photo here
           </h3>
-          <p className='text-light-4 small-regular mb-6'>SVG, PNG, JPG</p>
+          <p className='text-light-4 small-regular mb-6'>
+            SVG, PNG, JPG or GIF &#40;max. 800x400px&#41;
+          </p>
 
           <Button type='button' className='shad-button_dark_4'>
             Select from computer

@@ -5,7 +5,9 @@ const Reels = () => {
         <img
           src='/assets/icons/reels.svg'
           alt='Reels icon'
-          className='h-[36px] w-[36px] aspect-square invert-white'
+          height={36}
+          width={36}
+          className='invert-white'
         />
         <h1 className='h1-bold'>Search Reels</h1>
       </div>
