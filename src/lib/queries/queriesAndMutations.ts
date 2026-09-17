@@ -1,10 +1,11 @@
-import { INewPost, IUpdatePost, IUpdateUser, NewUser } from '@/types'
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient
 } from '@tanstack/react-query'
+import { Query } from 'appwrite'
 import {
   createPost,
   createUserAccount,
@@ -19,7 +20,6 @@ import {
   getUsers,
   likePost,
   savePost,
-  searchPosts,
   signInAccount,
   signOutAccount,
   updatePost,
@@ -29,7 +29,7 @@ import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
   return useMutation({
-    mutationFn: (user: NewUser) => createUserAccount(user)
+    mutationFn: (user: INewUser) => createUserAccount(user)
   })
 }
 
@@ -170,10 +170,15 @@ export const useGetUserPosts = ({ userId }: { userId: string }) => {
   })
 }
 
+const useGetPostsQueries = [Query.orderDesc('$updatedAt')]
 export function useGetPosts () {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: ({ pageParam }) => getInfinitePosts({ lastId: pageParam }),
+    queryFn: ({ pageParam }) =>
+      getInfinitePosts({
+        lastId: pageParam,
+        queries: useGetPostsQueries
+      }),
     getNextPageParam: lastPage => {
       if (lastPage?.documents?.length === 0) return null
       return lastPage.documents[lastPage.documents.length - 1].$id
@@ -182,13 +187,30 @@ export function useGetPosts () {
   })
 }
 
-export const useSearchPosts = ({ searchTerm }: { searchTerm: string }) => {
-  return useQuery({
+const infiniteSearchPostsQueries = ({ searchTerm }: { searchTerm: string }) => [
+  Query.search('caption', searchTerm)
+]
+export const useInfiniteSearchPosts = ({
+  searchTerm
+}: {
+  searchTerm: string
+}) => {
+  return useInfiniteQuery({
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
-    queryFn: () => searchPosts({ searchTerm }),
-    enabled: !!searchTerm
+    queryFn: ({ pageParam }) =>
+      getInfinitePosts({
+        lastId: pageParam,
+        queries: infiniteSearchPostsQueries({ searchTerm })
+      }),
+    enabled: !!searchTerm,
+    getNextPageParam: lastPage => {
+      if (lastPage?.documents?.length === 0) return null
+      return lastPage.documents[lastPage.documents.length - 1].$id
+    },
+    initialPageParam: ''
   })
 }
+
 // ============================================================
 // USER QUERIES
 // ============================================================

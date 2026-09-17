@@ -1,4 +1,4 @@
-import { INewPost, IUpdatePost, IUpdateUser, NewUser } from '@/types'
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { ID, Models, Query } from 'appwrite'
 import { account, appwriteConfig, avatars, databases, storage } from './config'
 
@@ -7,7 +7,7 @@ import { account, appwriteConfig, avatars, databases, storage } from './config'
 // ============================================================
 
 // ============================== SIGN UP
-export async function createUserAccount (user: NewUser) {
+export async function createUserAccount (user: INewUser) {
   try {
     const newAccount = await account.create(
       ID.unique(),
@@ -198,7 +198,7 @@ export async function getRecentPosts () {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
-      [Query.orderDesc('$createdAt'), Query.limit(20)]
+      [Query.orderDesc('$createdAt'), Query.limit(1)]
     )
     if (!posts) throw Error
     return posts
@@ -376,14 +376,20 @@ export async function deletePost ({
   }
 }
 
-export async function getInfinitePosts ({ lastId = '' }: { lastId: string }) {
-  const queries = [Query.orderDesc('$updatedAt'), Query.limit(9)]
-  if (lastId) queries.push(Query.cursorAfter(lastId.toString()))
+export async function getInfinitePosts ({
+  lastId = '',
+  queries = []
+}: {
+  lastId: string
+  queries: string[]
+}) {
+  const query = [...queries, Query.limit(1)]
+  if (lastId) query.push(Query.cursorAfter(lastId.toString()))
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postsCollectionId,
-      queries
+      query
     )
     if (!posts) throw Error
     return posts
