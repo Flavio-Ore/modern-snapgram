@@ -1,6 +1,7 @@
 import { INITIAL_AUTH_STATE, INITIAL_USER } from '@/context/constants'
-import { getCurrentUser } from '@/lib/services/api'
-import { IContextType, IUser } from '@/types'
+import { getCurrentSessionUser } from '@/lib/services/appwrite/auth'
+import { isObjectEmpty } from '@/lib/utils'
+import { type IContextType, type IUser } from '@/types'
 import { createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,12 +16,13 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true)
 
-      const currentUser = await getCurrentUser()
+      const currentUser = await getCurrentSessionUser()
       // ✅ Check if user is authenticated
       // ✅ If user is authenticated, set `isAuthenticated` to true
       // ✅ If user is not authenticated, set `isAuthenticated` to false
 
-      if (currentUser) {
+      console.log('currentUser CONTEXT :>> ', currentUser)
+      if (!isObjectEmpty(currentUser)) {
         const { $id, name, email, username, imageUrl, bio } = currentUser
         setUser({ id: $id, name, email, username, imageUrl, bio })
         setIsAuthenticated(true)
@@ -49,8 +51,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (
       localStorage.getItem('cookieFallback') === '[]' ||
       localStorage.getItem('cookieFallback') === null
-    )
-      navigate('/sign-in')
+    ) { navigate('/sign-in') }
     checkAuthUser()
   }, [])
 

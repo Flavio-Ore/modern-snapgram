@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/lib/queries/queryKeys'
-import { findInfiniteSaves, findSave } from '@/lib/services/appwrite/savesCol'
+import { findInfiniteSaves, findSave } from '@/lib/services/appwrite/saves'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { type Models, Query } from 'appwrite'
 import { findInfinitePosts } from '../services/appwrite/posts'

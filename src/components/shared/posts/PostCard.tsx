@@ -1,17 +1,15 @@
 import PostStats from '@/components/shared/posts//PostStats'
 import { useUserContext } from '@/context/useUserContext'
-import { multiFormatDateString } from '@/lib/utils'
-import { Models } from 'appwrite'
+import { isObjectEmpty, multiFormatDateString } from '@/lib/utils'
+import { type Post } from '@/types'
 import { Link } from 'react-router-dom'
 
-interface PostCardModel {
-  post: Models.Document
+interface PostCardProps {
+  post: Post
 }
-type PostCardProps = PostCardModel
-
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { user } = useUserContext()
-  if (!post.creator) return // Radix Skeleton
+  if (isObjectEmpty(post?.creator) || post.creator?.name == null || post.tags == null) return // Radix Skeleton
   return (
     <div className='post-card'>
       <div className='flex-between'>
@@ -19,7 +17,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <Link to={`/profile/${post.$id}`}>
             <img
               src={
-                post?.creator?.imageUrl ||
+                post?.creator?.imageUrl ??
                 '/assets/icons/profile-placeholder.svg'
               }
               alt='profile of the owner of the post'
@@ -66,7 +64,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </ul>
         </div>
         <img
-          src={post.imageUrl || '/assets/icons/profile-placeholder.svg'}
+          src={post.imageUrl ?? '/assets/icons/profile-placeholder.svg'}
           alt='post image'
           className='post-card_img'
         />

@@ -3,8 +3,8 @@ import LeftSidebar from '@/components/shared/app/LeftSidebar'
 import Loader from '@/components/shared/app/Loader'
 import Topbar from '@/components/shared/app/Topbar'
 import { lazy, Suspense } from 'react'
-const Outlet = lazy(() =>
-  import('react-router-dom').then(module => ({ default: module.Outlet }))
+const Outlet = lazy(async () =>
+  await import('react-router-dom').then(module => ({ default: module.Outlet }))
 )
 
 const RootLayout = () => {
