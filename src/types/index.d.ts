@@ -1,7 +1,7 @@
 import { type Models } from 'appwrite'
 
-export type EmptyObject = Record<string, never>
-
+export type EmptyObject = Record<keyof object, never>
+export type ObjectWithKeys = Record<keyof object, unknown>
 export interface IContextType {
   user: IUser
   isLoading: boolean
@@ -63,7 +63,7 @@ export interface INewUser {
 export interface TabsTriggers {
   trigger: string
   icon: string
-  Element: () => JSX.Element
+  Element: FC
 }
 
 export type User = Partial<{
@@ -74,15 +74,10 @@ export type User = Partial<{
   bio?: string
   imageId?: string
   imageUrl: string
-  $id: string
-  $createdAt: string
-  $updatedAt: string
-  $permissions: string[]
   posts: Post[]
   liked: Post[]
   save: Post[]
-}> &
-Partial<Models.Document>
+}> & Models.Document
 
 export type Post = Partial<{
   caption: string
@@ -90,11 +85,7 @@ export type Post = Partial<{
   imageUrl: string
   imageId: string
   location: string
-  $id: string
-  $createdAt: string
-  $updatedAt: string
-  $permissions: string[]
   likes: User[]
   save: User[]
-}> &
-Models.Document
+  creator: User
+}> & Models.Document

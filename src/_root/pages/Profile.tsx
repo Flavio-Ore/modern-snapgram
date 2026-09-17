@@ -2,9 +2,9 @@ import CustomTabs from '@/components/shared/app/CustomTabs'
 import Loader from '@/components/shared/app/Loader'
 import { Button } from '@/components/ui/button'
 import { useGetCurrentUser, useGetUserById } from '@/lib/queries/queries'
-import { User } from '@/types'
+import { type User } from '@/types'
 import { PROFILES_TRIGGERS } from '@/values'
-import { useMemo } from 'react'
+import { type FC, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 interface ProfileButtonProps {
@@ -12,8 +12,8 @@ interface ProfileButtonProps {
 }
 const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
   <div className='flex-start gap-1'>
-    {idMatch ? (
-      <Link
+    {idMatch
+      ? <Link
         to='/update-profile'
         className='flex-center gap-2 small-medium py-2.5  px-5 bg-dark-3 hover:bg-light-4 rounded-lg transition'
       >
@@ -26,8 +26,8 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
         />
         Edit Profile
       </Link>
-    ) : (
-      <>
+
+      : <>
         <Button className='shad-button_primary px-5 py-2.5 hover:bg-primary-600'>
           <p className='small-medium'>Follow</p>
         </Button>
@@ -35,16 +35,16 @@ const ProfileButtons: React.FC<ProfileButtonProps> = ({ idMatch }) => (
           <p className='small-semibold'>Message</p>
         </Button>
       </>
-    )}
+    }
   </div>
 )
 
-type ProfileStats = { name: string; value: number }[]
-
+type UserStats = Array<{ name: string, value: number }>
 interface ProfileStatsProps {
-  stats: ProfileStats
+  stats: UserStats
+
 }
-const ProfileStats: React.FC<ProfileStatsProps> = ({ stats }) => (
+const ProfileStats: FC<ProfileStatsProps> = ({ stats }) => (
   <div className='grid grid-flow-row xxs:flex place-items-center w-full max-w-lg gap-1 xxs:gap-0'>
     {stats.map(({ name, value }) => (
       <Button
@@ -70,23 +70,23 @@ const ProfileInnerContainer = () => {
     isLoading: isUserLoading,
     isError: isUserError,
     isFetched: isUserFetched
-  } = useGetUserById({ userId: id || '' })
+  } = useGetUserById({ userId: id ?? '' })
 
   const isLoading = isSessionLoading && isUserLoading
   const isError = isSessionError && isUserError
   const realUser: User | undefined = useMemo(
-    () => (id === sessionUser?.$id ? sessionUser : user || {}),
+    () => (id === sessionUser?.$id ? sessionUser : user),
     [sessionUser, user, id]
   )
   const profileStats = useMemo(
     () => ({
-      posts: realUser?.posts?.length || 0,
-      liked: realUser?.liked?.length || 0,
-      following: realUser?.save?.length || 0
+      posts: realUser?.posts?.length ?? 0,
+      liked: realUser?.liked?.length ?? 0,
+      following: realUser?.save?.length ?? 0
     }),
     [realUser]
   )
-  const stats: ProfileStats = Object.keys(profileStats).map(key => ({
+  const stats: UserStats = Object.keys(profileStats).map(key => ({
     name: key.charAt(0).toUpperCase() + key.slice(1),
     value: profileStats[key as keyof typeof profileStats]
   }))
@@ -98,10 +98,10 @@ const ProfileInnerContainer = () => {
         </div>
       )}
       {isError && <p>Something went wrong 👮‍♀️👮‍♂️</p>}
-      {!isLoading && !isError && realUser && (
+      {!isLoading && !isError && realUser != null && (
         <img
-          src={realUser.imageUrl || '/assets/icons/default-avatar.svg'}
-          alt={realUser.name || 'Profile Avatar'}
+          src={realUser.imageUrl ?? '/assets/icons/default-avatar.svg'}
+          alt={realUser.name ?? 'Profile Avatar'}
           height={150}
           width={150}
           className='rounded-full'
@@ -110,18 +110,18 @@ const ProfileInnerContainer = () => {
       <div className='flex justify-between items-start flex-col h-full gap-2 xl:gap-0'>
         {isLoading && <Loader />}
         {isError && <h2>An unexpected error happened.</h2>}
-        {!isLoading && !isError && realUser && (
+        {!isLoading && !isError && realUser != null && (
           <div className='flex-between flex-1 flex-col md:flex-row w-full  gap-2 xl:gap-0'>
             <h2 className='body-medium xs:h3-bold lg:h1-semibold max-w-60 xs:max-w-md sm:max-w-xs md:max-w-52 lg:max-w-sm xl:max-w-lg text-overflow-ellipsis'>
               {realUser.name}
             </h2>
-            {isSessionFetched && isUserFetched && sessionUser ? (
-              <ProfileButtons idMatch={id === sessionUser.$id} />
-            ) : (
-              <div className='w-1/2'>
+            {isSessionFetched && isUserFetched && sessionUser != null
+              ? <ProfileButtons idMatch={id === sessionUser.$id} />
+
+              : <div className='w-1/2'>
                 <Loader />
               </div>
-            )}
+            }
           </div>
         )}
         <h3 className='md:self-start self-center small-medium xs:base-medium text-light-3 '>
@@ -129,16 +129,16 @@ const ProfileInnerContainer = () => {
           {isLoading
             ? 'Loading username...'
             : isError
-            ? 'Error loading username'
-            : realUser?.username || ''}
+              ? 'Error loading username'
+              : realUser?.username ?? ''}
         </h3>
         <ProfileStats stats={stats} />
         <p className='base-regular text-light-2 max-w-xl text-pretty'>
           {isLoading
             ? 'Loading bio...'
             : isError
-            ? 'Error loading bio'
-            : realUser?.bio || ''}
+              ? 'Error loading bio'
+              : realUser?.bio ?? ''}
         </p>
       </div>
     </div>

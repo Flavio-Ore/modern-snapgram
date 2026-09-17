@@ -1,13 +1,11 @@
 import { useCallback, useState } from 'react'
-import { FileWithPath, useDropzone } from 'react-dropzone'
+import { type FileWithPath, useDropzone } from 'react-dropzone'
 import { Button } from '../../ui/button'
 
-interface FileUploaderModel {
+interface FileUploaderProps {
   fieldChange: (files: File[]) => void
   mediaUrl: string
 }
-type FileUploaderProps = FileUploaderModel
-
 const FileUploader: React.FC<FileUploaderProps> = ({
   fieldChange,
   mediaUrl
@@ -36,8 +34,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       className='flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer'
     >
       <input {...getInputProps()} className='cursor-pointer' />
-      {fileUrl ? (
-        <>
+      {(fileUrl != null && fileUrl.trim().length > 0)
+        ? <>
           <div className='flex flex-1 justify-center w-full p-5 lg:p-10'>
             <img
               src={fileUrl}
@@ -47,8 +45,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
           <p className='file_uploader-label'>Click or drag photo to replace</p>
         </>
-      ) : (
-        <div className='file_uploader-box'>
+        : <div className='file_uploader-box'>
           <img
             src='/assets/icons/file-upload.svg'
             width={96}
@@ -66,7 +63,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             Select from computer
           </Button>
         </div>
-      )}
+      }
     </div>
   )
 }

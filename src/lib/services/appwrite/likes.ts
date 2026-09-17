@@ -9,7 +9,7 @@ interface LikePost {
   usersLikes: string[]
 }
 
-export async function update ({
+export async function updateLikesPost ({
   postId,
   usersLikes
 }: LikePost): Promise<Models.Document | EmptyObject> {

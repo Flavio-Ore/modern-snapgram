@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 import { useUserContext } from '@/context/useUserContext'
 import { useCreatePost, useUpdatePost } from '@/lib/queries/mutations'
+import { isObjectEmpty } from '@/lib/utils'
 import { PostValidationSchema } from '@/lib/validations'
 import { type E_FORM_ACTIONS } from '@/values'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,12 +24,12 @@ import { useNavigate } from 'react-router-dom'
 import { type z } from 'zod'
 
 type Actions = keyof typeof E_FORM_ACTIONS
-interface PostFormModel {
+interface PostFormProps {
   post?: Models.Document
   action: Actions
 }
-type PostFormProps = PostFormModel
 const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
+  console.log('post :>> ', post)
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost()
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
@@ -40,10 +41,10 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
   const form = useForm<z.infer<typeof PostValidationSchema>>({
     resolver: zodResolver(PostValidationSchema),
     defaultValues: {
-      caption: post ? post?.caption : '',
+      caption: post?.caption ?? '',
       file: [],
-      location: post ? post?.location : '',
-      tags: post ? post.tags.join(',') : ''
+      location: post?.location ?? '',
+      tags: post?.tags?.join(',') ?? ''
     }
   })
 
@@ -52,7 +53,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
   // 2. Define a submit handler.
   // Handler
   const onSubmit = async (value: z.infer<typeof PostValidationSchema>) => {
-    if (post && action === 'UPDATE') {
+    if (post != null && action === 'UPDATE') {
       const updatedPost = await updatePost({
         ...value,
         postId: post.$id,
@@ -60,7 +61,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
         imageUrl: post?.imageUrl
       })
 
-      if (!updatedPost) {
+      if (isObjectEmpty(updatedPost)) {
         toast({ title: 'Post update error', description: 'Please try again' })
         navigate(`/posts/${post.$id}`)
         return
@@ -73,14 +74,13 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
       userId: user.id
     })
 
-    if (!newPost) {
+    if (isObjectEmpty(newPost)) {
       toast({
         title: 'Creation post failed. Please try again.'
       })
     }
     navigate('/')
   }
-
   return (
     <Form {...form}>
       <form
@@ -115,7 +115,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
               <FormControl>
                 <FileUploader
                   fieldChange={field.onChange}
-                  mediaUrl={post?.imageUrl}
+                  mediaUrl={post?.imageUrl ?? ''}
                 />
               </FormControl>
               <FormMessage className='shad-form_message' />
@@ -174,12 +174,9 @@ const PostForm: React.FC<PostFormProps> = ({ post, action }) => {
             disabled={isLoadingCreate || isLoadingUpdate}
           >
             {isLoadingCreate || isLoadingUpdate
-              ? (
-              <Loader />
-                )
-              : (
-              `${action[0].toUpperCase() + action.slice(1)} Post`
-                )}
+              ? <Loader />
+              : `${action[0].toUpperCase() + action.slice(1)} Post`
+            }
           </Button>
         </div>
       </form>
