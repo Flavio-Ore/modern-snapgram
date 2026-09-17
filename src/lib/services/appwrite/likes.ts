@@ -1,7 +1,5 @@
-import { isObjectEmpty } from '@/lib/utils'
-import { type Models } from 'appwrite'
-import { type EmptyObject } from 'react-hook-form'
-import { appwriteConfig, databases } from './config'
+import { appwriteConfig, databases } from '@/lib/services/appwrite/config'
+import { parseModel } from '@/lib/services/appwrite/util'
 
 // ============================== LIKE / UNLIKE POST
 interface LikePost {
@@ -12,7 +10,7 @@ interface LikePost {
 export async function updateLikesPost ({
   postId,
   usersLikes
-}: LikePost): Promise<Models.Document | EmptyObject> {
+}: LikePost) {
   try {
     const updatedPost = await databases.updateDocument(
       appwriteConfig.databaseId,
@@ -22,10 +20,10 @@ export async function updateLikesPost ({
         likes: usersLikes
       }
     )
-    if (isObjectEmpty(updatedPost)) throw Error('Post not updated')
+    parseModel({ model: updatedPost, errorMsg: 'Post not updated, try again' })
     return updatedPost
   } catch (error) {
     console.error(error)
-    return {}
+    return null
   }
 }

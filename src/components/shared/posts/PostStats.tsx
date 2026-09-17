@@ -1,3 +1,4 @@
+import Loader from '@/components/shared/app/Loader'
 import {
   useDeleteSavedPost,
   useLikePost,
@@ -7,7 +8,6 @@ import { useGetCurrentUser } from '@/lib/queries/queries'
 import { checkIsLiked, isObjectEmpty } from '@/lib/utils'
 import { type Post, type User } from '@/types'
 import { type FC, useEffect, useState } from 'react'
-import Loader from '../app/Loader'
 
 interface PostStatsProps {
   post: Post
