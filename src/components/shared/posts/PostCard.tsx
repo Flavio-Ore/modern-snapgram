@@ -1,15 +1,24 @@
 import PostStats from '@/components/shared/posts//PostStats'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useUserContext } from '@/context/useUserContext'
 import { isObjectEmpty, multiFormatDateString } from '@/lib/utils'
 import { type Post } from '@/types'
 import { Link } from 'react-router-dom'
 
 interface PostCardProps {
-  post: Post
+  post: Post | null
 }
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { user } = useUserContext()
-  if (isObjectEmpty(post?.creator) || post.creator?.name == null || post.tags == null) return // Radix Skeleton
+  if (post == null || isObjectEmpty(post?.creator) || post.creator?.name == null || post.tags == null) {
+    return <div className="flex flex-col space-y-3">
+  <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+  <div className="space-y-2">
+    <Skeleton className="h-4 w-[250px]" />
+    <Skeleton className="h-4 w-[200px]" />
+  </div>
+</div>
+  }// Radix Skeleton
   return (
     <div className='post-card'>
       <div className='flex-between'>

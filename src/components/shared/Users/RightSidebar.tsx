@@ -1,5 +1,5 @@
-import Loader from '@/components/shared//app/Loader'
 import UserCard from '@/components/shared/users/UserCard'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useGetUsers } from '@/lib/queries/queries'
 import { E_USERS } from '@/values'
 
@@ -7,17 +7,30 @@ const TopCreators = () => {
   const { data: topCreators, isLoading, isError } = useGetUsers({ limit: 8 })
   return (
     <ul className='home-creators_grid'>
-      {isLoading && <Loader />}
+      {isLoading &&
+        Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className='user-card'>
+            <Skeleton className='min-h-14 min-w-14 rounded-full' />
+            <div className='flex-center flex-col gap-1 w-full'>
+              <Skeleton className='h-4 w-4/6' />
+              <Skeleton className='h-2 w-9/12' />
+            </div>
+            <Skeleton className='h-4 w-1/4 rounded-lg bg-primary-500' />
+          </div>
+        ))}
       {isError && <p>Error 🚔</p>}
       {!isLoading &&
         !isError &&
-        topCreators &&
         topCreators?.map(user => (
           <li key={user.$id}>
             <UserCard
-              imgUrl={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
-              name={user.name || 'Not found'}
-              mainFollower={`Followed by ${user.followers || 'Not found'}`}
+              imgUrl={
+                user.imageUrl.trim().length > 0
+                  ? user.imageUrl
+                  : '/assets/icons/default-avatar.svg'
+              }
+              name={user.name.trim().length > 0 ? user.name : 'Not found'}
+              mainFollower={`Followed by ${user.followers ?? 'Not found'}`}
               profileLink={`/profile/${user.$id}`}
               role={E_USERS.TOP_CREATORS}
             />

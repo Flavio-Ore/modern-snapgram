@@ -11,6 +11,8 @@ const HomePosts = () => {
     () => data?.pages.flatMap(postsPage => postsPage) ?? [],
     [data]
   )
+
+  console.log('posts :>> ', posts)
   return (
     <InfiniteScroll
       data={data}
@@ -22,7 +24,7 @@ const HomePosts = () => {
       hasNextPage={hasNextPage}
     >
       {posts.map(post => (
-        <PostCard post={post} key={post.$id} />
+        <PostCard post={post} key={post?.$id} />
       ))}
     </InfiniteScroll>
   )

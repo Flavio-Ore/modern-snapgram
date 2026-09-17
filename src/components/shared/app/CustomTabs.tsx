@@ -31,7 +31,7 @@ const TabTriggers: React.FC<TabsTriggersProps> = ({
       )}
     >
       <img src={icon} alt='Link selection' width={20} height={20} />
-      <p className='text-ellipsis'>{trigger}</p>
+      <p className='overflow-ellipsis'>{trigger}</p>
     </TabsTrigger>
   ))
 
