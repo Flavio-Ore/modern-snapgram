@@ -227,6 +227,20 @@
   .leftsidebar-link {
     @apply rounded-lg base-medium hover:bg-primary-500 transition;
   }
+  /*! Right Sidebar */
+  .rightsidebar {
+    @apply hidden lg:flex flex-col gap-10 w-72 2xl:w-465 px-6 py-10  bg-dark-2 custom-scrollbar;
+  }
+
+  .rightsidebar-link {
+    @apply rounded-lg subtle-semibold bg-primary-500 h-[30px] w-[74px] p-2 text-center;
+  }
+  .rightsidebar-top_creators {
+    @apply grid grid-cols-2 h-full gap-4;
+  }
+  .rightsidebar-creators_container {
+    @apply flex-center flex-col w-full 2xl:max-w-[190px] 2xl:max-h-[190px] border border-dark-4 rounded-3xl;
+  }
 
   /*! Post Card */
   .post-card {
