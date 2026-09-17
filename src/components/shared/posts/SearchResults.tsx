@@ -1,7 +1,6 @@
-import GridPostList from '@/components/shared/GridPostList'
-import InfinitePosts from '@/components/shared/InfinitePosts'
+import InfiniteScroll from '@/components/shared/app/InfiniteScroll'
+import GridPostList from '@/components/shared/posts/GridPostList'
 import { useInfiniteSearchPosts } from '@/lib/queries/infiniteQueries'
-import { OPERATIONS } from '@/values'
 import { useMemo } from 'react'
 
 interface SearchResultsModel {
@@ -19,7 +18,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ debouncedValue }) => {
     [data]
   )
   return (
-    <InfinitePosts
+    <InfiniteScroll
       data={data}
       isDataEmpty={posts.length === 0}
       fetchNextPage={fetchNextPage}
@@ -28,11 +27,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({ debouncedValue }) => {
       isLoading={isLoading}
       isError={isError}
     >
-      <GridPostList
-        key={`${posts}-${OPERATIONS.SEARCH_POSTS}-${posts}`}
-        posts={posts}
-      />
-    </InfinitePosts>
+      <GridPostList posts={posts} />
+    </InfiniteScroll>
   )
 }
 

@@ -18,7 +18,7 @@ import { FileWithPath, useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
-import Loader from '../shared/Loader'
+import Loader from '../shared/app/Loader'
 import { Button } from '../ui/button'
 
 interface FileUploaderModel {

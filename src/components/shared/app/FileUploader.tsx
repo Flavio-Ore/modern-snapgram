@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { FileWithPath, useDropzone } from 'react-dropzone'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 
 interface FileUploaderModel {
   fieldChange: (files: File[]) => void
