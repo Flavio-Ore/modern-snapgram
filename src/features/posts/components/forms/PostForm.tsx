@@ -261,16 +261,14 @@ const PostForm = ({ post, action }: PostFormProps) => {
               (!postForm.formState.isValid && postForm.formState.isDirty)
             }
           >
-            {isLoadingCreate || isLoadingUpdate
-              ? (
+            {isLoadingCreate || isLoadingUpdate ? (
               <Loader />
-                )
-              : (
+            ) : (
               `${
                 action[0].toLocaleUpperCase() +
                 action.slice(1).toLocaleLowerCase()
               } Post`
-                )}
+            )}
           </Button>
         </div>
       </form>

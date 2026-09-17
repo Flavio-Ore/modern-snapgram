@@ -1,8 +1,4 @@
-import {
-  account,
-  appwriteConfig,
-  databases
-} from '@/services/config'
+import { account, appwriteConfig, databases } from '@/services/config'
 import { appwriteResponse } from '@/services/utils/appwriteResponse'
 import { APPWRITE_ERROR_TYPES } from '@/services/utils/constants/APPWRITE_ERROR_TYPES'
 import { APPWRITE_RESPONSE_CODES } from '@/services/utils/constants/APPWRITE_RESPONSE_CODES'

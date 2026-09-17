@@ -29,10 +29,9 @@ const GridPostList = ({
             className='relative grid-post_link overflow-hidden'
           >
             {post?.files?.length > 0 &&
-            post.files[0].mimeType === 'video/mp4'
-              ? (
+            post.files[0].mimeType === 'video/mp4' ? (
               <video
-                src={post.files[0].url ?? '/assets/icons/image-placeholder.svg'}
+                src={post.files[0].url ?? '/assets/icons/file-upload.svg'}
                 loop
                 autoPlay
                 muted
@@ -40,17 +39,16 @@ const GridPostList = ({
               >
                 <source src={post.files[0].url} type='video/mp4' />
               </video>
-                )
-              : (
+            ) : (
               <img
-                src={post.files[0].url ?? '/assets/icons/image-placeholder.svg'}
+                src={post?.files?.[0]?.url ?? '/assets/icons/file-upload.svg'}
                 alt='Post image'
                 loading='lazy'
                 height={100}
                 width={100}
                 className='size-full aspect-square object-contain sm:object-cover transition duration-700 hover:object-contain hover:scale-105'
               />
-                )}
+            )}
           </Link>
           <div className='grid-post_user'>
             {showUser && (
