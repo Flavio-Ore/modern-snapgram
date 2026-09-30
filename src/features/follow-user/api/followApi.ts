@@ -1,21 +1,13 @@
-import { appwriteConfig } from '@shared/config'
-import { databases } from '@shared/api'
+import { apiClient } from '@shared/api'
 import type { AppwriteResponse, FollowingFollowersModel } from '@shared/types'
-import { ID, Query } from 'appwrite'
 
-const createResponse = <T>(
-  data: T,
-  message = 'Success',
-  code = 200,
-  status = 'OK'
-): AppwriteResponse<T> => ({
-  data,
-  message,
-  status,
-  code
-})
-
+/**
+ * Follow API adapter delegating all follower/following operations to the unified apiClient.
+ */
 export const followApi = {
+  /**
+   * Creates a new follow relationship between follower and followed users.
+   */
   updateFollows: async ({
     followerUserId,
     followedUserId
@@ -23,39 +15,28 @@ export const followApi = {
     followerUserId: string
     followedUserId: string
   }): Promise<AppwriteResponse<FollowingFollowersModel | null> | null> => {
-    try {
-      const newFollowRecord = await databases.createDocument<FollowingFollowersModel>(
-        appwriteConfig.databaseId,
-        appwriteConfig.followersCollectionId,
-        ID.unique(),
-        {
-          following: followerUserId,
-          followed: followedUserId
-        }
-      )
-      return createResponse(newFollowRecord, 'Follow record created', 201, 'CREATED')
-    } catch {
-      return null
-    }
+    return await apiClient.follows.followUser({
+      followerUserId,
+      followedUserId
+    })
   },
 
+  /**
+   * Deletes an existing follow record by its unique document ID.
+   */
   deleteFollow: async ({
     followRecordId
   }: {
     followRecordId: string
   }): Promise<AppwriteResponse<null> | null> => {
-    try {
-      await databases.deleteDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.followersCollectionId,
-        followRecordId
-      )
-      return createResponse(null, 'Follow deleted', 200, 'OK')
-    } catch {
-      return null
-    }
+    return await apiClient.follows.unfollowUser({
+      followRecordId
+    })
   },
 
+  /**
+   * Retrieves a paginated list of followers for a given user.
+   */
   findInfiniteFollowers: async ({
     userId,
     lastId = ''
@@ -63,26 +44,15 @@ export const followApi = {
     userId: string
     lastId?: string
   }): Promise<AppwriteResponse<FollowingFollowersModel[]> | null> => {
-    const queries = [
-      Query.equal('followed', userId),
-      Query.orderDesc('$createdAt'),
-      Query.limit(10)
-    ]
-    if (lastId.trim().length > 0) {
-      queries.push(Query.cursorAfter(lastId))
-    }
-    try {
-      const res = await databases.listDocuments<FollowingFollowersModel>(
-        appwriteConfig.databaseId,
-        appwriteConfig.followersCollectionId,
-        queries
-      )
-      return createResponse(res.documents)
-    } catch {
-      return null
-    }
+    return await apiClient.follows.getInfiniteFollowers({
+      userId,
+      lastId
+    })
   },
 
+  /**
+   * Retrieves a paginated list of users followed by a given user.
+   */
   findInfiniteFollowings: async ({
     userId,
     lastId = ''
@@ -90,23 +60,9 @@ export const followApi = {
     userId: string
     lastId?: string
   }): Promise<AppwriteResponse<FollowingFollowersModel[]> | null> => {
-    const queries = [
-      Query.equal('following', userId),
-      Query.orderDesc('$createdAt'),
-      Query.limit(10)
-    ]
-    if (lastId.trim().length > 0) {
-      queries.push(Query.cursorAfter(lastId))
-    }
-    try {
-      const res = await databases.listDocuments<FollowingFollowersModel>(
-        appwriteConfig.databaseId,
-        appwriteConfig.followersCollectionId,
-        queries
-      )
-      return createResponse(res.documents)
-    } catch {
-      return null
-    }
+    return await apiClient.follows.getInfiniteFollowings({
+      userId,
+      lastId
+    })
   }
 }

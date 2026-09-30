@@ -4,6 +4,7 @@ import type {
   ChatMemberModel,
   ChatRoomModel,
   DeletePostParams,
+  FollowingFollowersModel,
   INewUser,
   MessageModel,
   NewPostData,
@@ -55,5 +56,22 @@ export interface IApiClient {
     sendMessage: (body: string, authorChatId: string, receiversChatIds: string[], chatRoomId: string) => Promise<AppwriteResponse<MessageModel | null> | null>
     setMemberOnline: (chatIds: string[], online: boolean) => Promise<AppwriteResponse<ChatMemberModel[]> | null>
     getMemberChats: (userId: string) => Promise<AppwriteResponse<ChatMemberModel[]> | null>
+  }
+  follows: {
+    followUser: (params: {
+      followerUserId: string
+      followedUserId: string
+    }) => Promise<AppwriteResponse<FollowingFollowersModel | null> | null>
+    unfollowUser: (params: {
+      followRecordId: string
+    }) => Promise<AppwriteResponse<null> | null>
+    getInfiniteFollowers: (params: {
+      userId: string
+      lastId?: string
+    }) => Promise<AppwriteResponse<FollowingFollowersModel[]> | null>
+    getInfiniteFollowings: (params: {
+      userId: string
+      lastId?: string
+    }) => Promise<AppwriteResponse<FollowingFollowersModel[]> | null>
   }
 }

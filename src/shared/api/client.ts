@@ -7,6 +7,7 @@ import type {
   ChatMemberModel,
   ChatRoomModel,
   DeletePostParams,
+  FollowingFollowersModel,
   INewUser,
   MessageModel,
   NewPostData,
@@ -538,6 +539,86 @@ const liveClient: IApiClient = {
         )
         return createResponse(chatMemberships.documents)
       } catch {
+        return null
+      }
+    }
+  },
+  follows: {
+    followUser: async ({
+      followerUserId,
+      followedUserId
+    }: {
+      followerUserId: string
+      followedUserId: string
+    }) => {
+      try {
+        const newFollowRecord = await databases.createDocument<FollowingFollowersModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.followersCollectionId,
+          ID.unique(),
+          {
+            following: followerUserId,
+            followed: followedUserId
+          }
+        )
+        return createResponse(newFollowRecord, 'Follow record created', 201, 'CREATED')
+      } catch (err) {
+        console.error('[liveClient.follows.followUser] Error:', err)
+        return null
+      }
+    },
+    unfollowUser: async ({ followRecordId }: { followRecordId: string }) => {
+      try {
+        await databases.deleteDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.followersCollectionId,
+          followRecordId
+        )
+        return createResponse(null, 'Follow deleted', 200, 'OK')
+      } catch (err) {
+        console.error('[liveClient.follows.unfollowUser] Error:', err)
+        return null
+      }
+    },
+    getInfiniteFollowers: async ({ userId, lastId = '' }: { userId: string; lastId?: string }) => {
+      try {
+        const queries = [
+          Query.equal('followed', userId),
+          Query.orderDesc('$createdAt'),
+          Query.limit(10)
+        ]
+        if (lastId.trim().length > 0) {
+          queries.push(Query.cursorAfter(lastId))
+        }
+        const res = await databases.listDocuments<FollowingFollowersModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.followersCollectionId,
+          queries
+        )
+        return createResponse(res.documents)
+      } catch (err) {
+        console.error('[liveClient.follows.getInfiniteFollowers] Error:', err)
+        return null
+      }
+    },
+    getInfiniteFollowings: async ({ userId, lastId = '' }: { userId: string; lastId?: string }) => {
+      try {
+        const queries = [
+          Query.equal('following', userId),
+          Query.orderDesc('$createdAt'),
+          Query.limit(10)
+        ]
+        if (lastId.trim().length > 0) {
+          queries.push(Query.cursorAfter(lastId))
+        }
+        const res = await databases.listDocuments<FollowingFollowersModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.followersCollectionId,
+          queries
+        )
+        return createResponse(res.documents)
+      } catch (err) {
+        console.error('[liveClient.follows.getInfiniteFollowings] Error:', err)
         return null
       }
     }

@@ -6,6 +6,7 @@ import type {
   ChatRoomModel,
   DeletePostParams,
   FileModelWithUrl,
+  FollowingFollowersModel,
   INewUser,
   MessageModel,
   NewPostData,
@@ -103,6 +104,7 @@ let saveModelsStore: SaveModel[] = [...mockSaveModels]
 let usersStore: UserModel[] = [...mockUsers]
 let messagesStore: MessageModel[] = [...mockMessages]
 let chatRoomsStore: ChatRoomModel[] = [...mockChatRooms]
+let followsStore: FollowingFollowersModel[] = []
 
 export const mockClient: IApiClient = {
   auth: {
@@ -414,6 +416,101 @@ export const mockClient: IApiClient = {
         m => m.member.$id === userId || userId === ''
       )
       return createResponse<ChatMemberModel[]>(members)
+    }
+  },
+  follows: {
+    followUser: async ({
+      followerUserId,
+      followedUserId
+    }: {
+      followerUserId: string
+      followedUserId: string
+    }) => {
+      const followerUser = usersStore.find(u => u.$id === followerUserId)
+      const followedUser = usersStore.find(u => u.$id === followedUserId)
+
+      if (!followerUser || !followedUser) {
+        return createResponse<FollowingFollowersModel | null>(null, 'User not found', 404, 'NOT_FOUND')
+      }
+
+      const now = new Date().toISOString()
+      const newFollowRecord: FollowingFollowersModel = {
+        $id: `mock-follow-${Date.now()}`,
+        $createdAt: now,
+        $updatedAt: now,
+        $permissions: ['read("any")', 'write("user:self")'],
+        $databaseId: 'mock-database',
+        $collectionId: 'mock-followers',
+        following: followerUser,
+        followed: followedUser
+      }
+
+      followsStore.push(newFollowRecord)
+
+      followerUser.followings = followerUser.followings ?? []
+      followerUser.followings.push({
+        $id: newFollowRecord.$id,
+        $createdAt: now,
+        $updatedAt: now,
+        $permissions: [],
+        $databaseId: 'mock-database',
+        $collectionId: 'mock-followers',
+        followed: followedUser
+      })
+
+      followedUser.followers = followedUser.followers ?? []
+      followedUser.followers.push({
+        $id: newFollowRecord.$id,
+        $createdAt: now,
+        $updatedAt: now,
+        $permissions: [],
+        $databaseId: 'mock-database',
+        $collectionId: 'mock-followers',
+        following: followerUser
+      })
+
+      return createResponse<FollowingFollowersModel | null>(newFollowRecord, 'Follow record created', 201, 'CREATED')
+    },
+    unfollowUser: async ({ followRecordId }: { followRecordId: string }) => {
+      const followIndex = followsStore.findIndex(f => f.$id === followRecordId)
+      if (followIndex === -1) {
+        return createResponse<null>(null, 'Follow record not found', 404, 'NOT_FOUND')
+      }
+
+      const record = followsStore[followIndex]
+      followsStore.splice(followIndex, 1)
+
+      const followerUser = usersStore.find(u => u.$id === record.following.$id)
+      const followedUser = usersStore.find(u => u.$id === record.followed.$id)
+
+      if (followerUser?.followings) {
+        followerUser.followings = followerUser.followings.filter(f => f.$id !== followRecordId)
+      }
+      if (followedUser?.followers) {
+        followedUser.followers = followedUser.followers.filter(f => f.$id !== followRecordId)
+      }
+
+      return createResponse<null>(null, 'Follow deleted', 200, 'OK')
+    },
+    getInfiniteFollowers: async ({ userId, lastId = '' }: { userId: string; lastId?: string }) => {
+      let filtered = followsStore.filter(f => f.followed.$id === userId)
+      if (lastId) {
+        const index = filtered.findIndex(f => f.$id === lastId)
+        if (index >= 0) {
+          filtered = filtered.slice(index + 1)
+        }
+      }
+      return createResponse<FollowingFollowersModel[]>(filtered.slice(0, 10))
+    },
+    getInfiniteFollowings: async ({ userId, lastId = '' }: { userId: string; lastId?: string }) => {
+      let filtered = followsStore.filter(f => f.following.$id === userId)
+      if (lastId) {
+        const index = filtered.findIndex(f => f.$id === lastId)
+        if (index >= 0) {
+          filtered = filtered.slice(index + 1)
+        }
+      }
+      return createResponse<FollowingFollowersModel[]>(filtered.slice(0, 10))
     }
   }
 }

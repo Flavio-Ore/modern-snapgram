@@ -1,13 +1,25 @@
 import { EditIcon, Loader, Button } from '@shared/ui'
 import { type UserModel } from '@shared/types'
 import { useFollow, useUnfollow } from '@features/follow-user'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 export interface ProfileActionsProps {
   className?: string
   currentUser: UserModel
   profileUser: UserModel
+}
+
+/**
+ * Safely extracts target followed user ID from a relationship record.
+ * Handles both string document IDs and populated UserModel objects.
+ */
+const getFollowedId = (record: { followed?: UserModel | string }): string => {
+  if (typeof record.followed === 'string') return record.followed
+  if (record.followed && typeof record.followed === 'object' && '$id' in record.followed) {
+    return (record.followed as UserModel).$id
+  }
+  return ''
 }
 
 export const ProfileActions = ({
@@ -17,18 +29,25 @@ export const ProfileActions = ({
 }: ProfileActionsProps) => {
   const [isFollowing, setIsFollowing] = useState(() => {
     return currentUser.followings?.some(
-      record => record.followed?.$id === profileUser.$id
+      record => getFollowedId(record) === profileUser.$id
     ) ?? false
   })
   const { mutateAsync: follow, isPending: isPendingFollow } = useFollow()
   const { mutateAsync: unfollow, isPending: isPendingUnfollow } = useUnfollow()
 
+  useEffect(() => {
+    const isTargetFollowed = currentUser.followings?.some(
+      record => getFollowedId(record) === profileUser.$id
+    ) ?? false
+    setIsFollowing(isTargetFollowed)
+  }, [currentUser.followings, profileUser.$id])
+
   const followRecordId = useMemo(
     () =>
       currentUser.followings?.find(
-        record => record.followed?.$id === profileUser.$id
+        record => getFollowedId(record) === profileUser.$id
       )?.$id ?? '',
-    [currentUser, profileUser]
+    [currentUser.followings, profileUser.$id]
   )
 
   const isCurrentUser = useMemo(

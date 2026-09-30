@@ -50,9 +50,9 @@ export const FollowButton = ({
         })
         if (response?.data?.$id) {
           setCurrentFollowRecordId(response.data.$id)
+          setIsFollowing(true)
+          onFollowChange?.(true)
         }
-        setIsFollowing(true)
-        onFollowChange?.(true)
       }
     } catch (e) {
       console.error(e)
