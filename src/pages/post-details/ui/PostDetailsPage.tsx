@@ -73,7 +73,7 @@ export const PostDetailsPage = () => {
       {!isError && !isLoading && post != null && (
         <div className='post_details-card'>
           <PostMediaCarousel
-            files={post.files}
+            files={post.files ?? []}
             className='post_details-carrousel'
           />
           <div className='post_details-info'>

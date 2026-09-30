@@ -12,14 +12,15 @@ import { CircleIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export interface PostMediaCarouselProps {
-  files: FileModelWithUrl[]
+  files?: FileModelWithUrl[]
   className?: string
 }
 
 export const PostMediaCarousel = ({
-  files,
+  files = [],
   className = ''
 }: PostMediaCarouselProps) => {
+  const mediaFiles = files ?? []
   const [emblaApi, setEmblaApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
 
@@ -35,12 +36,12 @@ export const PostMediaCarousel = ({
     emblaApi.on('select', () => {
       setCurrent(emblaApi.selectedScrollSnap() + 1)
     })
-  }, [emblaApi, files])
+  }, [emblaApi, mediaFiles])
 
   return (
     <Carousel setApi={setEmblaApi} className={cn('group', className)}>
       <CarouselContent>
-        {files.length === 0 && (
+        {mediaFiles.length === 0 && (
           <CarouselItem>
             <div className='p-1'>
               <img
@@ -52,11 +53,15 @@ export const PostMediaCarousel = ({
             </div>
           </CarouselItem>
         )}
-        {files.length > 0 &&
-          files.map(({ $id, url, mimeType }) => {
+        {mediaFiles.length > 0 &&
+          mediaFiles.map((file) => {
+            const fileId = file?.$id ?? Math.random().toString()
+            const mimeType = file?.mimeType ?? ''
+            const url = file?.url || '/assets/icons/file-upload.svg'
+
             if (mimeType.includes('video/mp4')) {
               return (
-                <CarouselItem key={$id}>
+                <CarouselItem key={fileId}>
                   <div className='p-1'>
                     <video
                       src={url}
@@ -70,10 +75,10 @@ export const PostMediaCarousel = ({
             }
 
             return (
-              <CarouselItem key={$id}>
+              <CarouselItem key={fileId}>
                 <div className='p-1'>
                   <img
-                    src={url || '/assets/icons/file-upload.svg'}
+                    src={url}
                     alt='Post image'
                     loading='lazy'
                     className='post_details-img'

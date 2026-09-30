@@ -36,6 +36,8 @@ export interface IApiClient {
     getInfinitePosts: (params: { lastId?: string; query?: string[] }) => Promise<AppwriteResponse<Post[]> | null>
     getRecentPosts: (lastId?: string) => Promise<AppwriteResponse<Post[]> | null>
     getPostById: (id: string) => Promise<AppwriteResponse<Post | null> | null>
+    getUserPosts?: (userId: string) => Promise<AppwriteResponse<Post[]> | null>
+    getSearchedPosts?: (searchTerm: string) => Promise<AppwriteResponse<Post[]> | null>
     createPost: (post: NewPostData) => Promise<AppwriteResponse<Post | null> | null>
     updatePost: (post: UpdatedPostData) => Promise<AppwriteResponse<Post | null> | null>
     deletePost: (params: DeletePostParams) => Promise<AppwriteResponse<null> | null>

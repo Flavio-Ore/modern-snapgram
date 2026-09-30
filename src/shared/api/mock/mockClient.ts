@@ -215,6 +215,14 @@ export const mockClient: IApiClient = {
       const post = postsStore.find(p => p.$id === id) ?? null
       return createResponse<Post | null>(post)
     },
+    getUserPosts: async (userId: string) => {
+      const results = postsStore.filter(p => p.creator?.$id === userId)
+      return createResponse<Post[]>(results)
+    },
+    getSearchedPosts: async (searchTerm: string) => {
+      const results = postsStore.filter(p => p.caption.toLowerCase().includes(searchTerm.toLowerCase()))
+      return createResponse<Post[]>(results)
+    },
     createPost: async (postData: NewPostData) => {
       const now = new Date().toISOString()
       const newFiles: FileModelWithUrl[] = postData.newFiles.map((file, i) => ({

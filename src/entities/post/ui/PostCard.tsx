@@ -97,7 +97,7 @@ export const PostCard = ({
         </div>
       </Link>
 
-      <PostMediaCarousel files={post.files} />
+      <PostMediaCarousel files={post.files ?? []} />
 
       {statsSlot ?? (
         <PostStats

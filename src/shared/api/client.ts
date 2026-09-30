@@ -46,6 +46,46 @@ const createResponse = <T>(
   code
 })
 
+const hydratePostFiles = async (post: PostModel | Post): Promise<Post> => {
+  const existingFiles = (post as Post).files
+  if (Array.isArray(existingFiles) && existingFiles.length > 0) {
+    return post as Post
+  }
+  const filesId = (post as PostModel).filesId ?? []
+  if (filesId.length === 0) {
+    return { ...(post as Post), files: [] }
+  }
+  try {
+    const files = await Promise.all(
+      filesId.map(async fileId => {
+        try {
+          const file = await storage.getFile(appwriteConfig.postsStorageId, fileId)
+          const url = storage.getFileView(appwriteConfig.postsStorageId, fileId).toString()
+          return { ...file, url }
+        } catch {
+          return {
+            $id: fileId,
+            bucketId: appwriteConfig.postsStorageId,
+            $createdAt: new Date().toISOString(),
+            $updatedAt: new Date().toISOString(),
+            $permissions: [],
+            name: 'media',
+            signature: '',
+            mimeType: 'image/jpeg',
+            sizeOriginal: 0,
+            chunksTotal: 0,
+            chunksUploaded: 0,
+            url: '/assets/icons/file-upload.svg'
+          }
+        }
+      })
+    )
+    return { ...(post as Post), files }
+  } catch {
+    return { ...(post as Post), files: [] }
+  }
+}
+
 const liveClient: IApiClient = {
   auth: {
     signIn: async ({ email, password }) => {
@@ -209,12 +249,13 @@ const liveClient: IApiClient = {
         if (lastId.trim().length > 0) {
           queries.push(Query.cursorAfter(lastId))
         }
-        const postDocs = await databases.listDocuments<Post>(
+        const postDocs = await databases.listDocuments<PostModel>(
           appwriteConfig.databaseId,
           appwriteConfig.postsCollectionId,
           queries
         )
-        return createResponse(postDocs.documents)
+        const data = await Promise.all(postDocs.documents.map(hydratePostFiles))
+        return createResponse(data)
       } catch {
         return null
       }
@@ -225,31 +266,59 @@ const liveClient: IApiClient = {
         if (lastId.trim().length > 0) {
           queries.push(Query.cursorAfter(lastId))
         }
-        const postDocs = await databases.listDocuments<Post>(
+        const postDocs = await databases.listDocuments<PostModel>(
           appwriteConfig.databaseId,
           appwriteConfig.postsCollectionId,
           queries
         )
-        return createResponse(postDocs.documents)
+        const data = await Promise.all(postDocs.documents.map(hydratePostFiles))
+        return createResponse(data)
       } catch {
         return null
       }
     },
     getPostById: async (id: string) => {
       try {
-        const post = await databases.getDocument<Post>(
+        const post = await databases.getDocument<PostModel>(
           appwriteConfig.databaseId,
           appwriteConfig.postsCollectionId,
           id
         )
-        return createResponse(post)
+        const hydrated = await hydratePostFiles(post)
+        return createResponse(hydrated)
+      } catch {
+        return null
+      }
+    },
+    getUserPosts: async (userId: string) => {
+      try {
+        const postDocs = await databases.listDocuments<PostModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.postsCollectionId,
+          [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
+        )
+        const data = await Promise.all(postDocs.documents.map(hydratePostFiles))
+        return createResponse(data)
+      } catch {
+        return null
+      }
+    },
+    getSearchedPosts: async (searchTerm: string) => {
+      try {
+        const postDocs = await databases.listDocuments<PostModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.postsCollectionId,
+          [Query.search('caption', searchTerm)]
+        )
+        const data = await Promise.all(postDocs.documents.map(hydratePostFiles))
+        return createResponse(data)
       } catch {
         return null
       }
     },
     createPost: async (post: NewPostData) => {
       try {
-        const newPost = await databases.createDocument<Post>(
+        const newPost = await databases.createDocument<PostModel>(
           appwriteConfig.databaseId,
           appwriteConfig.postsCollectionId,
           ID.unique(),
@@ -260,14 +329,15 @@ const liveClient: IApiClient = {
             tags: post.tags ? post.tags.split(',').map(t => t.trim()) : []
           }
         )
-        return createResponse(newPost, 'Post created successfully', 201, 'CREATED')
+        const hydrated = await hydratePostFiles(newPost)
+        return createResponse(hydrated, 'Post created successfully', 201, 'CREATED')
       } catch {
         return null
       }
     },
     updatePost: async (post: UpdatedPostData) => {
       try {
-        const updated = await databases.updateDocument<Post>(
+        const updated = await databases.updateDocument<PostModel>(
           appwriteConfig.databaseId,
           appwriteConfig.postsCollectionId,
           post.postId,
@@ -277,7 +347,8 @@ const liveClient: IApiClient = {
             tags: post.tags ? post.tags.split(',').map(t => t.trim()) : []
           }
         )
-        return createResponse(updated)
+        const hydrated = await hydratePostFiles(updated)
+        return createResponse(hydrated)
       } catch {
         return null
       }
@@ -354,7 +425,16 @@ const liveClient: IApiClient = {
           appwriteConfig.savesCollectionId,
           query
         )
-        return createResponse(saves.documents)
+        const hydratedSaves = await Promise.all(
+          saves.documents.map(async save => {
+            if (save.post) {
+              const hydratedPost = await hydratePostFiles(save.post)
+              return { ...save, post: hydratedPost }
+            }
+            return save
+          })
+        )
+        return createResponse(hydratedSaves)
       } catch {
         return null
       }
