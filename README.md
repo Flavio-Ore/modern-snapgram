@@ -1,7 +1,7 @@
 <div align="center">
-<<<<<<< HEAD
+  <img src="https://github.com/user-attachments/assets/ec28b252-d471-420e-a4e8-d297982f0571" alt="snapgram-logo" />
   <h1>Modern Snapgram 📷</h1>
-  <h2 align="center">A Social Media Application 🏞️</h3>
+  <h2 align="center">A Social Media Application 🏞️</h2>
   <p>Snapgram is a social networking application that allows users to share posts with each other</p>
   <p>It allows chatting between users 💭.</p>
   <p>Displays the most popular posts as well as the user's feed according to what they see. 👀</p>
@@ -11,16 +11,8 @@
   <p>Sort posts ⚙</p>
   <p>Search posts 🔍</p>
   <p>Create and update profile 🤺</p>
-  <h3>Practically a social network 🤯</h4>
-=======
-  <img src="https://github.com/user-attachments/assets/ec28b252-d471-420e-a4e8-d297982f0571" alt="snapgram-logo" />
-<<<<<<< HEAD
-  <p>My version of the original Snapgram project by <a href="https://github.com/adrianhajdin">Adrian Hajdin</a></p>
->>>>>>> refs/rewritten/main
-=======
+  <h3>Practically a social network 🤯</h3>
   <p>My own version of the original <a href="https://github.com/adrianhajdin/social_media_app">Snapgram</a> project by <a href="https://github.com/adrianhajdin">Adrian Hajdin</a></p>
-
->>>>>>> 17de56d (feat: update README with new features and add type definitions for user and post models)
 </div>
 
 ##  Todo: New key Features developed by me
@@ -41,9 +33,10 @@
 2. [Database Design](#database-design)
 3. [The design](#the-design)
 4. [The tools](#the-tools)
-5. [Local Setup](#local-setup)
-6. [Contacts](#contact)
-7. [Links](#links)
+5. [New Features](#features)
+6. [Local Setup](#local-setup)
+7. [Contacts](#contact)
+8. [Links](#links)
 
 ## <a name="preview">Preview 👀</a>
 
@@ -104,10 +97,6 @@ Originally, the project was built using the following technologies:
 
 This project uses Backend as a Service (BaaS) for the backend. The BaaS provider used is [Appwrite](https://appwrite.io/).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-## <a name="quick-start">🏃🏿Quick Start</a>
-=======
 ## <a name="features">New Features ⭐</a>
 
 The [original features](https://github.com/adrianhajdin/social_media_app?tab=readme-ov-file#-features) were implemented in the project, but I also added some new features, such as:
@@ -122,10 +111,7 @@ The [original features](https://github.com/adrianhajdin/social_media_app?tab=rea
 
 🤜 **Followers**: You can now follow users and be followed by others.
 
-=======
->>>>>>> 17de56d (feat: update README with new features and add type definitions for user and post models)
 ## <a name="local-setup">Local Setup 👩‍💻</a>
->>>>>>> refs/rewritten/main
 
 Follow these steps to set up the project locally on your machine.
 

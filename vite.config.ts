@@ -8,6 +8,12 @@ export default defineConfig({
     alias:
     {
       '@': path.resolve(__dirname, './src'),
+      '@app': path.resolve(__dirname, './src/app'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@widgets': path.resolve(__dirname, './src/widgets'),
+      '@features': path.resolve(__dirname, './src/features'),
+      '@entities': path.resolve(__dirname, './src/entities'),
+      '@shared': path.resolve(__dirname, './src/shared'),
       '@components': path.resolve(__dirname, './src/components'),
       '@shadcn': path.resolve(__dirname, './src/components/ui'),
       '@posts': path.resolve(__dirname, './src/features/posts'),
@@ -19,7 +25,7 @@ export default defineConfig({
       '@profile': path.resolve(__dirname, './src/features/profile'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@lib': path.resolve(__dirname, './src/lib'),
-      '@utils': path.resolve(__dirname, './src/utils'),
+      '@utils': path.resolve(__dirname, './src/utils')
     }
   }
 })
