@@ -1,6 +1,4 @@
-import ChatsIcon from '@/components/icons/ChatsIcon'
-import Loader from '@/components/Loader'
-import ChatsSkeleton from '@chats/components/skeletons/ChatsSkeleton'
+import { ChatsIcon, ChatsSkeleton, Loader } from '@shared/ui'
 import { ChatMemberCard } from '@entities/message'
 import { cn } from '@shared/lib/cn'
 import type { ChatRoomModel, UserModel } from '@shared/types'

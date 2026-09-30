@@ -1,13 +1,13 @@
+import { apiClient } from '@shared/api'
 import { QUERY_KEYS } from '@shared/config'
 import type { UpdatedPostData } from '@shared/types'
-import { updatePost } from '@posts/services/updatePost'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useUpdatePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (updatedPost: UpdatedPostData) =>
-      await updatePost(updatedPost),
+      await apiClient.posts.updatePost(updatedPost),
     onSuccess: success => {
       if (success?.data == null) {
         return

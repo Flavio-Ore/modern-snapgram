@@ -1,4 +1,3 @@
-import DeleteIcon from '@/components/icons/DeleteIcon'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn, multiFormatDateString } from '@shared/lib'
 import type { ChatMemberModel, MessageModel } from '@shared/types'
@@ -12,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
+  DeleteIcon,
   Dialog,
   DialogClose,
   DialogContent,

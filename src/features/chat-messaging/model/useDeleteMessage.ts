@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@shared/config'
-import { deleteMessage } from '@chats/services/deleteMessage'
+import { deleteMessage } from '../api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useDeleteMessage = () => {

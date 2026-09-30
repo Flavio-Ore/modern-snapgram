@@ -1,4 +1,3 @@
-import Loader from '@/components/Loader'
 import { useSessionUser } from '@entities/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FileModelWithUrl, Post } from '@shared/types'
@@ -11,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Loader,
   Textarea,
   useToast
 } from '@shared/ui'

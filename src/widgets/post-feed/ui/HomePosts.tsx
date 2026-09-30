@@ -1,5 +1,4 @@
-import InfiniteScroll from '@/components/InfiniteScroll'
-import HomePostSkeleton from '@/components/skeletons/HomePostSkeleton'
+import { HomePostSkeleton, InfiniteScroll } from '@shared/ui'
 import { PostCard, useGetInfiniteRecentPosts } from '@entities/post'
 import { useMemo } from 'react'
 

@@ -1,7 +1,6 @@
-import InfiniteScroll from '@/components/InfiniteScroll'
+import { useGetInfiniteSavedPosts } from '@entities/post'
 import { useSessionUser } from '@entities/user'
-import GridPostSkeleton from '@posts/components/GridPostSkeleton'
-import { useGetInfiniteSavedPosts } from '@saved/hooks/useGetInfiniteSavedPosts'
+import { GridPostSkeleton, InfiniteScroll } from '@shared/ui'
 import { useMemo } from 'react'
 import GridPostList from './GridPostList'
 

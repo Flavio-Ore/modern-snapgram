@@ -1,5 +1,5 @@
-import LoaderIcon from './icons/LoaderIcon'
-import { cn } from '@shared/lib/cn'
+import { LoaderIcon } from './icons'
+import { cn } from '../lib/cn'
 import {
   type FetchNextPageOptions,
   type InfiniteData,
@@ -7,7 +7,8 @@ import {
 } from '@tanstack/react-query'
 import { type ReactNode, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-interface InfiniteScrollProps {
+
+export interface InfiniteScrollProps {
   children: ReactNode
   skeleton?: ReactNode
   isDataEmpty: boolean
@@ -23,23 +24,7 @@ interface InfiniteScrollProps {
   hasNextPage: boolean
 }
 
-/**
- * A component that enables infinite scrolling behavior.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {ReactNode} props.children - The content to be rendered inside the InfiniteScroll component.
- * @param {ReactNode} props.skeleton - The skeleton element to be displayed while loading.
- * @param {boolean} props.isDataEmpty - Indicates whether the data is empty.
- * @param {any} props.data - The data to be rendered.
- * @param {Function} props.fetchNextPage - The function to fetch the next page of data.
- * @param {boolean} props.isFetching - Indicates whether data is currently being fetched.
- * @param {boolean} props.isLoading - Indicates whether the component is in a loading state.
- * @param {boolean} props.isError - Indicates whether an error occurred.
- * @param {boolean} props.hasNextPage - Indicates whether there is a next page of data.
- * @returns {JSX.Element} The rendered InfiniteScroll component.
- */
-const InfiniteScroll = ({
+export const InfiniteScroll = ({
   children,
   skeleton,
   isDataEmpty,

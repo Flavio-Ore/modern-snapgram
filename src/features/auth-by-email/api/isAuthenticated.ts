@@ -1,18 +1,5 @@
-import { account } from '@/services/config'
+import { apiClient } from '@shared/api'
 
-export async function isAuthenticated() {
-  try {
-    const session = window.localStorage.getItem('cookieFallback') ?? ''
-    if (session === '' || session === '[]') {
-      await account.deleteSession('current')
-      window.localStorage.removeItem('cookieFallback')
-      return false
-    }
-
-    await account.get()
-    return true
-  } catch (error) {
-    console.error(error)
-    return false
-  }
+export const isAuthenticated = async () => {
+  return await apiClient.auth.checkAuth()
 }

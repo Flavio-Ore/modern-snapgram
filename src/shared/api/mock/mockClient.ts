@@ -400,6 +400,12 @@ export const mockClient: IApiClient = {
         updatedMembers.push(mockChatMember2)
       }
       return createResponse<ChatMemberModel[]>(updatedMembers)
+    },
+    getMemberChats: async (userId: string) => {
+      const members = [mockChatMember1, mockChatMember2].filter(
+        m => m.member.$id === userId || userId === ''
+      )
+      return createResponse<ChatMemberModel[]>(members)
     }
   }
 }

@@ -2,7 +2,7 @@
 import type {
   ToastActionElement,
   ToastProps
-} from '@shadcn/toast'
+} from './toast'
 import { useEffect, useState, type ReactNode } from 'react'
 
 const TOAST_LIMIT = 1

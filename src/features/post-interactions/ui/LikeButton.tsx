@@ -31,7 +31,7 @@ export const LikeButton = ({
       : [...currentLikes, userId]
 
     setCurrentLikes(nextLikes)
-    like({ postId, usersLikes: nextLikes })
+    like({ postId, likesArray: nextLikes })
   }
 
   return (

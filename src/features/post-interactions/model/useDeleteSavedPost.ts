@@ -1,5 +1,5 @@
+import { apiClient } from '@shared/api'
 import { QUERY_KEYS } from '@shared/config'
-import { deleteSave } from '@saved/services/deleteSave'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export interface DeleteSavedPostParams {
@@ -10,7 +10,7 @@ export const useDeleteSavedPost = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ savedRecordId }: DeleteSavedPostParams) =>
-      await deleteSave({ savedRecordId }),
+      await apiClient.saves.deleteSave(savedRecordId),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID]

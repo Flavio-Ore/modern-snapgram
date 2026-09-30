@@ -1,4 +1,3 @@
-import LoaderIcon from '@/components/icons/LoaderIcon'
 import { useSessionUser } from '@entities/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -10,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  LoaderIcon,
   Skeleton,
   Textarea,
   useToast

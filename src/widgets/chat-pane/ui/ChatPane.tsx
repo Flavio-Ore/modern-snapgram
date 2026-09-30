@@ -1,8 +1,13 @@
-import BackIcon from '@/components/icons/BackIcon'
-import LoaderIcon from '@/components/icons/LoaderIcon'
-import PhoneIcon from '@/components/icons/PhoneIcon'
-import VideoIcon from '@/components/icons/VideoIcon'
-import { appwriteConfig, client } from '@/services/config'
+import {
+  BackIcon,
+  LoaderIcon,
+  MessagesSkeleton,
+  PhoneIcon,
+  VideoIcon,
+  useToast
+} from '@shared/ui'
+import { appwriteConfig } from '@shared/config'
+import { client } from '@shared/api'
 import { useGetInfiniteMessagesByChatRoomId } from '@entities/message'
 import { useSessionUser } from '@entities/user'
 import {
@@ -11,10 +16,8 @@ import {
   useCreateMessage,
   useSetMessagesReadToZero
 } from '@features/chat-messaging'
-import MessagesSkeleton from '@chats/components/skeletons/MessagesSkeleton'
 import { cn } from '@shared/lib/cn'
 import type { ChatRoomModel, MessageModel } from '@shared/types'
-import { useToast } from '@shared/ui'
 import { MessageCircleWarningIcon } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'

@@ -19,8 +19,14 @@
       "@/*": [
         "./src/*"
       ],
+      "@app": [
+        "./src/app/index.ts"
+      ],
       "@app/*": [
         "./src/app/*"
+      ],
+      "@pages": [
+        "./src/pages/index.ts"
       ],
       "@pages/*": [
         "./src/pages/*"
@@ -34,45 +40,11 @@
       "@entities/*": [
         "./src/entities/*"
       ],
+      "@shared": [
+        "./src/shared/index.ts"
+      ],
       "@shared/*": [
         "./src/shared/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@lib/*": [
-        "./src/lib/*"
-      ],
-      "@utils/*": [
-        "./src/utils/*"
-      ],
-      "@shadcn/*": [
-        "./src/components/ui/*",
-        "./src/shared/ui/*"
-      ],
-      "@auth/*": [
-        "./src/features/auth/*"
-      ],
-      "@chats/*": [
-        "./src/features/chats/*"
-      ],
-      "@posts/*": [
-        "./src/features/posts/*"
-      ],
-      "@saved/*": [
-        "./src/features/saved/*"
-      ],
-      "@users/*": [
-        "./src/features/users/*"
-      ],
-      "@following-followers/*": [
-        "./src/features/following-followers/*"
-      ],
-      "@profile/*": [
-        "./src/features/profile/*"
       ]
     },
     /* Bundler mode */

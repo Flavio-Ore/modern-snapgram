@@ -1,7 +1,6 @@
-import SendIcon from '@/components/icons/SendIcon'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@shared/lib/cn'
-import { Button, Form, FormControl, FormField, FormItem, Textarea } from '@shared/ui'
+import { Button, Form, FormControl, FormField, FormItem, SendIcon, Textarea } from '@shared/ui'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'

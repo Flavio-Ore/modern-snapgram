@@ -52,5 +52,6 @@ export interface IApiClient {
     getMessages: (chatRoomId: string, lastId?: string) => Promise<AppwriteResponse<MessageModel[]> | null>
     sendMessage: (body: string, authorChatId: string, receiversChatIds: string[], chatRoomId: string) => Promise<AppwriteResponse<MessageModel | null> | null>
     setMemberOnline: (chatIds: string[], online: boolean) => Promise<AppwriteResponse<ChatMemberModel[]> | null>
+    getMemberChats: (userId: string) => Promise<AppwriteResponse<ChatMemberModel[]> | null>
   }
 }

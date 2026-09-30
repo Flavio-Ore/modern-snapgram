@@ -1,4 +1,4 @@
-import { links } from '@/routes/links'
+import { links } from '@shared/config'
 import { cn, extractFirstRoutePart } from '@shared/lib'
 import { Link, useLocation, useParams } from 'react-router-dom'
 

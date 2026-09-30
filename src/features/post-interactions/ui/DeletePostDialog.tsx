@@ -9,9 +9,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   Button,
+  DeleteIcon,
   useToast
 } from '@shared/ui'
-import DeleteIcon from '@/components/icons/DeleteIcon'
 import { useDeletePost } from '../model/useDeletePost'
 
 export interface DeletePostDialogProps {

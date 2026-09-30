@@ -1,17 +1,17 @@
-import LoaderIcon from '@/components/icons/LoaderIcon'
-import { USER_ROUTES } from '@/routes/user'
-import { Button } from '@shared/ui'
+import { ROUTES } from '@shared/config'
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
+  Input,
+  Label,
+  LoaderIcon,
+  Skeleton,
+  useToast
 } from '@shared/ui'
-import { Input } from '@shared/ui'
-import { Label } from '@shared/ui'
-import { Skeleton } from '@shared/ui'
-import { useToast } from '@shared/ui'
 import { CopyCheckIcon, CopyIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
@@ -76,7 +76,7 @@ export const AuthLayout = () => {
         </Skeleton>
       )}
       {!isLoading && isAuthenticated != null && isAuthenticated && (
-        <Navigate to={USER_ROUTES.HOME} replace />
+        <Navigate to={ROUTES.HOME} replace />
       )}
       {!isLoading && isAuthenticated != null && !isAuthenticated && (
         <>

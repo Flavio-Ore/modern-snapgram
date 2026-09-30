@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@shared/config'
-import { resetMessagesToRead } from '@chats/services/chatsMember'
+import { resetMessagesToRead } from '../api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useSetMessagesReadToZero = () => {

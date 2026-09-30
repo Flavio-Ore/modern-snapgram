@@ -1,5 +1,5 @@
-import { links } from '@/routes/links'
-import { appwriteConfig, client } from '@/services/config'
+import { appwriteConfig, links } from '@shared/config'
+import { client } from '@shared/api'
 import {
   useGetAllChatRoomsByUserId,
   useSetChatMemberOnline

@@ -1,6 +1,5 @@
-import ChatsIcon from '@/components/icons/ChatsIcon'
-import Logo from '@/components/icons/Logo'
-import LogoutDialog from '@/components/LogoutDialog'
+import { ChatsIcon, Logo } from '@shared/ui'
+import { LogoutDialog } from '@features/auth-by-email'
 import { useSessionUser } from '@entities/user'
 import { cn, extractFirstRoutePart } from '@shared/lib'
 import { Skeleton } from '@shared/ui'

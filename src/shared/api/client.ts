@@ -447,6 +447,19 @@ const liveClient: IApiClient = {
       } catch {
         return null
       }
+    },
+    getMemberChats: async (userId: string) => {
+      try {
+        const query = [Query.equal('member', [userId])]
+        const chatMemberships = await databases.listDocuments<ChatMemberModel>(
+          appwriteConfig.databaseId,
+          appwriteConfig.chatMemberCollectionId,
+          query
+        )
+        return createResponse(chatMemberships.documents)
+      } catch {
+        return null
+      }
     }
   }
 }

@@ -1,13 +1,13 @@
+import { apiClient } from '@shared/api'
 import { QUERY_KEYS } from '@shared/config'
 import type { UserUpdateData } from '@shared/types'
-import { updateUser } from '@users/services/updateUser'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (updatedUser: UserUpdateData) =>
-      await updateUser({ user: updatedUser }),
+      await apiClient.users.updateUser(updatedUser),
     onSuccess: success => {
       void queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_INFINITE_USERS]

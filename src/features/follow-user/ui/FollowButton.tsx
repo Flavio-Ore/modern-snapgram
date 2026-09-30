@@ -1,6 +1,5 @@
-import Loader from '@/components/Loader'
 import { cn } from '@shared/lib/cn'
-import { Button } from '@shared/ui'
+import { Button, Loader } from '@shared/ui'
 import { useEffect, useState } from 'react'
 import { useFollow, useUnfollow } from '../model/useUpdateFollows'
 

@@ -1,4 +1,4 @@
-import { cn } from '@/utils/cn'
+import { cn } from '@shared/lib/cn'
 import { type SVGProps, useId } from 'react'
 
 const PostsIcon = ({ className }: SVGProps<SVGSVGElement>) => {

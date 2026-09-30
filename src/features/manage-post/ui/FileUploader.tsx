@@ -1,7 +1,5 @@
-import DeleteIcon from '@/components/icons/DeleteIcon'
-import FileUploadIcon from '@/components/icons/FileUploadIcon'
 import { cn } from '@shared/lib/cn'
-import { Button, Input } from '@shared/ui'
+import { Button, DeleteIcon, FileUploadIcon, Input } from '@shared/ui'
 import { useCallback, useEffect, useState } from 'react'
 import { type FileWithPath, useDropzone } from 'react-dropzone'
 import { FilePreviewImage, VideoFilePreview } from './FilesPreviews'

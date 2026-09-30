@@ -1,10 +1,5 @@
-import { account } from '@/services/config'
+import { apiClient } from '@shared/api'
 
-export async function signOutAccount() {
-  try {
-    await account.deleteSession('current')
-    window.localStorage.removeItem('cookieFallback')
-  } catch (error) {
-    console.error(error)
-  }
+export const signOutAccount = async () => {
+  await apiClient.auth.signOut()
 }

@@ -1,4 +1,4 @@
-import ManyPostIcon from '@/components/icons/ManyPostIcon'
+import { ManyPostIcon } from '@shared/ui'
 import { useSessionUser } from '@entities/user'
 import { PostInteractions } from '@features/post-interactions'
 import type { Post } from '@shared/types'

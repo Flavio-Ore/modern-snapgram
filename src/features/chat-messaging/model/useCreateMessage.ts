@@ -1,4 +1,4 @@
-import { createMessage } from '@chats/services/createMessage'
+import { createMessage } from '../api'
 import { useMutation } from '@tanstack/react-query'
 
 export const useCreateMessage = () => {

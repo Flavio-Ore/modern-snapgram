@@ -1,5 +1,5 @@
+import { apiClient } from '@shared/api'
 import { QUERY_KEYS } from '@shared/config'
-import { updateSave } from '@saved/services/updateSave'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useSavePost = () => {
@@ -11,7 +11,7 @@ export const useSavePost = () => {
     }: {
       postId: string
       userId: string
-    }) => await updateSave({ postId, userId }),
+    }) => await apiClient.saves.savePost(userId, postId),
     onSuccess: success => {
       if (success?.data == null) {
         return

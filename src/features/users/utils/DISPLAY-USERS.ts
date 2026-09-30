@@ -1,4 +1,0 @@
-export enum E_USERS {
-  ALL_USERS = 'ALL_USERS',
-  TOP_CREATORS = 'TOP_CREATORS'
-}

@@ -1,6 +1,6 @@
-import LoaderIcon from './icons/LoaderIcon'
+import { LoaderIcon } from './icons'
 
-const Loader = () => {
+export const Loader = () => {
   return (
     <div className='flex-center w-full'>
       <LoaderIcon className='' />

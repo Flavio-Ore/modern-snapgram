@@ -1,6 +1,5 @@
 import { QUERY_KEYS } from '@shared/config'
-import { deleteFollow } from '@following-followers/services/deleteFollow'
-import { updateFollows } from '@following-followers/services/updateFollows'
+import { followApi } from '../api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useFollow = () => {
@@ -13,7 +12,7 @@ export const useFollow = () => {
       followedUserId: string
       followerUserId: string
     }) =>
-      await updateFollows({
+      await followApi.updateFollows({
         followerUserId,
         followedUserId
       }),
@@ -34,7 +33,7 @@ export const useUnfollow = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ followRecordId }: { followRecordId: string }) =>
-      await deleteFollow({ followRecordId }),
+      await followApi.deleteFollow({ followRecordId }),
     onSuccess: data => {
       if (data != null) {
         void queryClient.invalidateQueries({

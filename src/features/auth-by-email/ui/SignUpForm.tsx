@@ -1,17 +1,17 @@
-import LoaderIcon from '@/components/icons/LoaderIcon'
-import Logo from '@/components/icons/Logo'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@shared/ui'
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
+  Input,
+  LoaderIcon,
+  Logo,
+  useToast
 } from '@shared/ui'
-import { Input } from '@shared/ui'
-import { useToast } from '@shared/ui'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import type { z } from 'zod'

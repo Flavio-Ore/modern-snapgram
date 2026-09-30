@@ -1,12 +1,3 @@
-import {
-  ChatsIcon,
-  CreatePostIcon,
-  ExploreIcon,
-  HomeIcon,
-  PeopleIcon,
-  SaveIcon
-} from '../ui/icons'
-
 export const PUBLIC_ROUTES = {
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up'
@@ -23,63 +14,12 @@ export const USER_ROUTES = {
   HOME: '/home',
   EXPLORE: '/explore',
   PEOPLE: '/all-users',
+  ALL_USERS: '/all-users',
   POST_DETAILS: '/posts/:id',
   NOT_FOUND: '*'
 } as const
 
-export const links = {
-  sidebar: [
-    {
-      Icon: HomeIcon,
-      route: '/home',
-      label: 'Home'
-    },
-    {
-      Icon: ExploreIcon,
-      route: '/explore',
-      label: 'Explore'
-    },
-    {
-      Icon: PeopleIcon,
-      route: '/all-users',
-      label: 'People'
-    },
-    {
-      Icon: SaveIcon,
-      route: '/saved',
-      label: 'Saved'
-    },
-    {
-      Icon: ChatsIcon,
-      route: '/chats',
-      label: 'Chats'
-    },
-    {
-      Icon: CreatePostIcon,
-      route: '/create-post',
-      label: 'Create Post'
-    }
-  ],
-  bottom: [
-    {
-      Icon: HomeIcon,
-      route: '/home',
-      label: 'Home'
-    },
-    {
-      Icon: ExploreIcon,
-      route: '/explore',
-      label: 'Explore'
-    },
-    {
-      Icon: CreatePostIcon,
-      route: '/create-post',
-      label: 'Create'
-    },
-    {
-      Icon: SaveIcon,
-      route: '/saved',
-      label: 'Saved'
-    }
-  ]
-}
+export const ROUTES = {
+  ...PUBLIC_ROUTES,
+  ...USER_ROUTES
+} as const

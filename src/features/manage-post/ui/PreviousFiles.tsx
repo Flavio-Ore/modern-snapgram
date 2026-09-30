@@ -1,5 +1,4 @@
-import DeleteIcon from '@/components/icons/DeleteIcon'
-import { Button } from '@shared/ui'
+import { Button, DeleteIcon } from '@shared/ui'
 import type { FileModelWithUrl, Post } from '@shared/types'
 import { ImageDownIcon } from 'lucide-react'
 
